@@ -728,6 +728,12 @@ body.onb .me-more{display:none}
 .wc-chance{background:#f6ecc8;border-color:#c9a24d}.wc-chance b{color:#8a6a10}
 .wc-risk{background:#f3e1e3;border-color:#b97a85}.wc-risk b{color:#8a4a55}
 .wc-ask{font-size:14px;font-weight:700;color:#1c2332;margin:4px 0 6px}
+.name-note{font-size:12px;line-height:1.75;color:#4f5666;text-align:left;margin:2px 0 10px}
+.name-note b{color:#1c2332}
+.name-note-dark{color:#c9d3e6;max-width:480px;margin:10px auto}
+.name-note-dark b{color:#fff}
+.pf-details .name-note{color:#c9d3e6}
+.pf-details .name-note b{color:#fff}
 .wc-note{font-size:12.5px;line-height:1.8;color:#4f5666;margin:6px 0 16px}
 .wc-back{appearance:none;cursor:pointer;background:none;border:0;font-family:inherit;font-size:12.5px;color:#5a6171;margin-top:10px;padding:6px;text-decoration:underline}
 .wc-card{margin:4px auto 0;max-width:340px}
@@ -848,6 +854,7 @@ body.onb .me-more{display:none}
       <p class="wc-sub">生年月日と、下の名前。<br>この2つで、今日のあなたの運勢を順位で教えます。</p>
       <input type="date" id="wcBirth" class="wc-input" aria-label="生年月日" autocomplete="off"/>
       <input type="text" id="wcName" class="wc-input" placeholder="下の名前（例：晴輝 ／ ELON）" aria-label="下の名前" autocomplete="off"/>
+      <p class="name-note"><b>下の名前は、正確な表記で入力してください。</b>漢字なら漢字、ひらがななら ひらがな、アルファベットなら アルファベットのままで入れます（表記が変わると、画数が変わります）。</p>
       <div id="wcStrokes" class="wc-strokes"></div>
       <div class="err" id="wcErr"></div>
       <button class="rd-pill" id="wcGo" type="button">今日の運勢を見る</button>
@@ -1208,6 +1215,7 @@ body.onb .me-more{display:none}
     <div class="pf-season" id="pfSeason"></div>
     <label class="flabel" for="pfName">下の名前（必須）</label>
     <input type="text" id="pfName" placeholder="例：晴輝 ／ ELON" autocomplete="off"/>
+    <p class="name-note"><b>下の名前は、正確な表記で入力してください。</b>漢字なら漢字、ひらがななら ひらがな、アルファベットなら アルファベットのままで入れます（表記が変わると、画数が変わります）。</p>
     <div id="pfStrokes"></div>
     <div class="err" id="pfErr"></div>
     <button class="btn" id="pfGo" type="button">この内容で見る</button>
@@ -1252,6 +1260,7 @@ body.onb .me-more{display:none}
     <div id="compatStrokesB"></div>
   </div>
 </div>
+<p class="name-note name-note-dark"><b>下の名前は、正確な表記で入力してください。</b>漢字なら漢字、ひらがななら ひらがな、アルファベットなら アルファベットのままで入れます（表記が変わると、画数が変わります）。</p>
 <div class="ty-actions"><button class="rd-pill" id="compatBtn" type="button">二人の海を見る</button></div>
 <div class="err" id="compatErr"></div>
 <div class="compat-result" id="compatResult">
