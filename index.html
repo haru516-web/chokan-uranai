@@ -785,6 +785,23 @@ body.onb .me-more{display:none}
 .kw3 .k2 b{color:#5a6171;background:#eceae4}
 .kw3 .k3 b{color:#8a4a55;background:#f3e1e3}
 .kw3 .k4 b{color:#f4f1ec;background:#1c1a12;border-color:#1c1a12}
+
+/* 神キャラクター（仮の呼び名。文章は相談して決める） */
+.sp{aspect-ratio:1/1;background-repeat:no-repeat;background-size:400% 200%;background-position:0 0;flex:none}
+.god-intro{display:flex;align-items:center;gap:8px;margin:6px 0 4px}
+.god-intro p{margin:0;font-size:13.5px;line-height:1.8;color:#2a3040;text-align:left}
+.god-origin{width:112px}
+.god-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin:0 0 6px}
+.god-row figure{margin:0;text-align:center}
+.god-row .sp{width:100%}
+.god-row figcaption{font-size:11px;color:#4a5468;line-height:1.5;margin-top:0}
+.god-row figcaption b{display:block;font-size:14px;color:#1c2332}
+.ty-god{display:flex;align-items:center;justify-content:center;gap:6px;margin:0 auto}
+.ty-god .sp{width:150px}
+.ty-god-cap{display:flex;flex-direction:column;gap:2px;text-align:left}
+.ty-god-cap small{font-size:11px;letter-spacing:.12em;color:#9fb0c9}
+.ty-god-cap b{font-size:18px;color:#f3efe6}
+.ty-god-cap span{font-size:12.5px;color:#c8d4e6}
 </style>
 </head>
 <body>
@@ -833,6 +850,16 @@ body.onb .me-more{display:none}
     <svg class="rd-globe" id="wcGlobe" viewBox="-8 -8 256 256" aria-hidden="true"></svg>
     <div class="rd-card wc-card" id="wcIntro">
       <div class="rd-lab">この占いについて<br><small>1 ／ 2</small></div>
+      <div class="god-intro">
+        <div class="sp god-origin" data-g="origin" role="img" aria-label="はじまりの神"></div>
+        <p><b>はじまりの神</b>が、この海をつくりました。四季をつかさどる4柱の神が、潮を巡らせます。</p>
+      </div>
+      <div class="god-row" aria-label="四季の神">
+        <figure><div class="sp" data-g="spring" role="img" aria-label="春の神"></div><figcaption><b>春</b>始める</figcaption></figure>
+        <figure><div class="sp" data-g="summer" role="img" aria-label="夏の神"></div><figcaption><b>夏</b>広げる</figcaption></figure>
+        <figure><div class="sp" data-g="autumn" role="img" aria-label="秋の神"></div><figcaption><b>秋</b>実らせる</figcaption></figure>
+        <figure><div class="sp" data-g="winter" role="img" aria-label="冬の神"></div><figcaption><b>冬</b>蓄える</figcaption></figure>
+      </div>
       <p class="wc-sub">人生と今日を「海」にたとえて読む占いです。<br>わかることは、3つです。</p>
       <ol class="wc-points">
         <li><b>あなたのタイプ</b><span>生年月日と名前で決まる、一生変わらない名札</span></li>
@@ -918,8 +945,7 @@ body.onb .me-more{display:none}
 <div class="rd-cap">F L O W</div>
 <h2 class="ty-title">あなたの流れ</h2>
 <p class="ty-lead">今年と今月は、どんな流れか。過去の年と見比べて、当たっているか確かめられます。</p>
-<div id="flowCards"></div>
-  <div class="rd-weekhead" style="margin-top:26px">あなたの輪 ― 今どこにいて、これからどう進むか</div>
+<div class="rd-weekhead" style="margin-top:4px">あなたの輪 ― 回して、年・月を動かす</div>
   <div class="wheel-card">
     <svg id="wheelSvg" viewBox="0 -16 600 616" role="img" aria-label="あなたを中心にした、12年の輪。外側の輪を回すと年が動き、内側の輪にその年の12ヶ月が出る"></svg>
     <div class="wheel-detail" id="wheelDetail"></div>
@@ -932,7 +958,9 @@ body.onb .me-more{display:none}
     <div class="wheel-legend"><span><i class="lg lg-good"></i>追い風</span><span><i class="lg lg-mid"></i>ふつう</span><span><i class="lg lg-bad"></i>向かい風</span><span><i class="lg lg-now"></i>今年</span></div>
     <p class="wheel-note">外側の輪を回すと「年」、内側の輪を回すと「月」が動きます（12月を越えると次の年へ）。丸をタップしてもその時期が上に来ます。色は12年・36か所の中での相対評価です。</p>
   </div>
-<div class="screen-end">― 「流れ」はここまでです ―</div>
+<div class="rd-weekhead" style="margin-top:28px">今年・今月を、くわしく</div>
+<div id="flowCards"></div>
+  <div class="screen-end">― 「流れ」はここまでです ―</div>
 </div>
 <div class="screen" id="screen-rank">
 <div class="screen-head"><h2>今日の総順位 ― 全160タイプ</h2><p class="screen-lead">名札160タイプ（季節4×深さ10×「−」×A）を、今日の海で順位づけします。あなたのタイプは、一覧で「あなた」の印が付きます。</p></div>
@@ -1201,6 +1229,7 @@ body.onb .me-more{display:none}
 <div class="onb-steps"><span class="done">① 入力</span><span class="on">② あなたのタイプ</span><span>③ 今年・今月・今日</span></div>
 <div class="rd-cap">Y O U R &nbsp; T Y P E</div>
 <h2 class="ty-title">あなたのタイプは</h2>
+<div class="ty-god" id="tyGod"></div>
 <div class="ty-big" id="tyBig">―</div>
 <p class="ty-lead">この名札は、いくつかの印の組み合わせです。ひとつずつ、何を表しているか見てみましょう。</p>
 <div id="tyParts"></div>
@@ -1946,9 +1975,11 @@ function chartRarity(t){
   h+='</div><div class="ch-axis"><span>◀ 多い</span><span>珍しい ▶</span></div></div>';
   return {html:h,p:SPECIAL_P[key],key:key};
 }
+var GOD_KEY=["winter","spring","summer","autumn"];   /* same order as SEASON: 冬 春 夏 秋 */
 function renderType(){
   if(!PROF) return;
   var t=PROF.t, S=SEASON[t.mod], I=SEASON_INFO[t.mod], band=bandOf(t.num), opp=({"冬":"夏","夏":"冬","春":"秋","秋":"春"})[S.n];
+  document.getElementById("tyGod").innerHTML='<div class="sp" data-g="'+GOD_KEY[t.mod]+'" role="img" aria-label="'+S.n+'の神"></div><div class="ty-god-cap"><small>あなたの守り神</small><b>'+S.n+'の神</b><span>'+I.act+'力をつかさどる</span></div>';
   document.getElementById("tyBig").innerHTML='<span style="color:'+S.col+'">'+S.n+'</span>'+(t.A?" A":"")+(t.minus?"-":"")+numStr(t.num);
   var h="";
   h+=partCard(S.n,"季節","季節「"+S.n+"」＝ 生まれ持った性質：「"+I.act+"」人",
@@ -2262,6 +2293,23 @@ window.SHIO_DAILY={STAGES:STAGES,STAGE_PTS:STAGE_PTS,OUTER:OUTER,SEASON:SEASON,T
     var c=ctxFor(new Date()), row=dayTable(c).byKey[PROF.t.key];
     return '<div style="font-weight:800;margin-bottom:6px">'+dateLabel(c)+'　名札 '+labelHTML(PROF.t)+'　→ '+row.rank+'位／160</div>'+whyHTML(c,row,personalFor(c,PROF,row));
   }};
+})();
+</script>
+<script>
+/* 神のアニメーション: スプライトシート（4列×2行・8コマ）を行き来させて、ゆらゆら揺らす */
+(function(){
+  var SEQ=[0,1,2,3,4,5,6,7,6,5,4,3,2,1], n=0;
+  function tick(){
+    var els=document.querySelectorAll(".sp"), i, e, f;
+    for(i=0;i<els.length;i++){
+      e=els[i];
+      if(!e.style.backgroundImage) e.style.backgroundImage='url("img/sheet-'+e.getAttribute("data-g")+'.webp")';
+      f=SEQ[(n+i*5)%SEQ.length];
+      e.style.backgroundPosition=((f%4)*100/3)+"% "+(f>>2)*100+"%";
+    }
+    n++;
+  }
+  tick(); setInterval(function(){ if(!document.hidden) tick(); },170);
 })();
 </script>
 </body>
