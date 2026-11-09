@@ -673,6 +673,8 @@ body.onb .me-more{display:none}
 .ty-sum{max-width:480px;margin:12px auto 0;text-align:left;padding:20px 18px}
 .ty-sum .ty-catch{font-size:clamp(17px,4.6vw,20px);font-weight:700;line-height:1.7;color:#1c2332;margin:6px 0 8px;text-align:center}
 .ty-sum p{font-size:14px;line-height:1.95;color:#2f3646;margin:6px 0}
+.ty-actions .rd-pill{background:#e9eef7;color:#151a26;font-size:15px;font-weight:700;letter-spacing:.1em;padding:16px 36px;box-shadow:0 0 0 4px rgba(233,238,247,.22)}
+.ty-actions .rd-pill:active{transform:scale(.98)}
 .ty-actions{text-align:center;margin:20px 0 6px}
 .nw-card{background:#f4f1ec;color:#232a38;border-radius:12px;padding:16px 16px}
 .nw-card .nw-when{font-size:11px;letter-spacing:.3em;color:#5a6171}
@@ -706,6 +708,28 @@ body.onb .me-more{display:none}
 .tabbtn.active .tabsub{color:#c9d3e6}
 .how-btn{letter-spacing:.14em;font-weight:500;color:#dfe6f2;background:transparent;border-color:rgba(255,255,255,.3)}
 .wc-title{font-weight:300!important;letter-spacing:.3em!important;font-size:clamp(34px,9vw,46px)!important;margin:6px 0 0!important}
+.wc-card[hidden]{display:none}
+.wc-points{list-style:none;counter-reset:p;margin:6px 0 10px;padding:0;text-align:left}
+.wc-points li{counter-increment:p;display:flex;flex-direction:column;gap:1px;padding:9px 0 9px 38px;position:relative;border-bottom:1px solid #e2ded5}
+.wc-points li:last-child{border-bottom:0}
+.wc-points li:before{content:counter(p);position:absolute;left:0;top:9px;width:26px;height:26px;border-radius:50%;background:#1c2332;color:#f4f1ec;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.wc-points b{font-size:15px;color:#1c2332}
+.wc-points span{font-size:12.5px;color:#4f5666;line-height:1.7}
+.wc-scale{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:10px 0 2px}
+.wc-scale span{font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;font-weight:700;font-size:15px;padding:8px 0;border-radius:6px;border:2px solid currentColor;text-align:center;letter-spacing:.04em}
+.wc-scale-cap{display:flex;justify-content:space-between;font-size:10.5px;color:#5a6171;margin-bottom:8px}
+.wc-big{display:inline-block;font-style:normal;font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;font-weight:700;font-size:32px;letter-spacing:.1em;line-height:1;padding:10px 14px;border-radius:6px;border:3px solid currentColor;transform:rotate(-4deg);margin:2px 0 8px}
+.s0{color:#8a6a10;background:#f6ecc8}.s1{color:#2f6b49;background:#e2f0e6}.s2{color:#5a6171;background:#eceae4}.s3{color:#8a4a55;background:#f3e1e3}.s4{color:#f4f1ec;background:#1c1a12;border-color:#1c1a12}
+.wc-duo{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 12px;text-align:left}
+@media(max-width:380px){.wc-duo{grid-template-columns:1fr}}
+.wc-duo div{border-radius:10px;padding:10px 12px;border:1.5px solid}
+.wc-duo b{display:block;font-size:13px;letter-spacing:.14em;margin-bottom:3px}
+.wc-duo span{display:block;font-size:12px;line-height:1.75;color:#2f3646}
+.wc-chance{background:#f6ecc8;border-color:#c9a24d}.wc-chance b{color:#8a6a10}
+.wc-risk{background:#f3e1e3;border-color:#b97a85}.wc-risk b{color:#8a4a55}
+.wc-ask{font-size:14px;font-weight:700;color:#1c2332;margin:4px 0 6px}
+.wc-note{font-size:12.5px;line-height:1.8;color:#4f5666;margin:6px 0 16px}
+.wc-back{appearance:none;cursor:pointer;background:none;border:0;font-family:inherit;font-size:12.5px;color:#5a6171;margin-top:10px;padding:6px;text-decoration:underline}
 .wc-card{margin:4px auto 0;max-width:340px}
 .wc-card .wc-sub{color:#2a3040;font-size:14.5px;margin:12px 0 16px}
 .wc-card .wc-input{background:#fff;color:#232a38;border:1px solid #cfd3dc;font-size:19px!important;padding:13px!important;margin-bottom:14px}
@@ -801,8 +825,26 @@ body.onb .me-more{display:none}
     <div class="rd-cap">S H I O K A N</div>
     <h1 class="wc-title">潮環占い</h1>
     <svg class="rd-globe" id="wcGlobe" viewBox="-8 -8 256 256" aria-hidden="true"></svg>
-    <div class="rd-card wc-card">
-      <div class="rd-lab">はじめに</div>
+    <div class="rd-card wc-card" id="wcIntro">
+      <div class="rd-lab">この占いについて<br><small>1 ／ 2</small></div>
+      <p class="wc-sub">人生と今日を「海」にたとえて読む占いです。<br>わかることは、3つです。</p>
+      <ol class="wc-points">
+        <li><b>あなたのタイプ</b><span>生年月日と名前で決まる、一生変わらない名札</span></li>
+        <li><b>今日の順位と一言</b><span>160タイプの中で、今日は何位か</span></li>
+        <li><b>今年・今月の流れ</b><span>いまの海が、追い風か向かい風か</span></li>
+      </ol>
+      <div class="wc-scale" aria-label="調子の5段階"><span class="s0">大漁</span><span class="s1">順風</span><span class="s2">凪</span><span class="s3">荒波</span><span class="s4">轟沈</span></div>
+      <div class="wc-scale-cap"><span>◀ 追い風</span><span>向かい風 ▶</span></div>
+      <div class="wc-duo">
+        <div class="wc-chance"><em class="wc-big s0">大漁</em><b>チャンス</b><span>追い風の「大漁」の日や年がわかれば、動くタイミングをつかめます。勝負をかけるなら、その日に。</span></div>
+        <div class="wc-risk"><em class="wc-big s4">轟沈</em><b>危険</b><span>向かい風の「轟沈」の時期を知らずに進むと、頑張るほど消耗します。知っていれば、守りに回って備えられます。</span></div>
+      </div>
+      <p class="wc-ask">あなたの「大漁の日」と「轟沈の日」は、いつでしょう。</p>
+      <p class="wc-note">当てるための占いではなく、いまの海に合う進み方のヒントです。舵は、いつもあなたが握っています。</p>
+      <button class="rd-pill" id="wcStart" type="button">自分の海を調べる →</button>
+    </div>
+    <div class="rd-card wc-card" id="wcForm" hidden>
+      <div class="rd-lab">あなたの情報<br><small>2 ／ 2</small></div>
       <p class="wc-sub">生年月日と、下の名前。<br>この2つで、今日のあなたの運勢を順位で教えます。</p>
       <input type="date" id="wcBirth" class="wc-input" aria-label="生年月日" autocomplete="off"/>
       <input type="text" id="wcName" class="wc-input" placeholder="下の名前（例：晴輝 ／ ELON）" aria-label="下の名前" autocomplete="off"/>
@@ -810,6 +852,7 @@ body.onb .me-more{display:none}
       <div class="err" id="wcErr"></div>
       <button class="rd-pill" id="wcGo" type="button">今日の運勢を見る</button>
       <p class="rd-fine">入力は保存されません。リロードすると最初に戻ります</p>
+      <button class="wc-back" id="wcBack" type="button">← 説明にもどる</button>
     </div>
   </div>
   <div id="dayMain">
@@ -1155,7 +1198,7 @@ body.onb .me-more{display:none}
 <p class="ty-lead">この名札は、いくつかの印の組み合わせです。ひとつずつ、何を表しているか見てみましょう。</p>
 <div id="tyParts"></div>
 <div class="rd-card ty-sum" id="tySummary"></div>
-<div class="ty-actions"><button class="rd-pill" id="tyNext" type="button">次へ ― 今年・今月・今日</button></div>
+<div class="ty-actions"><button class="rd-pill" id="tyNext" type="button">次へ：今年・今月・今日 →</button></div>
 <div class="me-more">
   <h3 class="me-h">設定</h3>
   <details class="pf-details" id="pfDetails">
@@ -1184,7 +1227,7 @@ body.onb .me-more{display:none}
 <h2 class="ty-title">いまの海は</h2>
 <p class="ty-lead">あなたのタイプで見ると、今年・今月・今日はこうです。</p>
 <div id="nwCards"></div>
-<div class="ty-actions"><button class="rd-pill" id="nwDone" type="button">今日の画面へ</button></div>
+<div class="ty-actions"><button class="rd-pill" id="nwDone" type="button">今日の画面へ →</button></div>
 <p class="rd-fine" style="text-align:center;margin-top:10px">毎日開くと、今日の順位が変わります</p>
 </div>
 <div class="screen" id="screen-compat">
@@ -2173,6 +2216,8 @@ document.body.classList.add("gate");
 var wcName=document.getElementById("wcName"), wcStr=document.getElementById("wcStrokes"), wcErr=document.getElementById("wcErr");
 document.getElementById("wcBirth").value=""; wcName.value=""; wcStr.innerHTML="";   /* browsers may restore form values on reload */
 wcName.addEventListener("input",function(){ renderStrokes(wcName,wcStr); });
+document.getElementById("wcStart").addEventListener("click",function(){ document.getElementById("wcIntro").hidden=true; document.getElementById("wcForm").hidden=false; document.getElementById("wcBirth").focus(); });
+document.getElementById("wcBack").addEventListener("click",function(){ document.getElementById("wcForm").hidden=true; document.getElementById("wcIntro").hidden=false; });
 document.getElementById("wcGo").addEventListener("click",function(){
   var v=document.getElementById("wcBirth").value;
   if(!checkBirth(v,wcErr,"生年月日を入れてください。")) return;
