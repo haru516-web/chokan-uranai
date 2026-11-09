@@ -1,0 +1,2641 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta name="color-scheme" content="dark"/>
+<link rel="icon" href="data:,"/>
+<title>潮環占い</title>
+<style>
+:root{
+  --bg:#071426; --bg2:#0a1e38; --panel:#0d2442; --panel2:#102a4d;
+  --line:rgba(148,197,255,.22); --line2:rgba(148,197,255,.12);
+  --text:#eef4ff; --muted:#a9bedd; --muted2:#7f96b8;
+  --accent:#5ec8d8; --accent2:#f2c979; --warm:#ff9a7a; --cold:#7ab8ff;
+  --good:#4ade9e; --bad:#ff7a7a;
+  --radius:18px;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(1200px 600px at 70% -10%, #173a66 0%, transparent 60%), radial-gradient(900px 500px at 10% 20%, #0e2f52 0%, transparent 55%), linear-gradient(180deg,#071426 0%,#081a33 45%,#071426 100%);color:var(--text);font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;line-height:1.75;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 18px 64px}
+.topnav{display:flex;gap:8px;flex-wrap:wrap;padding:14px 0 0;font-size:13px}
+.topnav a{color:var(--muted);text-decoration:none;border:1px solid var(--line2);padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.03)}
+.topnav a:hover{color:#fff;border-color:var(--line)}
+.hero{padding:28px 0 8px;text-align:center}
+.kicker{letter-spacing:.18em;font-size:12px;color:var(--accent);font-weight:700}
+.hero h1{font-size:clamp(38px,7vw,64px);line-height:1.1;margin:10px 0 6px;font-weight:900;letter-spacing:.04em}
+.hero h1 .kan{font-size:.55em;color:var(--muted);font-weight:600;letter-spacing:.2em;display:block;margin-top:6px}
+.hero .sub{color:var(--muted);max-width:680px;margin:10px auto 0;font-size:15.5px}
+.hero .pillrow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.pill{font-size:12.5px;border:1px solid var(--line);background:rgba(255,255,255,.04);padding:6px 12px;border-radius:999px;color:#dbeafe}
+.pill b{color:var(--accent2)}
+/* orrery */
+.orrery-wrap{display:flex;justify-content:center;padding:18px 0 6px}
+.orrery{width:min(92vw,560px);height:auto;display:block}
+@keyframes spinCW{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes spinCCW{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
+.ring-outer{transform-origin:300px 300px;animation:spinCW 120s linear infinite}
+.ring-inner{transform-origin:300px 300px;animation:spinCCW 36s linear infinite}
+@media (prefers-reduced-motion: reduce){.ring-outer,.ring-inner{animation:none}}
+.legend{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:4px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.philosophy{max-width:760px;margin:22px auto 0;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid var(--line2);border-radius:var(--radius);padding:18px 20px;text-align:left}
+.philosophy p{margin:6px 0;color:#dbeafe;font-size:15px}
+.philosophy strong{color:#fff}
+section{margin-top:42px}
+.sec-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.sec-num{font-size:12px;letter-spacing:.15em;color:var(--accent);font-weight:800;border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+h2{font-size:clamp(22px,4vw,30px);margin:0;line-height:1.3}
+.sec-desc{color:var(--muted);font-size:14.5px;margin:6px 0 16px;max-width:760px}
+.card{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line2);border-radius:var(--radius);padding:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+/* calculator */
+.calc{background:linear-gradient(180deg,#102a4d,#0a1e38);border:1px solid var(--line);border-radius:20px;padding:22px}
+.calc h3{margin:0 0 4px;font-size:19px}
+.calc .hint{color:var(--muted);font-size:13.5px;margin:0 0 16px}
+label.flabel{display:block;font-size:13px;font-weight:700;color:#cfe3ff;margin:14px 0 6px}
+input[type=date],input[type=text],input[type=number]{width:100%;background:#071426;border:1px solid var(--line);color:#fff;border-radius:12px;padding:12px 14px;font-size:16px;outline:none}
+input:focus{border-color:var(--accent)}
+.stroke-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:10px;margin-top:10px}
+.stroke-cell{background:rgba(255,255,255,.04);border:1px solid var(--line2);border-radius:12px;padding:10px;text-align:center}
+.stroke-cell .ch{font-size:22px;font-weight:800;line-height:1.2}
+.stroke-cell .auto{font-size:11px;color:var(--muted2)}
+.stroke-cell input{margin-top:6px;text-align:center;padding:8px 6px}
+.btn{appearance:none;border:0;cursor:pointer;background:linear-gradient(90deg,#1a7f96,#2aa5bd);color:#fff;font-weight:800;font-size:16px;padding:14px 22px;border-radius:999px;width:100%;margin-top:18px;letter-spacing:.04em}
+.btn:active{transform:scale(.99)}
+.err{display:none;margin-top:12px;background:rgba(255,80,80,.12);border:1px solid rgba(255,120,120,.4);color:#ffd7d7;padding:10px 14px;border-radius:12px;font-size:14px}
+.result{display:none;margin-top:20px;border-top:1px dashed var(--line);padding-top:18px}
+.result.show{display:block}
+.biglabel{font-size:clamp(34px,6vw,52px);font-weight:900;text-align:center;letter-spacing:.03em;line-height:1.15;padding:10px 0 2px}
+.biglabel .season-spring{color:#7ee2a0}.biglabel .season-summer{color:#ffb26b}.biglabel .season-autumn{color:#f2c979}.biglabel .season-winter{color:#8ecbff}
+.result-meta{text-align:center;color:var(--muted);font-size:13.5px}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+@media(max-width:700px){.rgrid{grid-template-columns:1fr}}
+.rbox{background:rgba(255,255,255,.04);border:1px solid var(--line2);border-radius:14px;padding:14px 16px}
+.rbox h4{margin:0 0 6px;font-size:13px;letter-spacing:.08em;color:var(--accent)}
+.rbox p{margin:4px 0;font-size:14.5px;color:#e6efff}
+.rbox .big{font-size:17px;font-weight:800;color:#fff}
+.badge{display:inline-block;font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;vertical-align:middle;margin-left:6px}
+.badge-kari{background:#3a2f10;color:var(--accent2);border:1px solid rgba(242,201,121,.5)}
+.badge-good{background:rgba(74,222,158,.15);color:var(--good);border:1px solid rgba(74,222,158,.4)}
+.badge-bad{background:rgba(255,122,122,.12);color:var(--bad);border:1px solid rgba(255,122,122,.4)}
+.detail{font-size:12.5px;color:var(--muted2);margin-top:8px;word-break:break-all}
+/* tables / lists */
+.stage-list{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:820px){.stage-list{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.stage-list{grid-template-columns:1fr}}
+.stage{background:rgba(255,255,255,.035);border:1px solid var(--line2);border-radius:14px;padding:12px 14px}
+.stage .no{font-size:11px;color:var(--muted2);font-weight:700;letter-spacing:.1em}
+.stage .name{font-size:17px;font-weight:800;margin:2px 0}
+.stage .desc{font-size:13px;color:var(--muted);line-height:1.6}
+.stage.peak{border-color:rgba(74,222,158,.55);background:rgba(74,222,158,.07)}
+.stage.trough{border-color:rgba(255,122,122,.55);background:rgba(255,122,122,.06)}
+.tag{font-size:11px;font-weight:800;padding:2px 7px;border-radius:999px;margin-left:6px;vertical-align:middle}
+.tag-peak{background:rgba(74,222,158,.18);color:var(--good)}
+.tag-trough{background:rgba(255,122,122,.16);color:var(--bad)}
+.tag-warm{background:rgba(255,154,122,.16);color:var(--warm)}
+.tag-cold{background:rgba(122,184,255,.16);color:var(--cold)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:9px 10px;border-bottom:1px solid var(--line2);text-align:left;vertical-align:top}
+th{color:var(--muted);font-size:12.5px;letter-spacing:.05em}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:6px 14px;font-size:14.5px}
+@media(max-width:520px){.kv{grid-template-columns:1fr}}
+.kv dt{color:var(--muted);font-weight:700}
+.kv dd{margin:0}
+/* matrix */
+.matrix-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mbtn{cursor:pointer;text-align:left;background:rgba(255,255,255,.04);border:1px solid var(--line2);border-radius:14px;padding:14px 16px;color:var(--text)}
+.mbtn.active{border-color:var(--accent);background:rgba(94,200,216,.10)}
+.mbtn .t{font-weight:800;font-size:15px}
+.mbtn .s{font-size:12.5px;color:var(--muted)}
+.matrix-text{margin-top:12px;background:rgba(255,255,255,.04);border:1px solid var(--line2);border-radius:14px;padding:16px 18px;font-size:15px;min-height:92px}
+ul.clean{margin:8px 0;padding-left:1.2em}
+ul.clean li{margin:5px 0;font-size:14.5px;color:#dbeafe}
+.note{font-size:12.5px;color:var(--muted2)}
+.decided li::marker{color:var(--good)}
+.undecided li::marker{color:var(--accent2)}
+footer{margin-top:48px;border-top:1px solid var(--line2);padding-top:16px;color:var(--muted2);font-size:12.5px;text-align:center}
+.season-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:760px){.season-grid{grid-template-columns:repeat(2,1fr)}}
+.season-card{border-radius:14px;padding:14px;text-align:center;border:1px solid var(--line2)}
+.sc-spring{background:rgba(80,200,120,.08)}.sc-summer{background:rgba(255,150,80,.08)}.sc-autumn{background:rgba(242,201,121,.08)}.sc-winter{background:rgba(120,180,255,.08)}
+.season-card .sname{font-size:24px;font-weight:900}
+.season-card .sact{font-size:13px;color:var(--muted)}
+/* ===== proposals (unapproved) ===== */
+.prop-section{border:1.5px dashed rgba(242,201,121,.55);border-radius:22px;padding:22px 18px 20px;background:linear-gradient(180deg,rgba(242,201,121,.05),rgba(255,255,255,.015));margin-top:48px}
+.prop-badge{display:inline-block;font-size:11.5px;font-weight:900;letter-spacing:.1em;padding:3px 10px;border-radius:999px;background:#3a2f10;color:var(--accent2);border:1px solid rgba(242,201,121,.6)}
+.prop-badge-sm{font-size:10.5px;padding:2px 8px}
+.prop-sub{margin-top:26px}
+.prop-sub:first-of-type{margin-top:8px}
+.prop-sub h3{font-size:19px;margin:0 0 4px;line-height:1.35}
+.prop-card{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line2);border-radius:var(--radius);padding:18px 20px;margin-top:12px}
+.tide-main{font-size:clamp(24px,5vw,34px);font-weight:900;line-height:1.3}
+.tide-main .tide-name{color:var(--accent)}
+.tide-main .moon-name{color:var(--accent2)}
+.tide-text{font-size:15px;color:#e6efff;margin:8px 0 0}
+.phase-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.phase-chip{font-size:13px;font-weight:800;padding:6px 14px;border-radius:999px;border:1px solid var(--line2);color:var(--muted2);background:rgba(255,255,255,.03)}
+.phase-chip.on{color:#071426;background:var(--accent);border-color:var(--accent)}
+.three-seas{display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:12px;margin-top:12px}
+@media(max-width:760px){.three-seas{grid-template-columns:1fr}}
+.sea-card{background:rgba(255,255,255,.035);border:1px solid var(--line2);border-radius:14px;padding:14px 16px}
+.sea-card.now{border-color:var(--accent);background:rgba(94,200,216,.09)}
+.sea-card .sea-when{font-size:11.5px;font-weight:800;letter-spacing:.1em;color:var(--muted)}
+.sea-card.now .sea-when{color:var(--accent)}
+.sea-card .sea-name{font-size:20px;font-weight:900;margin:2px 0 4px}
+.sea-card.now .sea-name{font-size:24px}
+.sea-card .sea-desc{font-size:13.5px;color:var(--muted);line-height:1.65;margin:0}
+.dom-tag{display:inline-block;font-size:11.5px;font-weight:800;padding:2px 9px;border-radius:999px;background:rgba(94,200,216,.14);color:var(--accent);border:1px solid rgba(94,200,216,.35);margin:1px 2px 1px 0;white-space:nowrap}
+.dom-table td:first-child{font-weight:800;color:#fff;white-space:nowrap}
+.dom-table tr.is-now td{background:rgba(94,200,216,.09)}
+.dom-table tr.is-now td:first-child{color:var(--accent)}
+/* ===== proposals round 2 ===== */
+.compat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+@media(max-width:760px){.compat-grid{grid-template-columns:1fr}}
+.person-box{background:rgba(255,255,255,.035);border:1px solid var(--line2);border-radius:14px;padding:16px}
+.person-box h4{margin:0 0 4px;font-size:15px}
+.compat-result{display:none;margin-top:14px;border-top:1px dashed var(--line);padding-top:16px}
+.compat-result.show{display:block}
+.compat-labels{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;text-align:center}
+@media(max-width:520px){.compat-labels{grid-template-columns:1fr}}
+.compat-labels .cl{font-size:clamp(24px,5vw,34px);font-weight:900;line-height:1.2}
+.compat-labels .cwho{font-size:12.5px;color:var(--muted)}
+.compat-vs{font-size:20px;color:var(--accent2)}
+.compat-word{font-size:17px;font-weight:800;text-align:center;margin:14px 0 4px;color:#fff}
+.compat-word2{font-size:15px;font-weight:700;text-align:center;margin:4px 0;color:var(--accent2)}
+.compat-why{font-size:14px;color:#dbeafe;text-align:center;margin:6px auto 0;max-width:560px}
+.voyage-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.voyage-row{display:grid;grid-template-columns:118px 1fr minmax(140px,220px);gap:10px;align-items:center;background:rgba(255,255,255,.03);border:1px solid var(--line2);border-radius:12px;padding:10px 12px}
+@media(max-width:640px){.voyage-row{grid-template-columns:1fr}}
+.voyage-row.is-now{border-color:var(--accent);background:rgba(94,200,216,.09)}
+.voyage-row .v-year{font-weight:800;font-size:14.5px;white-space:nowrap}
+.voyage-row .v-year .v-koki{display:block;font-weight:400;font-size:11.5px;color:var(--muted2)}
+.voyage-row .v-cur{font-weight:800;font-size:15px}
+.voyage-row .v-cur .tag{margin-left:4px}
+.voyage-memo{font-size:13.5px!important;padding:9px 10px!important}
+.now-mark{font-size:11px;font-weight:900;padding:2px 8px;border-radius:999px;background:var(--accent);color:#071426;margin-left:6px;vertical-align:middle}
+.chapter-line{font-size:clamp(17px,3.5vw,21px);font-weight:800;line-height:1.5;margin:10px 0 0}
+.chapter-line .hl{color:var(--accent)}
+.storm-groups{display:grid;grid-template-columns:1.4fr 1.4fr 1fr;gap:12px;margin-top:12px}
+@media(max-width:760px){.storm-groups{grid-template-columns:1fr}}
+.storm-group{border-radius:14px;padding:14px 16px;border:1px solid var(--line2);background:rgba(255,255,255,.03)}
+.storm-group.g-in{border-color:rgba(242,201,121,.5);background:rgba(242,201,121,.06)}
+.storm-group.g-mid{border-color:rgba(255,122,122,.55);background:rgba(255,122,122,.06)}
+.storm-group.g-out{border-color:rgba(74,222,158,.5);background:rgba(74,222,158,.06)}
+.storm-group .sg-label{font-size:12px;font-weight:900;letter-spacing:.08em}
+.storm-group.g-in .sg-label{color:var(--accent2)}.storm-group.g-mid .sg-label{color:var(--bad)}.storm-group.g-out .sg-label{color:var(--good)}
+.storm-group .sg-stages{font-size:18px;font-weight:900;margin:4px 0}
+.storm-group .sg-desc{font-size:13.5px;color:var(--muted);margin:0;line-height:1.65}
+.meander-note{background:rgba(255,255,255,.03);border:1px solid var(--line2);border-left:4px solid var(--accent);border-radius:12px;padding:14px 18px;margin-top:12px}
+.meander-note p{margin:6px 0;font-size:14.5px;color:#dbeafe}
+/* ===== morning issue (proposal 6-1) ===== */
+.m-layer{margin-top:26px}
+.m-layer:first-of-type{margin-top:10px}
+.m-layer-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.m-layer-no{font-size:11px;font-weight:900;letter-spacing:.1em;color:#071426;background:var(--accent2);border-radius:999px;padding:3px 10px;white-space:nowrap}
+.m-layer-head h3{font-size:18px;margin:0;line-height:1.35}
+.m-cover{text-align:center;padding:26px 18px 22px}
+.m-date{font-size:14px;color:var(--muted);letter-spacing:.06em}
+.m-cover-tide{font-size:15px;margin-top:6px;color:#dbeafe}
+.m-cover-tide b{color:var(--accent);font-size:17px}
+.m-cover-stage{font-size:13.5px;color:var(--muted);margin-top:2px}
+.m-badges{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.m-badge{font-size:12px;font-weight:800;padding:4px 12px;border-radius:999px;background:rgba(242,201,121,.14);color:var(--accent2);border:1px solid rgba(242,201,121,.55)}
+.m-oneliner{font-size:clamp(21px,4.6vw,30px);font-weight:900;line-height:1.55;margin:18px auto 0;max-width:640px;color:#fff}
+.m-type-name{font-size:13px;font-weight:800;letter-spacing:.08em;color:var(--accent)}
+.m-body-text{font-size:15.5px;color:#e6efff;margin:6px 0 0;line-height:1.9}
+.m-essay{font-size:15px;color:#dbeafe;line-height:1.95;margin:8px 0 0}
+.m-sub-label{font-size:12px;font-weight:800;letter-spacing:.08em;color:var(--accent);margin-top:16px}
+.m-drift{font-size:16px;font-weight:700;color:#fff;line-height:1.8;margin:6px 0 0}
+.m-ritual{font-size:16px;font-weight:700;color:#fff;line-height:1.8;margin:6px 0 0}
+.m-next{font-size:14.5px;color:var(--muted);text-align:center}
+.m-next b{color:var(--accent)}
+.journal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:12px}
+.j-day{border-radius:10px;border:1px solid var(--line2);padding:6px 4px;min-height:56px;text-align:center;background:rgba(255,255,255,.02)}
+.j-day .j-d{font-size:13px;font-weight:800;line-height:1.3}
+.j-day .j-t{font-size:10px;color:var(--muted2);line-height:1.3}
+.j-day.stamped{background:rgba(94,200,216,.22);border-color:var(--accent)}
+.j-day.stamped .j-d{color:#fff}
+.j-day.stamped .j-t{color:var(--accent)}
+.j-day.past-missed{opacity:.55}
+.j-day.today{outline:2px solid var(--accent2);outline-offset:-2px}
+.j-day.future{opacity:.35}
+.j-day.empty{background:transparent;border-color:transparent}
+/* ===== layer 3 readings & evening sea (proposal 7-1) ===== */
+.ev-line{font-size:clamp(19px,4.2vw,26px);font-weight:900;line-height:1.65;color:#fff;margin:8px 0 0}
+.ev-ritual{font-size:15px;color:#dbeafe;line-height:1.85;margin:6px 0 0}
+.morning-evening-link{display:inline-block;margin:2px 0 10px;font-size:14px;font-weight:800;color:var(--accent2);text-decoration:none;border:1px solid rgba(242,201,121,.55);border-radius:999px;padding:7px 16px;background:rgba(242,201,121,.08)}
+.morning-evening-link:hover{color:#fff}
+
+/* ===== tab navigation / screens ===== */
+.tabnav{position:sticky;top:0;z-index:60;display:flex;gap:6px;background:rgba(7,20,38,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:10px 2px;border-bottom:1px solid var(--line2);margin:0 -2px}
+.tabbtn{flex:1;appearance:none;cursor:pointer;background:rgba(255,255,255,.03);border:1px solid var(--line2);color:var(--muted);border-radius:12px;padding:10px 4px;font-size:14px;font-weight:800;font-family:inherit;letter-spacing:.02em;line-height:1.3}
+.tabbtn .tabsub{display:block;font-size:10.5px;font-weight:600;color:var(--muted2);margin-top:1px}
+.tabbtn.active{background:rgba(94,200,216,.14);border-color:var(--accent);color:#fff}
+.tabbtn.active .tabsub{color:var(--accent)}
+.screen{display:none}
+.screen.active{display:block}
+.screen-head{padding:24px 0 2px}
+.screen-head h2{font-size:clamp(24px,5vw,32px);margin:0;line-height:1.3}
+.screen-head .screen-lead{color:var(--muted);font-size:15px;margin:8px 0 0;max-width:720px;line-height:1.8}
+.screen-end{text-align:center;color:var(--muted2);font-size:13px;margin:40px 0 4px;padding-top:18px;border-top:1px dashed var(--line2)}
+.screen section{scroll-margin-top:84px}
+@media(max-width:760px){
+  .tabnav{position:fixed;top:auto;bottom:0;left:0;right:0;margin:0;padding:8px 8px calc(8px + env(safe-area-inset-bottom));border-bottom:0;border-top:1px solid var(--line)}
+  body{padding-bottom:84px}
+  .tabbtn{font-size:12.5px;padding:9px 2px}
+  .screen section{scroll-margin-top:16px}
+}
+/* ===== sea chart (past / future) ===== */
+.badge-paid{display:inline-block;font-size:11px;font-weight:900;letter-spacing:.06em;padding:2px 9px;border-radius:999px;background:#ff8fa3;color:#2b0a14;border:1px solid #ffc2cf;vertical-align:middle;margin-left:6px;white-space:nowrap}
+.badge-paid-lg{font-size:12px;padding:4px 12px}
+.chart-list{display:flex;flex-direction:column;gap:8px;max-height:560px;overflow-y:auto;padding:2px 4px 2px 0;-webkit-overflow-scrolling:touch}
+.chart-row{background:rgba(255,255,255,.03);border:1px solid var(--line2);border-radius:12px;padding:10px 12px}
+.chart-row.is-now{border-color:var(--accent);background:rgba(94,200,216,.09)}
+.chart-row.is-future{background:rgba(255,143,163,.05);border-color:rgba(255,143,163,.28)}
+.chart-row-head{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
+.chart-year{font-weight:900;font-size:16px;white-space:nowrap}
+.chart-age{font-size:12.5px;color:var(--muted);white-space:nowrap}
+.chart-koki{font-size:11.5px;color:var(--muted2)}
+.chart-cur{font-weight:800;font-size:15px}
+.chart-toggle{margin-left:auto;appearance:none;cursor:pointer;background:rgba(255,255,255,.05);border:1px solid var(--line);color:#dbeafe;border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:800;font-family:inherit;white-space:nowrap}
+.chart-toggle:active{transform:scale(.98)}
+.chart-months{display:none;margin-top:12px;border-top:1px dashed var(--line2);padding-top:10px}
+.chart-months.open{display:block}
+.chart-month-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(max-width:520px){.chart-month-grid{grid-template-columns:repeat(2,1fr)}}
+.chart-month{background:rgba(255,255,255,.035);border:1px solid var(--line2);border-radius:10px;padding:8px 10px}
+.chart-month .cm-m{font-size:11px;font-weight:800;color:var(--muted2);letter-spacing:.06em}
+.chart-month .cm-name{font-size:15px;font-weight:900;line-height:1.35}
+.chart-month .cm-desc{font-size:11.5px;color:var(--muted);line-height:1.55}
+.chart-month.is-block-start{border-color:rgba(94,200,216,.4)}
+.chart-memo{margin-top:10px}
+.chart-memo input{font-size:13.5px!important;padding:9px 10px!important}
+.chart-memo .cm-saved{font-size:11.5px;color:var(--good);min-height:1em;display:block;margin-top:3px}
+.future-wrap{border:1.5px solid rgba(255,143,163,.55);border-radius:18px;padding:16px;background:linear-gradient(180deg,rgba(255,143,163,.07),rgba(255,255,255,.015));margin-top:22px}
+.future-wrap h3{margin:0 0 4px;font-size:18px}
+.chart-jump{appearance:none;cursor:pointer;background:var(--accent);color:#071426;border:0;border-radius:999px;padding:9px 18px;font-size:13.5px;font-weight:900;font-family:inherit}
+.chart-jump:active{transform:scale(.98)}
+/* ===== chart: minus (headwind) & A (vortex) reflection (design proposal) ===== */
+.chart-special{display:none;margin-top:14px;text-align:left;flex-direction:column;gap:10px}
+.chart-special.show{display:flex}
+.special-block{border-radius:14px;padding:13px 16px;border:1px solid var(--line2);background:rgba(255,255,255,.035)}
+.special-block h4{margin:0 0 5px;font-size:15px;line-height:1.5}
+.special-block p{margin:4px 0;font-size:14px;color:#dbeafe;line-height:1.75}
+.special-block.hw{border-color:rgba(255,154,122,.5);background:rgba(255,154,122,.06)}
+.special-block.hw h4{color:var(--warm)}
+.special-block.vx{border-color:rgba(94,200,216,.5);background:rgba(94,200,216,.06)}
+.special-block.vx h4{color:var(--accent)}
+.special-block.vx ul{margin:4px 0;padding-left:1.2em}
+.special-block.vx li{margin:3px 0;font-size:14px;color:#dbeafe}
+.mark-hw{display:inline-block;font-size:11px;font-weight:900;letter-spacing:.04em;padding:2px 8px;border-radius:999px;background:rgba(255,154,122,.16);color:var(--warm);border:1px solid rgba(255,154,122,.5);vertical-align:middle;margin-left:6px;white-space:nowrap}
+.chart-vortex-note{margin-top:9px;font-size:12.5px;line-height:1.7;color:#cdeef5;background:rgba(94,200,216,.08);border:1px solid rgba(94,200,216,.35);border-radius:10px;padding:8px 11px}
+.chart-vortex-note b{color:#fff}
+.cm-vortex{display:inline-block;font-size:10.5px;font-weight:900;padding:1px 7px;border-radius:999px;background:rgba(94,200,216,.18);color:var(--accent);border:1px solid rgba(94,200,216,.45);margin-top:4px}
+/* ===== combination ranking (design proposal) ===== */
+.rank-guide{display:none;margin:14px 0 0;font-size:14px;line-height:1.75;color:#ffe3b3;background:rgba(242,201,121,.09);border:1px solid rgba(242,201,121,.5);border-radius:12px;padding:11px 14px}
+.rank-controls{display:flex;flex-wrap:wrap;gap:10px 22px;margin:16px 0 4px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg button{appearance:none;cursor:pointer;border:0;background:rgba(255,255,255,.04);color:var(--muted);font-family:inherit;font-size:13.5px;font-weight:800;padding:8px 16px}
+.seg button.active{background:var(--accent);color:#071426}
+.rank-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line2);border-radius:14px;background:rgba(255,255,255,.02)}
+.rank-heat{display:grid;grid-template-columns:56px repeat(12,minmax(42px,1fr));gap:3px;padding:8px;min-width:660px}
+.rh-corner{font-size:10.5px;color:var(--muted2);display:flex;align-items:flex-end;justify-content:center;padding-bottom:2px}
+.rh-col{font-size:11.5px;font-weight:800;color:#dbeafe;text-align:center;line-height:1.35;padding:2px 0}
+.rh-col span{display:block;font-size:10px;font-weight:700}
+.rh-warm{color:var(--warm)}.rh-cold{color:var(--cold)}
+.rh-row{font-size:12px;font-weight:800;color:#dbeafe;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;white-space:nowrap}
+.rh-cell{position:relative;appearance:none;border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:7px 2px;font-family:inherit;font-weight:900;font-size:13px;cursor:pointer;line-height:1.2;min-height:38px}
+.rh-cell:active{transform:scale(.97)}
+.rh-cell.sel{outline:2px solid #fff;outline-offset:-2px}
+.rh-vortex{position:absolute;top:0;right:3px;font-size:9.5px;font-weight:900;color:#0b2b33;background:rgba(255,255,255,.75);border-radius:0 0 4px 4px;padding:0 3px;line-height:1.5}
+.rank-legend{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:12px;color:var(--muted)}
+.rank-legend .bar{flex:1;height:10px;border-radius:999px;background:linear-gradient(90deg,#5b2333,#274b63,#1f7a6d,#3fbf72,#f2c979)}
+.rank-detail{margin-top:14px;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:14px;padding:14px 16px;font-size:14px;color:var(--muted);line-height:1.8}
+.rank-detail .rd-title{font-size:16.5px;font-weight:900;color:#fff}
+.rank-detail .rk-badge{font-size:12px;font-weight:800;color:var(--accent2);margin-left:6px}
+.rank-detail .rd-lines{color:#dbeafe;margin-top:4px}
+.rank-list{display:flex;flex-direction:column;gap:5px;max-height:560px;overflow-y:auto;padding:2px 4px 2px 0;-webkit-overflow-scrolling:touch}
+.rank-row{appearance:none;cursor:pointer;font-family:inherit;text-align:left;display:grid;grid-template-columns:52px 1fr auto;gap:2px 10px;align-items:center;background:rgba(255,255,255,.03);border:1px solid var(--line2);border-radius:10px;padding:8px 12px;color:var(--text)}
+.rank-row:active{transform:scale(.995)}
+.rank-row.sel{outline:2px solid var(--accent);outline-offset:-2px}
+.rank-row.top{border-color:rgba(242,201,121,.6);background:rgba(242,201,121,.09)}
+.rank-row.bottom{border-color:rgba(255,122,122,.5);background:rgba(122,40,50,.18)}
+.rank-row .rk-no{font-weight:900;font-size:14.5px;white-space:nowrap}
+.rank-row.top .rk-no{color:var(--accent2)}
+.rank-row.bottom .rk-no{color:var(--bad)}
+.rank-row .rk-name{font-weight:800;font-size:14px;line-height:1.5}
+.rank-row .rk-break{display:block;font-size:11.5px;font-weight:600;color:var(--muted)}
+.rank-row .rk-score{font-weight:900;font-size:15px;white-space:nowrap}
+.delta{font-size:12.5px;font-weight:900;margin-left:4px}
+.delta-up{color:var(--good)}.delta-down{color:var(--bad)}.delta-same{color:var(--muted2)}
+/* ===== guide layer (readability & navigation overhaul) ===== */
+.tabbtn{position:relative}
+.tabbtn.active{background:linear-gradient(180deg,rgba(94,200,216,.30),rgba(94,200,216,.13));border-color:var(--accent);color:#fff;box-shadow:inset 0 -3px 0 var(--accent2),0 0 0 1px rgba(94,200,216,.35)}
+.tabbtn.active .tabsub{color:#ffe3b3}
+@media(max-width:480px){.tabbtn .tabsub{display:none}}
+.learn-line{display:flex;gap:10px;align-items:flex-start;background:rgba(94,200,216,.10);border:1px solid rgba(94,200,216,.45);border-radius:14px;padding:12px 16px;margin:16px 0 4px;font-size:15px;line-height:1.7;color:#eaf7ff}
+.learn-line .ll-tag{flex:none;font-size:11.5px;font-weight:900;letter-spacing:.06em;background:var(--accent);color:#071426;border-radius:999px;padding:3px 10px;margin-top:3px;white-space:nowrap}
+.learn-line b{color:#fff}
+.howto{font-size:13.5px;line-height:1.8;color:#c9ddf7;background:rgba(255,255,255,.03);border:1px solid var(--line2);border-radius:12px;padding:10px 14px;margin:10px 0 14px;max-width:840px}
+.howto b{color:var(--accent);font-weight:800}
+.howto .hb{color:var(--accent2)}
+.howto .hb b{color:var(--accent2)}
+.toc{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:16px;padding:14px 18px;margin:16px 0 6px}
+.toc .toc-title{font-size:13px;font-weight:900;letter-spacing:.08em;color:var(--accent);margin-bottom:6px}
+.toc ol{margin:0;padding-left:1.5em}
+.toc li{margin:7px 0;font-size:15px}
+.toc a{color:#eaf4ff;text-decoration:none;font-weight:700;border-bottom:1px dashed rgba(94,200,216,.55)}
+.toc a:hover{color:var(--accent)}
+.toc .toc-note{font-size:12.5px;color:var(--muted2);margin-left:8px}
+.goto-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.nav-btn{flex:1;min-width:190px;appearance:none;cursor:pointer;background:rgba(94,200,216,.12);border:1px solid var(--accent);color:#fff;border-radius:14px;padding:13px 16px;font-size:15px;font-weight:800;font-family:inherit;text-align:center;line-height:1.5}
+.nav-btn small{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-top:2px}
+.nav-btn:hover{background:rgba(94,200,216,.22)}
+.nav-btn:active{transform:scale(.99)}
+.anchor-target{scroll-margin-top:90px}
+@media(max-width:760px){.anchor-target{scroll-margin-top:16px}}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:860px){.grid3{grid-template-columns:1fr}}
+.thing .t-no{font-size:12px;font-weight:900;letter-spacing:.12em;color:var(--accent)}
+.thing h3{margin:4px 0 6px;font-size:19px}
+.thing p{margin:0;font-size:14.5px;color:#dbeafe}
+.thing .nav-btn{flex:none;width:100%;min-width:0;margin-top:14px}
+.parts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:700px){.parts{grid-template-columns:1fr}}
+.part{background:rgba(255,255,255,.035);border:1px solid var(--line2);border-radius:14px;padding:14px 16px}
+.part .p-name{font-size:18px;font-weight:900;margin-bottom:4px}
+.part p{margin:0;font-size:14px;color:#dbeafe;line-height:1.75}
+.steps{display:flex;flex-direction:column;gap:12px}
+.step{display:flex;gap:14px;background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line2);border-radius:16px;padding:16px 18px}
+.step-no{flex:none;width:36px;height:36px;border-radius:50%;background:var(--accent);color:#071426;font-weight:900;font-size:16px;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.step-body{flex:1;min-width:0}
+.step-body h3{margin:0 0 4px;font-size:17px}
+.step-body p{margin:0;font-size:14.5px;color:#dbeafe}
+.step-body .nav-btn{display:block;width:auto;min-width:180px;flex:none;margin-top:10px}
+@media(max-width:520px){.step-body .nav-btn{width:100%}}
+.ring-flex{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.ring-flex svg{flex:none;margin:0 auto;display:block}
+.ring-text{flex:1;min-width:260px}
+.ring-text p{margin:7px 0;font-size:14.5px;color:#dbeafe;line-height:1.8}
+.ring-text b{color:#fff}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav class="tabnav" aria-label="画面切り替え">
+  <button class="tabbtn active" type="button" data-screen="intro">はじめに<span class="tabsub">この占いの説明</span></button>
+  <button class="tabbtn" type="button" data-screen="today">今日の海<span class="tabsub">朝の号・帰りの海</span></button>
+  <button class="tabbtn" type="button" data-screen="label">名札<span class="tabsub">計算と読み解き</span></button>
+  <button class="tabbtn" type="button" data-screen="calendar">海の暦<span class="tabsub">海況・海流・起点</span></button>
+  <button class="tabbtn" type="button" data-screen="chart">海図<span class="tabsub">過去と未来の流れ</span></button>
+  <button class="tabbtn" type="button" data-screen="compat">相性<span class="tabsub">二人の海</span></button>
+  <button class="tabbtn" type="button" data-screen="notes">設計ノート<span class="tabsub">決定の記録</span></button>
+</nav>
+<main>
+<div class="screen active" id="screen-intro">
+<div class="screen-head"><h2>はじめに ― 潮環占いとは</h2></div>
+<p class="learn-line"><span class="ll-tag">分かること</span><span>この画面では、<b>潮環占いが何で、何が分かり、どう使えばいいか</b>が分かります。初めての方は、まずここから読んでください。</span></p>
+
+<section>
+  <div class="sec-head"><span class="sec-num">ABOUT</span><h2>潮環占いとは ― 人生と今日を「海」で読む占い</h2></div>
+  <div class="card">
+    <p style="margin:4px 0;font-size:15.5px;color:#e6efff;line-height:1.9">潮環占いは、あなたの人生と今日を、<strong style="color:#fff">「海」</strong>にたとえて読む占いです。生まれ持った性質は一生変わらない「名札」として中心にあり、その周りを「今の海の状態」と「人生の大きな流れ」が、円を描くように回っています。</p>
+    <p style="margin:10px 0 4px;font-size:15.5px;color:#e6efff;line-height:1.9">これは、未来を言い当てて従わせる占いではありません。「今の海はこういう状態です。進むなら、この進み方が合います」という<strong style="color:#fff">ヒントを渡す羅針盤</strong>です。嵐の時期は罰ではなく、「出航しないのが正解の海」があるだけ。舵は、最後はいつもあなたが握ります。</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="sec-num">3 THINGS</span><h2>まず分かること ― 3つだけ</h2></div>
+  <p class="sec-desc">この占いで分かることは、大きく3つです。上から順に見るのがおすすめです。</p>
+  <div class="grid3">
+    <div class="card thing">
+      <div class="t-no">1つ目</div>
+      <h3>あなたの「名札」</h3>
+      <p>生年月日と名前から決まる、<strong style="color:#fff">生まれ持った海の性質</strong>です。一生変わりません。まずこれを知ることが、すべての出発点です。</p>
+      <button class="nav-btn" type="button" data-goto="label">名札を出す<small>「名札」の画面へ</small></button>
+    </div>
+    <div class="card thing">
+      <div class="t-no">2つ目</div>
+      <h3>今日の海</h3>
+      <p><strong style="color:#fff">今日の海の状態と、今日どう進めばいいか</strong>のヒントです。朝に読む「朝の号」と、帰りに読み返す「帰りの海」があります。</p>
+      <button class="nav-btn" type="button" data-goto="today">今日の海を見る<small>「今日の海」の画面へ</small></button>
+    </div>
+    <div class="card thing">
+      <div class="t-no">3つ目</div>
+      <h3>一生の流れ（海図）</h3>
+      <p>生まれ年から未来まで、<strong style="color:#fff">どの時期が追い風で、どの時期が嵐か</strong>を年表で見ます。過去の出来事と重ねると、「あの年はこの海だった」と照合できます。</p>
+      <button class="nav-btn" type="button" data-goto="chart">海図を見る<small>「海図」の画面へ</small></button>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="sec-num">LABEL</span><h2>名札の読み方 ― 4つの部品</h2></div>
+  <p class="sec-desc">名札は「<strong style="color:#fff">冬-4.5</strong>」のように書きます。これは「季節＝冬、数値＝4.5」という意味で、ほかに特別な印が付くこともあります。部品は4つだけです。</p>
+  <div class="parts">
+    <div class="part">
+      <div class="p-name">季節（春・夏・秋・冬）＝ もともとの性質</div>
+      <p>春＝始める力、夏＝広げる力、秋＝実らせる力、冬＝蓄える力。あなたの大まかな性格の軸で、生年月日で決まります。</p>
+    </div>
+    <div class="part">
+      <div class="p-name">数値（1.0〜5.5）＝ その中での深さ</div>
+      <p>同じ季節の中での位置です。小さいほど季節の「入口」で軽く速く、大きいほど「深部」で濃く、どっしりしています。下の名前の画数で決まります。</p>
+    </div>
+    <div class="part">
+      <div class="p-name">「−」＝ 向かい風タイプ（約1割の人）</div>
+      <p>「冬-4.5」の「−」のように付く印です。追い風の流れが少なく、流れ任せではなく<strong style="color:#fff">自分の力で漕ぐ人</strong>という意味で、悪い印ではありません。</p>
+    </div>
+    <div class="part">
+      <div class="p-name">A ＝ 渦（うず）（約5%の人）</div>
+      <p>「秋 A-5.5」のように付く、特別な印です。周りの人を<strong style="color:#fff">巻き込む力</strong>を持つ一方で、自分が渦に飲み込まれる危うさも持つ、と読みます。</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="sec-num">2 RINGS</span><h2>2つの円 ― 海況と海流</h2></div>
+  <p class="sec-desc">名札の周りには、速さの違う2つの円が回っています。この2つの組み合わせで、今日や今年の「調子」を読みます。</p>
+  <div class="card">
+    <div class="ring-flex">
+      <svg viewBox="0 0 300 300" width="270" height="270" role="img" aria-label="名札を中心に、海況の円と海流の円が回る図">
+        <circle cx="150" cy="150" r="138" fill="none" stroke="rgba(122,184,255,.55)" stroke-width="2" stroke-dasharray="4 6"/>
+        <circle cx="150" cy="150" r="92" fill="none" stroke="rgba(94,200,216,.6)" stroke-width="2" stroke-dasharray="4 6"/>
+        <circle cx="150" cy="150" r="46" fill="#0a1e38" stroke="#f2c979" stroke-width="2"/>
+        <text x="150" y="157" text-anchor="middle" fill="#ffffff" font-size="17" font-weight="900">名札</text>
+        <text x="150" y="52" text-anchor="middle" fill="#5ec8d8" font-size="14" font-weight="800">海況</text>
+        <text x="150" y="22" text-anchor="middle" fill="#7ab8ff" font-size="14" font-weight="800">海流</text>
+        <text x="150" y="292" text-anchor="middle" fill="#a9bedd" font-size="11">中心は一生変わらない</text>
+      </svg>
+      <div class="ring-text">
+        <p><b>内側の円「海況」＝ 今の海の状態。</b>穏やかな「朝凪」から一番荒れる「嵐」まで12種類があり、<strong style="color:#fff">約4ヶ月ごとに1つ進み</strong>、約4年で一周します。短い期間の調子は、こちらで見ます。</p>
+        <p><b>外側の円「海流」＝ 人生の大きな流れ。</b>「今年はどんなテーマの年か」を示す12種類があり、<strong style="color:#fff">1年ごとに1つ進み</strong>、12年で一周します。長い目で見た流れは、こちらで見ます。</p>
+        <p><b>読み方：</b>調子は2つの組み合わせで決まります。内側が良くても外側が向かい風なら「楽に流されるけれど、行き先には注意」。両方いい時期は攻め時、両方厳しい時期は守り時、という判断の目安になります。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="sec-num">HOW TO</span><h2>使い方 ― 3ステップ</h2></div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-no">1</div>
+      <div class="step-body">
+        <h3>名札を出す</h3>
+        <p>「名札」の画面で、生年月日と下の名前を入れるだけです。あなたの季節・数値・印が分かります。</p>
+        <button class="nav-btn" type="button" data-goto="label">ステップ1へ ― 名札の画面</button>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-no">2</div>
+      <div class="step-body">
+        <h3>今日の海を見る</h3>
+        <p>「今日の海」の画面で、今日の海の状態と、今日の進み方のヒントを確認します。朝読んで、帰りに読み返すのがおすすめです。</p>
+        <button class="nav-btn" type="button" data-goto="today">ステップ2へ ― 今日の海の画面</button>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-no">3</div>
+      <div class="step-body">
+        <h3>海図で過去と未来を見る</h3>
+        <p>「海図」の画面で、生まれ年からの流れを振り返り、これから先の時期の調子を確認します。過去の出来事と重ねて読むと、この占いの当たり具合を自分で確かめられます。</p>
+        <button class="nav-btn" type="button" data-goto="chart">ステップ3へ ― 海図の画面</button>
+      </div>
+    </div>
+  </div>
+  <p class="note" style="margin-top:14px">そのほかの画面：二人の名札の組み合わせを見たいときは「相性」、海況・海流の仕組みを詳しく知りたいときは「海の暦」、決まったこと・まだ決まっていないことの記録は「設計ノート」にあります。</p>
+</section>
+
+<section>
+  <div class="sec-head"><span class="sec-num">BADGES</span><h2>バッジの見方</h2></div>
+  <div class="card">
+    <p style="margin:4px 0;font-size:14.5px;color:#dbeafe"><span class="prop-badge prop-badge-sm">設計提案</span> ＝ <strong style="color:#fff">まだ正式には決まっていないアイデア</strong>です。試しに体験できる形で置いてありますが、内容は変わることがあります。</p>
+    <p style="margin:10px 0 4px;font-size:14.5px;color:#dbeafe"><span class="badge-paid">有料候補</span> ＝ <strong style="color:#fff">正式版では有料にするかもしれない部分</strong>です（未来の先読みや、月ごとの細かい読みなど）。「過去を見て『当たった』と感じてもらってから、未来は有料に」という考え方で付けています。今は試作なので、全部そのまま見られます。</p>
+  </div>
+</section>
+<div class="screen-end">― 「はじめに」はここまでです。次は上のステップ1から、自分の名札を出してみてください ―</div>
+</div>
+<div class="screen" id="screen-today">
+<p class="learn-line"><span class="ll-tag">分かること</span><span>この画面では、<b>今日の海の状態と、今日どう進めばいいか</b>が分かります。朝に読む「朝の号」と、帰りに読み返す「帰りの海」があります。</span></p>
+<header class="hero">
+  <div class="kicker">FORTUNE SYSTEM</div>
+  <h1>潮環占い<span class="kan">ちょうかん うらない ・ 仮名</span></h1>
+  <p class="sub">世界は「海」。中心に一生変わらない<strong style="color:#fff">名札</strong>、その周りを<strong style="color:#fff">海況（内・4年）</strong>と<strong style="color:#fff">海流（外・12年）</strong>の二重の円が回る、天体運行儀のような占いです。生年月日と下の名前から、あなたの名札と今日の海を、その場で計算できます。</p>
+  <div class="pillrow">
+    <span class="pill">目的：<b>人生の生き方の羅針盤</b></span>
+    <span class="pill">名札：<b>40タイプ × 特別枠 ＝ 160通り</b></span>
+    <span class="pill">周期：<b>暦ベース・全員同時（皇紀で数える）</b></span>
+    <span class="pill">状態：<b>仮名・試作実装</b></span>
+  </div>
+
+  <div class="orrery-wrap">
+    <!-- Orrery -->
+    <svg class="orrery" viewBox="0 0 600 600" role="img" aria-label="潮環占いの運行儀：中心に名札、内側に海況、外側に海流の二重の円">
+      <defs>
+        <radialGradient id="sea" cx="50%" cy="45%" r="65%">
+          <stop offset="0%" stop-color="#14365f"/><stop offset="60%" stop-color="#0b2242"/><stop offset="100%" stop-color="#071426"/>
+        </radialGradient>
+      </defs>
+      <circle cx="300" cy="300" r="292" fill="url(#sea)" stroke="rgba(148,197,255,.25)"/>
+      <!-- stars -->
+      <g fill="#cfe6ff" opacity=".7">
+        <circle cx="90" cy="110" r="1.6"/><circle cx="500" cy="80" r="1.3"/><circle cx="540" cy="300" r="1.5"/><circle cx="70" cy="430" r="1.4"/><circle cx="460" cy="520" r="1.6"/><circle cx="150" cy="520" r="1.2"/><circle cx="300" cy="42" r="1.3"/><circle cx="42" cy="260" r="1.2"/>
+      </g>
+      <!-- outer ring track -->
+      <circle cx="300" cy="300" r="248" fill="none" stroke="rgba(122,184,255,.35)" stroke-width="1.5" stroke-dasharray="3 6"/>
+      <circle cx="300" cy="300" r="188" fill="none" stroke="rgba(94,200,216,.18)"/>
+      <!-- inner ring track -->
+      <circle cx="300" cy="300" r="168" fill="none" stroke="rgba(94,200,216,.4)" stroke-width="1.5" stroke-dasharray="3 6"/>
+      <circle cx="300" cy="300" r="108" fill="none" stroke="rgba(94,200,216,.15)"/>
+
+      <!-- OUTER rotating group: 12 currents -->
+      <g class="ring-outer" id="outerRing"></g>
+      <!-- INNER rotating group: 12 sea states -->
+      <g class="ring-inner" id="innerRing"></g>
+
+      <!-- center -->
+      <circle cx="300" cy="300" r="86" fill="#0a1e38" stroke="#5ec8d8" stroke-width="1.5"/>
+      <circle cx="300" cy="300" r="78" fill="none" stroke="rgba(94,200,216,.3)" stroke-dasharray="2 5"/>
+      <text x="300" y="288" text-anchor="middle" fill="#7f96b8" font-size="12" letter-spacing="3">あなたの名札</text>
+      <text id="centerLabel" x="300" y="330" text-anchor="middle" fill="#ffffff" font-size="34" font-weight="900">冬-4.5</text>
+      <text id="centerSub" x="300" y="356" text-anchor="middle" fill="#a9bedd" font-size="12">計算例（2001.8.11／晴輝）</text>
+
+      <!-- current markers (fixed, on top) -->
+      <g id="markerOuter"></g>
+      <g id="markerInner"></g>
+    </svg>
+  </div>
+  <div class="legend">
+    <span><i class="dot" style="background:#7ab8ff"></i>外側の円 ＝ 海流（12年周期・1年で1つ進む）</span>
+    <span><i class="dot" style="background:#5ec8d8"></i>内側の円 ＝ 海況（4年周期・4ヶ月で1つ進む）</span>
+    <span><i class="dot" style="background:#f2c979"></i>中心 ＝ 名札（一生変わらない）</span>
+  </div>
+
+  <div class="philosophy">
+    <p>🌊 <strong>この占いの約束：</strong>占いは「海図」を渡すだけ。<strong>舵は本人が握る。</strong></p>
+    <p>嵐は罰ではありません。「出航しないのが正解の海」があるだけです。恐怖で行動を止めさせるのではなく、今の海の条件と、その海での進み方を示して、求める方向へ背中を押す——それが設計の前提です。</p>
+  </div>
+</header>
+<section>
+<div class="prop-sub">
+    <h3>① 今日の潮 <span class="prop-badge prop-badge-sm">設計提案</span></h3>
+    <p class="sec-desc">毎日見る理由を作るための提案です。潮環の「海」に、実際の今日の潮と月の形を重ねます。開いた日の日付（端末の日付）でその場で計算して表示します。</p>
+    <p class="howto"><b>これは何か：</b>本物の月の満ち欠けから計算した、今日の実際の潮（大潮・小潮など）と月の形です。<span class="hb"><b>どう判断するか：</b></span>潮環の海況と重ねて、今日一日の「振れ幅」の目安にします。大潮の日は大きく動く、小潮・長潮の日は小さく丁寧に運ぶ、という具合です。</p>
+    <div class="prop-card">
+      <div class="tide-main">今日の潮は<span class="tide-name" id="tideName">―</span>。今日の月は<span class="moon-name" id="moonName">―</span>。</div>
+      <p class="tide-text" id="tideText">計算中です…</p>
+      <p class="tide-text" id="tideCombo" style="color:#dbeafe"></p>
+      <p class="note" style="margin-top:12px" id="tideNote"></p>
+    </div>
+  </div>
+</section>
+<section id="morning" class="prop-section" aria-label="今朝の海（朝の号）設計提案（未承認）">
+  <div class="sec-head"><span class="prop-badge">設計提案 ・ ユーザー未承認</span><h2>今朝の海 ― 朝の号</h2></div>
+  <p class="sec-desc" style="max-width:none">朝は予感と仕掛け、帰りは読み返し。往路の電車で読む「朝の号」と、復路で同じ文章を読み返す「帰りの海」が、今日のあなたの往復です。文は今日の日付で決まります（同じ日は、朝でも夜でも同じ文です）。朝の号は全6層の設計で、ここでは層0〜3と層5を体験できます。層4（昨日の振り返り）は、日誌の「潮だまり」表示（層5）と「帰りの海」で担う形にしています。</p>
+  <p class="howto"><b>読み方：</b>上から順に読む読み物です。時間がない日は、層0（扉）と層1（今日のひと言）だけでも今日の海がつかめます。時間のある日は、層2〜3までゆっくりどうぞ。</p>
+  <p style="margin:0 0 4px"><a class="morning-evening-link" href="#evening">🌙 帰りの海へ ― 夜、同じ文章を読み返すためのページ</a></p>
+
+  <!-- Layer 0: cover -->
+  <div class="m-layer">
+    <div class="m-layer-head"><span class="m-layer-no">層 0</span><h3>扉 ― 数秒で今日の海をつかむ</h3></div>
+    <p class="howto"><b>これは何か：</b>今日の海の要約です。まずここだけ見れば、今日がどんな日か分かります。</p>
+    <div class="prop-card m-cover">
+      <div class="m-date" id="mDate">―</div>
+      <div class="m-cover-tide">今日の潮は <b id="mTideName">―</b></div>
+      <div class="m-cover-stage" id="mStageLine">―</div>
+      <div class="m-badges" id="mBadges"></div>
+      <p class="m-oneliner" id="mOneLiner">計算中です…</p>
+    </div>
+  </div>
+
+  <!-- Layer 1: today's line -->
+  <div class="m-layer">
+    <div class="m-layer-head"><span class="m-layer-no">層 1</span><h3>今日のひと言</h3></div>
+    <p class="howto"><b>これは何か：</b>今日の進み方を一言で渡す文です。<span class="hb"><b>どう読むか：</b></span>命令ではなく「許可」として読んでください（「今日は打っていい」「休んでいい」という渡し方です）。</p>
+    <div class="prop-card">
+      <div class="m-type-name" id="mTypeName">―</div>
+      <p class="m-body-text" id="mTypeText"></p>
+      <p class="note" style="margin-top:10px">文の型は、海の状態から機械的に決まります。節目の日は「節目型」、追い風の海や大潮・若潮は「押す型」、嵐や長潮は「許す型」、それ以外は「見通し型」。同じ型の中から、日付で1文が選ばれます（同じ日は、誰が開いても同じ文です）。「許す型」は免罪符として——進めない日を、自分のせいにしないための文です。</p>
+    </div>
+  </div>
+
+  <!-- Layer 2: deep reading -->
+  <div class="m-layer">
+    <div class="m-layer-head"><span class="m-layer-no">層 2</span><h3>深読み ― 数分の読み物</h3></div>
+    <p class="howto"><b>これは何か：</b>今の海・今日の潮・自分の位置を、文章でゆっくり読む部分です。「なぜ今日そう進むといいのか」という理由を知りたいときに読みます。</p>
+    <div class="prop-card">
+      <div class="m-sub-label" style="margin-top:0">今の海について</div>
+      <p class="m-essay" id="mEssay"></p>
+      <div class="m-sub-label">今日の潮について</div>
+      <p class="m-essay" id="mTideSentence"></p>
+      <div class="m-sub-label">この海の中での位置</div>
+      <p class="m-essay" id="mPhaseSentence"></p>
+      <div class="m-sub-label">今日の分野</div>
+      <p class="m-essay" id="mDomainLine"></p>
+    </div>
+  </div>
+
+  <!-- Layer 2.5: drift -->
+  <div class="m-layer">
+    <div class="m-layer-head"><span class="m-layer-no">層 2</span><h3>漂着物 ― 今日、浜に流れ着いたもの</h3></div>
+    <p class="howto"><b>これは何か：</b>一日持ち歩く「問い」や「合図」です。<span class="hb"><b>どう使うか：</b></span>その場で答えは出さなくて大丈夫です。帰りの電車で読み返すと、朝とは違って読めます。</p>
+    <div class="prop-card">
+      <p class="m-drift" id="mDrift"></p>
+      <p class="note" style="margin-top:8px">問いは、答えをその場で出さなくていいものです。一日持ち歩いて、帰りの電車で読み返すと、朝とは違って読めます。種別（問い／小物／合図）は日替わりで、その日に流れ着く物は全員同じです。</p>
+    </div>
+  </div>
+
+  <!-- Layer 2.5: ritual -->
+  <div class="m-layer">
+    <div class="m-layer-head"><span class="m-layer-no">層 2</span><h3>今日の作法 ― 朝の締めの、小さな所作</h3></div>
+    <p class="howto"><b>これは何か：</b>読み終わりに行う、小さな所作の提案です。一日を始める合図として使います。</p>
+    <div class="prop-card">
+      <p class="m-ritual" id="mRitual"></p>
+      <p class="note" style="margin-top:8px">おみくじを結んで置いてくるように、一日の読みには「閉じ方」の作法を置きます。作法は文の型に連動します。</p>
+    </div>
+  </div>
+
+  <!-- Layer 3: sea reading -->
+  <div class="m-layer">
+    <div class="m-layer-head"><span class="m-layer-no">層 3</span><h3>海の読み物 ― 日替わりの一編</h3></div>
+    <p class="howto"><b>これは何か：</b>海そのものについての、日替わりの読み物です。占いの結果ではなく、知識と物語として楽しむ部分です。</p>
+    <div class="prop-card">
+      <div class="m-type-name" id="rTitle">―</div>
+      <p class="m-essay" id="rBody"></p>
+      <p class="note" id="rNote" style="margin-top:8px"></p>
+    </div>
+  </div>
+
+  <!-- Layer 5: journal stamp -->
+  <div class="m-layer">
+    <div class="m-layer-head"><span class="m-layer-no">層 5</span><h3>日誌の刻印 ― 潮だまり</h3></div>
+    <p class="howto"><b>これは何か：</b>朝の号を開いた証の記録です。<span class="hb"><b>どう捉えるか：</b></span>押せなかった日も「引き潮」として残るので、連続記録を守るプレッシャーにはなりません。</p>
+    <div class="prop-card">
+      <p class="tide-text" style="margin-top:0">朝の号を開いた証に、今日の刻印を押せます。刻印のたまった日は「潮だまり」としてカレンダーに残ります。押せなかった日は「引き潮」——欠席でも失敗でもなく、潮が引いただけです。</p>
+      <label class="flabel" for="mMemo">一行メモ（任意）</label>
+      <input type="text" id="mMemo" placeholder="今日の自分へ、一行だけ" autocomplete="off"/>
+      <button class="btn" id="mStampBtn" type="button">今朝の刻印を押す</button>
+      <p class="note" id="mStampMsg" style="margin-top:10px"></p>
+      <div style="font-size:13px;font-weight:800;letter-spacing:.06em;color:var(--accent);margin-top:16px" id="mCalTitle">今月の潮だまり</div>
+      <div class="journal-grid" id="mCalGrid"></div>
+      <p class="tide-text" id="mJournalStats" style="margin-top:12px"></p>
+      <p class="note" id="mJournalNote"></p>
+    </div>
+  </div>
+
+  <!-- Tomorrow preview -->
+  <div class="m-layer">
+    <div class="prop-card">
+      <p class="m-next" id="mTomorrow">明日の予告：―</p>
+    </div>
+  </div>
+</section>
+<section id="evening" class="prop-section" aria-label="帰りの海 設計提案（未承認）">
+  <div class="sec-head"><span class="prop-badge">設計提案 ・ ユーザー未承認</span><h2>帰りの海 ― 復路の読み返し</h2></div>
+  <p class="sec-desc" style="max-width:none">朝の号の対になる、夕方以降のためのページです。チェックリストや採点はありません。朝に開いた問いを、今日を生きた目で閉じるための読み返しです。今朝のひと言と今日の漂着物は、朝の号とまったく同じ文がここにも出ます（同じ日は、朝でも夜でも同じ文です）。</p>
+  <p class="howto"><b>読み方：</b>朝の文を、今日を生きた目でもう一度読むための画面です。チェックリストや採点はありません。朝に立てた問いを、今日の出来事で閉じる時間として使ってください。</p>
+
+  <!-- 1. second reading -->
+  <div class="m-layer">
+    <div class="m-layer-head"><span class="m-layer-no">夜 1</span><h3>二度読み ― 今朝のひと言を、もう一度</h3></div>
+    <p class="howto"><b>これは何か：</b>今朝のひと言とまったく同じ文です。言葉は変わっていません。朝は「予感」として、夜は「今日の答え合わせ」として読むための再掲です。</p>
+    <div class="prop-card">
+      <p class="tide-text" style="margin-top:0">朝は予感だったこの文を、今日を生きた目でもう一度。</p>
+      <p class="ev-line" id="evSentence">計算中です…</p>
+      <p class="note" id="evTypeLine" style="margin-top:8px"></p>
+      <p class="tide-text">朝に読んだときと、言葉は一字も変わっていません。変わったのは、今日一日を生きたあなたのほうです。朝は「これから」の予感として読めた文が、夜には今日の出来事のどこかに、そっと重なって読めるかもしれません。</p>
+    </div>
+  </div>
+
+  <!-- 2. evening key (only when today's drift was a sign) -->
+  <div class="m-layer" id="evKeyBlock" style="display:none">
+    <div class="m-layer-head"><span class="m-layer-no">夜 2</span><h3>夕方の鍵 ― 今朝の合図</h3></div>
+    <div class="prop-card">
+      <p class="tide-text" style="margin-top:0">今朝の合図は、これでした。</p>
+      <p class="m-drift" id="evKeyText"></p>
+      <p class="tide-text">今日、その合図に出会う場面はありましたか。出会っていたら、それが今日の答え合わせです。出会っていなくても、探しながら一日を過ごしたこと自体が、今日の見張りでした。</p>
+    </div>
+  </div>
+
+  <!-- 3 + 5. closing the question & the homecoming ritual (shared input) -->
+  <div class="m-layer">
+    <div class="m-layer-head"><span class="m-layer-no">夜 3</span><h3>問いを閉じる ― 今日の答えは、今日が持ってきた</h3></div>
+    <div class="prop-card">
+      <div id="evMorningQBlock" style="display:none">
+        <div class="m-sub-label" style="margin-top:0">今朝の問い（今日の漂着物）</div>
+        <p class="m-drift" id="evMorningQ"></p>
+        <p class="tide-text">答えは、朝の時点ではまだ存在しませんでした。今日という一日が、その答えを持ってきたはずです。</p>
+      </div>
+      <div class="m-sub-label" id="evStageQLabel">今の海からの、夕方の問い</div>
+      <p class="m-drift" id="evStageQ"></p>
+      <div class="m-sub-label">帰港の作法</div>
+      <p class="ev-ritual">帰港の作法：今日の出来事を一つ選んで、海の言葉で一行に書き換えてみる。（例：午前はさざ波、午後から追い風だった）</p>
+      <label class="flabel" for="evInput">今日の一日を、海の言葉で一行に</label>
+      <input type="text" id="evInput" placeholder="例：午前はさざ波、午後から追い風だった" autocomplete="off"/>
+      <button class="btn" id="evSaveBtn" type="button">この一行を日誌にしまう</button>
+      <p class="note" id="evMsg" style="margin-top:10px"></p>
+      <p class="note">この一行は、朝の刻印と同じ日の日誌に「夕方の一行」として添えられます。採点はしません。公開もしません。書くこと自体が、今日の航海を港にしまう作法です。</p>
+    </div>
+  </div>
+
+  <!-- 4. night sentence -->
+  <div class="m-layer">
+    <div class="m-layer-head"><span class="m-layer-no">夜 4</span><h3>夜の文 ― 一日を閉じる一文</h3></div>
+    <div class="prop-card">
+      <div class="m-type-name" id="evNightType">―</div>
+      <p class="m-body-text" id="evNightText"></p>
+    </div>
+  </div>
+
+  <!-- 6 + 7. tomorrow preview & bookmark -->
+  <div class="m-layer">
+    <div class="prop-card">
+      <p class="m-next" id="evTomorrow">明日の予告：―</p>
+      <p class="tide-text" style="text-align:center;margin-top:10px">しおり：朝の号で読み切れなかった層は、夜の読み物としてそのまま続けられます。<a href="#morning">朝の号へ戻る</a></p>
+    </div>
+  </div>
+</section>
+<div class="screen-end">― 「今日の海」はここまでです ―</div>
+</div>
+<div class="screen" id="screen-label">
+<div class="screen-head"><h2>名札 ― あなたの中心にあるもの</h2><p class="screen-lead">生年月日と下の名前から、一生変わらない「名札」を計算します。季節・数値・符号・A——名札の読み解きもこの画面にあります。</p></div>
+<p class="learn-line"><span class="ll-tag">分かること</span><span>この画面では、<b>あなたの生まれ持った性質（名札）と、その読み方</b>が分かります。まずここで名札を出すのが、他の画面すべての前提です。</span></p>
+<section id="calc">
+  <div class="sec-head"><span class="sec-num">PROTOTYPE</span><h2>占ってみる ― 名札と「今」を計算する</h2></div>
+  <p class="sec-desc">生年月日と下の名前だけで計算します（入力条件：簡単・誰もが持っている・提示できる・変わらない）。「今」の海況／海流の割り当ては<strong style="color:#fff">決定ルール（起点＝皇紀元年）</strong>で計算しています（皇紀＝西暦＋660年の数え方／下に明記）。相性だけは当面の仮ルールです。端末の日付を「今日」として使います。</p>
+  <p class="howto"><b>これは何か：</b>生年月日と名前の画数から、あなたの名札と「今の海」を計算する場所です。<span class="hb"><b>どう使うか：</b></span>まずここで自分の名札を知ることが、他のすべての画面を読む前提になります。結果が出たら、その下のボタンから「今日の海」や「海図」へ進めます。</p>
+  <div class="calc">
+    <h3>入力</h3>
+    <p class="hint">検証例：① 2001-08-11 ＋「晴輝」（下で 12画・15画と入力）→ <b style="color:#fff">冬-4.5</b>　② 1971-06-28 ＋「ELON」→ <b style="color:#fff">春1.5</b></p>
+
+    <label class="flabel" for="birth">生年月日</label>
+    <input type="date" id="birth" value="2001-08-11"/>
+
+    <label class="flabel" for="givenName">下の名前（ファーストネーム）</label>
+    <input type="text" id="givenName" value="晴輝" placeholder="例：晴輝 ／ ELON" autocomplete="off"/>
+    <p class="note" id="nameModeNote" style="margin-top:6px"></p>
+
+    <div id="strokeArea"></div>
+
+    <button class="btn" id="calcBtn" type="button">この条件で計算する</button>
+    <div class="err" id="errBox"></div>
+
+    <div class="result" id="resultBox">
+      <div class="biglabel" id="bigLabel">冬-4.5</div>
+      <div class="result-meta" id="resultMeta"></div>
+      <div class="rgrid">
+        <div class="rbox"><h4>名札の意味</h4><p class="big" id="rLabelTitle"></p><p id="rLabelText"></p><p class="detail" id="rLabelDetail"></p></div>
+        <div class="rbox"><h4>特別枠</h4><p class="big" id="rSpecialTitle"></p><p id="rSpecialText"></p></div>
+        <div class="rbox"><h4>今の海況（内側）<span class="badge badge-good">決定ルール・皇紀起点</span></h4><p class="big" id="rInnerTitle"></p><p id="rInnerText"></p></div>
+        <div class="rbox"><h4>今年の海流（外側）<span class="badge badge-good">決定ルール・皇紀起点</span></h4><p class="big" id="rOuterTitle"></p><p id="rOuterText"></p></div>
+      </div>
+      <div class="rbox" style="margin-top:12px"><h4>組み合わせの一言 ― 読みの核</h4><p class="big" id="rComboTitle"></p><p id="rComboText"></p></div>
+      <div class="goto-row">
+        <button class="nav-btn" type="button" data-goto="today">今日の海を見る<small>今日の状態と、今日の進み方のヒント</small></button>
+        <button class="nav-btn" type="button" data-goto="chart">あなたの海図を見る<small>生まれ年から未来までの流れ</small></button>
+      </div>
+    </div>
+  </div>
+  <p class="note" style="margin-top:10px">※「今」の決定ルール：年の数え方は皇紀（西暦＋660）。皇紀 K として、外側の海流 ＝ (9＋(K−1)) mod 12（皇紀元年＝結束の海流）。内側の海況 ＝ (((K−1) mod 4)×3 ＋ 4ヶ月ブロック[1〜4月=0／5〜8月=1／9〜12月=2]) mod 12（皇紀元年＝朝凪から）。検証：2026年（皇紀2686年）は「創作の海流」の年で、2026年11月の海況は「波立つ」になります。相性だけは仮ルールのまま：暖流は春・夏の人に追い風／寒流は秋・冬の人に追い風、逆は向かい風（マイナス持ちは向かい風が強まる）。</p>
+</section>
+<section id="label">
+  <div class="sec-head"><span class="sec-num">01</span><h2>名札 ― 中心にある、一生変わらない自分</h2></div>
+  <p class="sec-desc">形式は「<strong style="color:#fff">季節 ＋（A）＋（−）＋ 数値</strong>」。例：冬-4.5／秋 A-5.5／春3.0。「+」記号は使いません。基本は季節×数値の40タイプ、符号とAで全160通り。</p>
+  <p class="howto"><b>これは何か：</b>名札の4つの部品（季節・数値・「−」・A）の意味の一覧です。<span class="hb"><b>どう使うか：</b></span>上の計算で出た自分の名札にどの部品が付いているかを確認し、その意味をここで引いてください。平たい言葉での説明は「はじめに」の画面にもあります。</p>
+
+  <div class="season-grid">
+    <div class="season-card sc-spring"><div class="sname" style="color:#7ee2a0">春</div><div class="sact">始める力<br>余り 1</div></div>
+    <div class="season-card sc-summer"><div class="sname" style="color:#ffb26b">夏</div><div class="sact">広げる力<br>余り 2</div></div>
+    <div class="season-card sc-autumn"><div class="sname" style="color:#f2c979">秋</div><div class="sact">実らせる力<br>余り 3</div></div>
+    <div class="season-card sc-winter"><div class="sname" style="color:#8ecbff">冬</div><div class="sact">蓄える力<br>余り 0</div></div>
+  </div>
+  <p class="note" style="margin-top:8px">季節 ＝ (生年＋月＋日) mod 4。対向ペアは <b>春⇔秋</b>（始める⇔実らせる）、<b>夏⇔冬</b>（広げる⇔蓄える）で、正反対の性質として定義します。各季節は人口のちょうど25%ずつになります（1950〜2010年全日付で検証済み）。</p>
+
+  <div class="grid2" style="margin-top:14px">
+    <div class="card">
+      <h3 style="margin-top:0">数値 ― 季節の中での位置・深度</h3>
+      <table>
+        <tr><th>数値</th><th>名前の総画数</th></tr>
+        <tr><td>1.0</td><td>〜9画</td></tr><tr><td>1.5</td><td>10〜13画</td></tr>
+        <tr><td>2.0</td><td>14〜16画</td></tr><tr><td>2.5</td><td>17〜18画</td></tr>
+        <tr><td>3.0</td><td>19〜21画</td></tr><tr><td>3.5</td><td>22〜23画</td></tr>
+        <tr><td>4.0</td><td>24〜26画</td></tr><tr><td>4.5</td><td>27〜29画</td></tr>
+        <tr><td>5.0</td><td>30〜34画</td></tr><tr><td>5.5</td><td>35画〜</td></tr>
+      </table>
+      <p class="note">1.0側＝季節の入口（前の季節の名残・軽く速い）、5.5側＝季節の深部（次の季節の先取り・濃い）。各数値が人口の約10%ずつになる境界で設計（実名データでの再校正は未決定）。画数は体系独自の現代字形の辞書画数。外国人の名前はカタカナ変換せず、アルファベット大文字の画数表（線分の数）で数えます。</p>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px">
+        <h3 style="margin-top:0">「−」マイナス ― 向かい風体質（約1割）</h3>
+        <p style="font-size:14.5px;color:#dbeafe;margin:6px 0">生年月日の各桁を判定し、プラスの桁とマイナスの桁が<strong style="color:#fff">同数</strong>の人だけに付きます。桁判定：プラス＝{0,4,8}／マイナス＝{1,3,5,6,7}／中立＝{2,9}（年は4桁、月日は先行ゼロなし）。</p>
+        <p style="font-size:14.5px;color:#dbeafe;margin:6px 0">意味は「いい方向への海流が少なく、流れ任せでなく<strong style="color:#fff">自力で漕ぐ人</strong>」。罰でも欠点でもありません。</p>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0">「A」 ― 渦（うず）（約5%）</h3>
+        <p style="font-size:14.5px;color:#dbeafe;margin:6px 0">生年月日の桁＋名前の各文字の画数を桁分解した数字、全部を二進数に直して通算し、<strong style="color:#fff">0の総数＝1の総数</strong>の時に付きます。</p>
+        <ul class="clean">
+          <li>周りを<strong>巻き込む</strong>ことができる</li>
+          <li>他者にとっては<strong>逃げられる対象</strong>にもなる</li>
+          <li>そして<strong>自分が最も飲み込まれる</strong>危険性もある</li>
+        </ul>
+        <p class="note">力と危険が同じ場所にある特別枠。A＋マイナスは最レアで約1.3%。特別性の内訳：どちらもなし 86.3%／マイナスのみ 8.6%／Aのみ 3.8%／A＋マイナス 1.3%。</p>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="screen-end">― 「名札」はここまでです ―</div>
+</div>
+<div class="screen" id="screen-calendar">
+<div class="screen-head"><h2>海の暦 ― 二つの円環の仕組み</h2><p class="screen-lead">名札の周りを回る二重の円——内側の海況（4年周期）と外側の海流（12年周期）、その起点の決め方、そして暦にまつわる読みの道具立てをまとめています。</p></div>
+<p class="learn-line"><span class="ll-tag">分かること</span><span>この画面では、<b>海の状態（海況）と人生の流れ（海流）の仕組みと、全種類の一覧</b>が分かります。「今の海がなぜそうなのか」を知りたいときの辞書のような画面です。</span></p>
+<section id="inner">
+  <div class="sec-head"><span class="sec-num">02</span><h2>内側の円 ― 海況12ステージ（4年周期）</h2></div>
+  <p class="sec-desc">今の海の状態。1ステージ＝4ヶ月、12ステージで4年を一巡します。暦ベースで全員同時に切り替わり、年は皇紀で数えます（起点は下の「円環の起点」参照）。波は「静けさ → 追い風の山 → うねり・嵐の谷 → 静けさ」の一山型。</p>
+  <p class="howto"><b>これは何か：</b>「今の海の状態」の12種類の一覧です。自分が今どのステージにいるかは、「今日の海」や名札の計算結果で分かります。<span class="hb"><b>どう判断するか：</b></span>「順風」に近いほど攻め時、「嵐」に近いほど守り時、という進み方の目安にします。</p>
+
+  <div class="card" style="margin-bottom:14px">
+    <h3 style="margin-top:0;font-size:15px;color:var(--muted)">波形 ― 頂点は「順風」、底は「嵐」</h3>
+    <svg viewBox="0 0 720 220" style="width:100%;height:auto;display:block" role="img" aria-label="海況12ステージの波形グラフ">
+      <line x1="30" y1="110" x2="700" y2="110" stroke="rgba(148,197,255,.25)" stroke-dasharray="4 5"/>
+      <path d="M40,105 C90,100 110,88 150,70 C190,52 220,38 270,30 C320,38 350,60 390,88 C420,110 440,150 480,168 C520,150 550,120 590,105 C630,92 660,100 690,104" fill="none" stroke="#5ec8d8" stroke-width="3" stroke-linecap="round"/>
+      <g font-size="11.5" fill="#a9bedd" text-anchor="middle">
+        <text x="40" y="140">朝凪</text><text x="100" y="132">さざ波</text><text x="160" y="112">満ち潮</text><text x="225" y="82">追い風</text>
+        <text x="290" y="58" fill="#4ade9e" font-weight="bold">順風 ★頂点</text>
+        <text x="360" y="100">波立つ</text><text x="425" y="140">うねり</text>
+        <text x="485" y="196" fill="#ff7a7a" font-weight="bold">嵐 ★底</text>
+        <text x="545" y="152">嵐の目</text><text x="600" y="132">雨上がり</text><text x="650" y="140">引き潮</text><text x="692" y="140">夕凪</text>
+      </g>
+      <circle cx="290" cy="32" r="5" fill="#4ade9e"/><circle cx="485" cy="166" r="5" fill="#ff7a7a"/>
+    </svg>
+    <p class="note">最もいい状態＝<b style="color:var(--good)">順風</b>（最も速く進める時）。最も厳しい状態＝<b style="color:var(--bad)">嵐</b>（ただし「出航しないのが正解の海」であって、罰ではありません）。</p>
+  </div>
+
+  <div class="stage-list" id="innerList"></div>
+</section>
+<section id="outer">
+  <div class="sec-head"><span class="sec-num">03</span><h2>外側の円 ― 海流12種（12年周期）</h2></div>
+  <p class="sec-desc">人生が流れる方向。1海流＝1年、12年で一周します。暦ベースで全員同時、年は皇紀で数えます。各海流には「行き先のテーマ」と素の性質（暖流／寒流・速さ・強さ）があり、実際の読みは<strong style="color:#fff">素の性質 × 自分の季節との相性</strong>の両方で決まります。なお初期案の「季節×数値＝40種の海流」は、作る量・覚える量の観点から不採用になりました。</p>
+  <p class="howto"><b>これは何か：</b>1年ごとに変わる「人生の大きな流れ」の12種類の一覧です。<span class="hb"><b>どう判断するか：</b></span>今年のテーマ（行き先）を知り、1年の計画の前提にします。自分にとって追い風かどうかは、自分の季節との相性（暖流／寒流の合い・不合い）で決まります。</p>
+  <div class="stage-list" id="outerList"></div>
+
+  <div class="card" style="margin-top:14px">
+    <h3 style="margin-top:0">実際の海の知見 ― 相性で読む根拠</h3>
+    <div class="grid2">
+      <div><p style="margin:6px 0;font-size:14.5px"><b>① 海流に善悪はない。</b>黒潮も親潮も、行きたい方向と合うかどうかで追い風にも逆流にもなる。</p>
+      <p style="margin:6px 0;font-size:14.5px"><b>② 波とうねりは別物。</b>目の前の波は今の風、うねりは遠くの嵐が届いたもの。だから内（今の海況）と外（大きな流れ）は別々に読む。</p></div>
+      <div><p style="margin:6px 0;font-size:14.5px"><b>③ 潮目は荒れるが最も豊か。</b>暖流と寒流がぶつかる場所は波が立つ一方、魚が集まる一番豊かな海になる。</p>
+      <p style="margin:6px 0;font-size:14.5px"><b>④ 海流は蛇行する。</b>黒潮大蛇行のように、流れ自体が数年単位で進路を変える。流れはレールではなく生き物。</p></div>
+    </div>
+  </div>
+</section>
+<section id="matrix">
+  <div class="sec-head"><span class="sec-num">04</span><h2>読みの核 ― 内（海況）× 外（海流）の組み合わせ</h2></div>
+  <p class="sec-desc">結果の意味は、内側と外側の組み合わせで変わります。ボタンをタップすると読みが切り替わります。</p>
+  <p class="howto"><b>これは何か：</b>今の海（内）と大きな流れ（外）の組み合わせ4パターンの読みです。<span class="hb"><b>どう判断するか：</b></span>両方いい時は流れに任せて進む、内だけいい時は「行き先に注意」、外だけいい時は「守って耐えれば運ばれる」、両方悪い時は守りに徹する——判断の基本形です。全144通りの細かい順位は「海図」のランキングで見られます。</p>
+  <div class="matrix-btns" id="matrixBtns">
+    <button class="mbtn active" data-k="gg" type="button"><span class="t">内 ◎ × 外 ◎</span><br><span class="s">追い風 × 追い風の海流</span></button>
+    <button class="mbtn" data-k="gb" type="button"><span class="t">内 ◎ × 外 ×</span><br><span class="s">追い風 × 向かい風の海流</span></button>
+    <button class="mbtn" data-k="bg" type="button"><span class="t">内 × × 外 ◎</span><br><span class="s">嵐・向かい風 × 追い風の海流</span></button>
+    <button class="mbtn" data-k="bb" type="button"><span class="t">内 × × 外 ×</span><br><span class="s">嵐・向かい風 × 向かい風の海流</span></button>
+  </div>
+  <div class="matrix-text" id="matrixText"></div>
+</section>
+<section id="origin">
+  <div class="sec-head"><span class="sec-num">05</span><h2>円環の起点 ― 皇紀元年の「状況」で決める</h2></div>
+  <p class="sec-desc">二つの円環の始まりは、リストの1番目を機械的に置くのではなく、<strong style="color:#fff">皇紀元年がどんな年だったか</strong>で決めました。年は皇紀（西暦＋660）で数え、神武天皇即位（日本書紀）＝皇紀元年を起点とします。</p>
+  <div class="grid2">
+    <div class="card">
+      <h3 style="margin-top:0">外側（海流）の起点 ＝ 結束の海流</h3>
+      <p style="font-size:14.5px;color:#dbeafe;margin:6px 0">皇紀元年は、神武東征が終わり、国がまとまって橿原で即位した年。大きな流れのテーマは「挑戦」の完遂でもありますが、即位そのものは土地と人が束ねられた出来事——だから外側の円は<strong style="color:#fff">結束の海流</strong>から数え始めます。</p>
+      <p class="note">式：皇紀 K の年の海流 ＝ リストの (9＋(K−1)) mod 12 番目（結束はリストの10番目＝index 9）。</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">内側（海況）の起点 ＝ 朝凪</h3>
+      <p style="font-size:14.5px;color:#dbeafe;margin:6px 0">即位した新しい世の始まりは、嵐の船旅と戦いを越えた先の<strong style="color:#fff">朝の静けさ</strong>。だから内側の円は<strong style="color:#fff">朝凪</strong>から始まります。</p>
+      <p class="note">式：皇紀 K の年の海況 ＝ (((K−1) mod 4)×3 ＋ 4ヶ月ブロック) mod 12。2026年（皇紀2686年）は創作の海流の年、2026年11月の海況は波立つです。</p>
+    </div>
+  </div>
+  <div class="philosophy" style="margin-top:14px;max-width:none">
+    <p>⛵ <strong>神話の背景：</strong>神武東征は、日向から瀬戸内海を進み、途中で嵐に遭いながら大和へたどり着く<strong>船旅</strong>の記録です。そして古事記の国生みでは、イザナギ・イザナミが天の浮橋から矛で海をかき混ぜ、滴った塩が島になった——日本の国土は<strong>渦</strong>から始まりました。この体系で「A＝渦」と置いたことと、神話の創造の始まりが重なっています。</p>
+  </div>
+</section>
+<section><div class="sec-head"><span class="sec-num">VIEWS</span><h2>暦の見方 ― 三つの海・分野・日誌・嵐</h2></div>
+<div class="prop-sub">
+    <h3>② 三つの海 <span class="prop-badge prop-badge-sm">設計提案</span></h3>
+    <p class="sec-desc">今の海況だけを点で見るのではなく、「過ぎた海 → 今の海 → 来る海」の流れで見る提案です。海況の計算は決定済みの皇紀起点ルールをそのまま使います。今いるステージの中での位置も、あわせて示します。</p>
+    <p class="howto"><b>これは何か：</b>過ぎた海・今の海・来る海を横に並べたものです。<span class="hb"><b>どう判断するか：</b></span>今の状態を「点」ではなく「流れ」で捉えるためのものです。あとどれくらいで海が変わるかが見えるので、耐える期間の見通しが立ちます。</p>
+    <div class="three-seas">
+      <div class="sea-card">
+        <div class="sea-when">過ぎた海（前のステージ）</div>
+        <div class="sea-name" id="seaPrevName">―</div>
+        <p class="sea-desc" id="seaPrevDesc"></p>
+      </div>
+      <div class="sea-card now">
+        <div class="sea-when">今の海（現在のステージ）</div>
+        <div class="sea-name" id="seaNowName">―</div>
+        <p class="sea-desc" id="seaNowDesc"></p>
+      </div>
+      <div class="sea-card">
+        <div class="sea-when">来る海（次のステージ）</div>
+        <div class="sea-name" id="seaNextName">―</div>
+        <p class="sea-desc" id="seaNextDesc"></p>
+      </div>
+    </div>
+    <div class="prop-card">
+      <div style="font-size:13px;font-weight:800;letter-spacing:.06em;color:var(--accent)">今のステージの中での位置 ― 三相（その時期の中での進み具合のこと）</div>
+      <div class="phase-row" id="phaseRow">
+        <span class="phase-chip" data-phase="入り">入り ― 立ち上がり</span>
+        <span class="phase-chip" data-phase="盛り">盛り ― 本番</span>
+        <span class="phase-chip" data-phase="名残">名残 ― 仕舞いかけ</span>
+      </div>
+      <p class="tide-text" id="phaseText"></p>
+      <p class="note" style="margin-top:8px">1ステージは4ヶ月です。その中で何ヶ月目にいるかで「入り／盛り／名残」を分けます（1ヶ月目＝入り、2〜3ヶ月目＝盛り、4ヶ月目＝名残）。</p>
+    </div>
+  </div>
+<div class="prop-sub">
+    <h3>③ 海況と分野の対応表 <span class="prop-badge prop-badge-sm">設計提案</span></h3>
+    <p class="sec-desc">海況の「進み方」の一言を、仕事・お金・心・体・縁といった日常の分野へ翻訳する層の提案です。読み方は、<strong style="color:#fff">今年の海流（大きなテーマ）× 今の海況（今の注意分野）</strong>で読む、です。たとえば今年の海流が「創作」なら大きなテーマはものづくり、そのうえで今の海況が「波立つ」なら、今とくに気を配る分野は「心」という具合に重ねます。</p>
+    <p class="howto"><b>これは何か：</b>今の海況が、日常のどの分野（仕事・お金・心・体・縁）に影響しやすいかを示した対応表です。<span class="hb"><b>どう判断するか：</b></span>青く光っている行が今の海況です。今とくに気を配る分野を決める目安にしてください。</p>
+    <div class="prop-card" style="padding:8px 16px">
+      <table class="dom-table">
+        <tr><th>海況ステージ</th><th>今の注意分野</th><th>海の様子（決定済みの読み）</th></tr>
+        <tr data-stage="0"><td>朝凪</td><td><span class="dom-tag">体</span></td><td>始まりの静けさ。休んで、備える</td></tr>
+        <tr data-stage="1"><td>さざ波</td><td><span class="dom-tag">心</span></td><td>小さく動き始める。試しに漕ぎ出す</td></tr>
+        <tr data-stage="2"><td>満ち潮</td><td><span class="dom-tag">縁</span></td><td>潮が満ちて、物も人も集まり始める</td></tr>
+        <tr data-stage="3"><td>追い風</td><td><span class="dom-tag">仕事</span></td><td>風が背中を押す。素直に進む</td></tr>
+        <tr data-stage="4"><td>順風</td><td><span class="dom-tag">仕事</span><span class="dom-tag">お金</span></td><td>一番速く進む。帆を張り切る</td></tr>
+        <tr data-stage="5"><td>波立つ</td><td><span class="dom-tag">心</span></td><td>ざわつき始める。変化の兆しに気づく</td></tr>
+        <tr data-stage="6"><td>うねり</td><td><span class="dom-tag">心</span><span class="dom-tag">体</span></td><td>遠くの嵐の気配が届く。見えない所で変わり始める</td></tr>
+        <tr data-stage="7"><td>嵐</td><td><span class="dom-tag">体</span></td><td>一番荒れる。出航せず、守って耐える</td></tr>
+        <tr data-stage="8"><td>嵐の目</td><td><span class="dom-tag">心</span></td><td>中心だけ静か。ここで見極める</td></tr>
+        <tr data-stage="9"><td>雨上がり</td><td><span class="dom-tag">縁</span></td><td>空が澄む。立て直して再出発</td></tr>
+        <tr data-stage="10"><td>引き潮</td><td><span class="dom-tag">お金</span><span class="dom-tag">物</span></td><td>潮が引く。手放す・整理する</td></tr>
+        <tr data-stage="11"><td>夕凪</td><td><span class="dom-tag">体</span><span class="dom-tag">心</span></td><td>終わりの静けさ。次の周期に備える</td></tr>
+      </table>
+      <p class="note" style="margin:8px 0 10px" id="domNowNote"></p>
+    </div>
+  </div>
+<div class="prop-sub">
+    <h3>⑤ 航海日誌と人生の章立て <span class="prop-badge prop-badge-sm">設計提案</span></h3>
+    <p class="sec-desc">海流の12年周期を「人生の本」の章立てとして見せる提案です。海流の割り当ては決定済みの皇紀起点ルールをそのまま使います。今年を中心に前後を含む12年分を並べると、流れの移り変わりが「日誌」として見えてきます。各年のメモ欄は見た目のイメージで、<strong style="color:#fff">入力しても保存はされません</strong>。</p>
+    <p class="howto"><b>これは何か：</b>今年を中心にした前後12年分の海流の年表です。<span class="hb"><b>どう判断するか：</b></span>転機の年がどの海だったかを振り返り、流れの移り変わりを掴むために使います。自分の生まれ年からの年表は「海図」の画面で見られます。</p>
+    <div class="prop-card">
+      <div style="font-size:13px;font-weight:800;letter-spacing:.06em;color:var(--accent)" id="voyageRangeTitle">12年分の海流 ― 航海日誌</div>
+      <div class="voyage-list" id="voyageList"></div>
+      <div style="border-top:1px dashed var(--line);margin-top:16px;padding-top:14px">
+        <label class="flabel" for="voyageBirthYear" style="margin-top:0">あなたの誕生年（西暦）</label>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start">
+          <input type="number" id="voyageBirthYear" value="2001" min="1900" max="2100" inputmode="numeric"/>
+          <button class="btn" id="voyageBtn" type="button" style="width:auto;margin-top:0;padding:12px 20px">章立てを見る</button>
+        </div>
+        <p class="chapter-line" id="voyageChapter"></p>
+        <p class="note" style="margin-top:6px">章は海流が切り替わるごとに1つ進み、12章で一周して次の周が始まります。誕生年を第1周・第1章として数えています。</p>
+      </div>
+    </div>
+  </div>
+<div class="prop-sub">
+    <h3>⑥ 嵐の三相 <span class="prop-badge prop-badge-sm">設計提案</span></h3>
+    <p class="sec-desc">海況12ステージのうち、厳しい区間だけを「嵐」という一つの出来事として束ねて見せる提案です。ステージの順序と名前は決定済みのまま変えず、その上に束ねラベルを重ねます。</p>
+    <p class="howto"><b>これは何か：</b>厳しい区間（波立つ〜雨上がり）を、一つの「嵐」という出来事として束ねた見方です。<span class="hb"><b>どう判断するか：</b></span>今が嵐の入り口・ただ中・出口のどこかを知ることで、備え方と耐え方を変えます。嵐には入り口と出口がある、という見通しのために使います。</p>
+    <div class="storm-groups">
+      <div class="storm-group g-in">
+        <div class="sg-label">嵐の入り口</div>
+        <div class="sg-stages">波立つ ・ うねり</div>
+        <p class="sg-desc">ざわつきが始まり、遠くの嵐の気配が届く頃。まだ嵐そのものではなく、備えを始める合図として読む区間です。</p>
+      </div>
+      <div class="storm-group g-mid">
+        <div class="sg-label">嵐のただ中</div>
+        <div class="sg-stages">嵐 ・ 嵐の目</div>
+        <p class="sg-desc">一番荒れる本体と、その中心の静けさ。出航せず守って耐え、嵐の目では見極める——嵐の芯の区間です。</p>
+      </div>
+      <div class="storm-group g-out">
+        <div class="sg-label">嵐の出口</div>
+        <div class="sg-stages">雨上がり</div>
+        <p class="sg-desc">空が澄み、立て直して再出発する頃。嵐は通り過ぎた、と宣言できる区間です。</p>
+      </div>
+    </div>
+    <div class="prop-card">
+      <p style="margin:0;font-size:15px;color:#e6efff"><strong style="color:#fff">悪い時期にも、入り口と出口がある。</strong>「波立つ」から「雨上がり」までを一つの嵐として束ねると、厳しい時期は永遠に続くものではなく、入って、通り過ぎて、出ていくものだと分かります。今が入り口なのか、ただ中なのか、出口なのか——位置が分かるだけで、耐え方と備え方が変わります。</p>
+    </div>
+  </div>
+<div class="prop-sub">
+    <h3>⑦ 蛇行の年 <span class="prop-badge prop-badge-sm">設計提案 ・ 小さな注記</span></h3>
+    <div class="meander-note">
+      <p>🌊 <strong style="color:#fff">実際の海にも、暦どおりに流れない年があります。</strong>黒潮が大きく蛇行する「黒潮大蛇行」は、2017年8月に始まって2025年4月に終わるまで<strong style="color:#fff">7年9ヶ月</strong>続き、観測史上最長だったと気象庁が発表しました。</p>
+      <p>この体系では、<strong style="color:#fff">暦どおりに流れなかった年を、あとから振り返って「蛇行の年」と呼ぶための言葉</strong>として置く提案です。<strong style="color:#fff">計算には入れない、振り返りのための言葉</strong>です。予定と違った年を「外れた年」ではなく「蛇行した年」と呼べると、自分の航海日誌にそのまま書き込めます。</p>
+    </div>
+  </div>
+</section>
+<div class="screen-end">― 「海の暦」はここまでです ―</div>
+</div>
+<div class="screen" id="screen-chart">
+<div class="screen-head"><span class="prop-badge">設計提案 ・ ユーザー未承認</span><h2 style="margin-top:10px">海図 ― あなたの過去と未来の流れ</h2><p class="screen-lead">生まれた年から今年までの海流を年表でたどり、過去の出来事と海を照らし合わせてみてください。あの転機の年は、どの海だったか——「当たった」と感じる瞬間は、この照合から生まれます。計算は皇紀式（皇紀＝西暦＋660年の数え方）による海流・海況をそのまま使っています。</p></div>
+<p class="learn-line"><span class="ll-tag">分かること</span><span>この画面では、<b>あなたの生まれ年から未来までの流れと、どの時期が調子いいか</b>が分かります。下の目次から、見たい場所へ直接飛べます。</span></p>
+<div class="toc">
+  <div class="toc-title">この画面の目次 ― 見たいものを選んでください</div>
+  <ol>
+    <li><a href="#chartProfile">あなたの名札とタイプ（向かい風・渦）</a><span class="toc-note">まず生年月日を入れる場所です</span></li>
+    <li><a href="#chartPast">過去の年表</a><span class="toc-note">生まれ年〜今年。各年の出来事と照合します</span></li>
+    <li><a href="#chartFuture">未来の海図</a><span class="toc-note">来年〜12年先の先読み</span></li>
+    <li><a href="#chartRanking">組み合わせランキング</a><span class="toc-note">全144通りを調子のいい順に</span></li>
+  </ol>
+</div>
+<section id="chartProfile" class="anchor-target">
+  <div class="calc">
+    <h3>あなたの海図を作る</h3>
+    <p class="hint">生年月日を入れると、その人の海図が表示されます。名前も入れると、名札計算機と同じ計算で名札もあわせて表示します。結果は、この下の目次の①名札とタイプ → ②過去の年表 → ③未来 → ④ランキングの順に出ます。</p>
+    <label class="flabel" for="chartBirth">生年月日</label>
+    <input type="date" id="chartBirth" value="2001-08-11"/>
+    <label class="flabel" for="chartName">下の名前（任意・名札表示用）</label>
+    <input type="text" id="chartName" value="晴輝" placeholder="例：晴輝 ／ ELON" autocomplete="off"/>
+    <div id="chartStrokes"></div>
+    <button class="btn" id="chartBtn" type="button">海図を表示する</button>
+    <div class="err" id="chartErr"></div>
+    <div class="result" id="chartResult">
+      <div class="biglabel" id="chartBigLabel" style="font-size:clamp(26px,5vw,38px)"></div>
+      <div class="result-meta" id="chartMeta"></div>
+      <div class="chart-special" id="chartSpecial"></div>
+    </div>
+  </div>
+</section>
+<section id="chartPast" class="anchor-target">
+  <div class="sec-head"><span class="sec-num">PAST</span><h2>過去の海図 ― 生まれ年から今年まで</h2></div>
+  <p class="sec-desc">1年ごとに、その年の海流を並べた年表です。この年表自体は無料で開ける想定です（バッジなし）。各年の行を開くと、その年の月別の海況が見られます。月別の細かい読みは有料化を検討している部分なので<span class="badge-paid">有料候補</span>を付けていますが、今回の試作では全て見られます。各年に、その年に起きたことを一言メモできます（この端末にのみ保存されます）。</p>
+  <p class="howto"><b>これは何か：</b>生まれ年から今年まで、1年ごとの「海流」（その年の大きな流れ）を並べた年表です。<span class="hb"><b>どう判断するか：</b></span>転職・結婚・不調だった年など、自分の出来事と重ねて「あの年はこの海だった」と照合するために使います。過去が当たって感じられるかどうかが、この占いを信じるかどうかの入口です。</p>
+  <p style="margin:0 0 12px"><button class="chart-jump" id="chartJumpBtn" type="button">▼ 今年の行へジャンプ</button></p>
+  <p class="note" style="margin:0 0 10px;font-size:13px;color:var(--muted)">※ 年表は下の枠の中だけでスクロールできます。<b style="color:#eaf4ff">生まれ年が一番上、今年は一番下</b>です。各年の「月別を見る」を押すと、その年の月ごとの海況が開きます。</p>
+  <div class="chart-list" id="chartPastList" aria-label="過去の海図（年表）"></div>
+
+  <div class="future-wrap anchor-target" id="chartFuture">
+    <h3>未来の海図 ― 来年から先<span class="badge-paid badge-paid-lg">有料候補</span></h3>
+    <p class="sec-desc" style="margin-bottom:12px">今年の翌年から、海流が一周する分（12年分）の先読みです。未来の部分は全体が有料化の候補なので、過去の年表とは色味を変えて区別しています。今回の試作では全て見られます。</p>
+    <p class="howto"><b>これは何か：</b>来年から12年先までの、各年の海流の先読みです。<span class="hb"><b>どう判断するか：</b></span>大きな決断や挑戦の時期を考える目安にします。追い風の年に攻め、嵐まわりの年は守りを厚く、という年単位の計画の前提になります。</p>
+    <div class="chart-list" id="chartFutureList" aria-label="未来の海図（年表）" style="max-height:480px"></div>
+  </div>
+  <p class="note" style="margin-top:12px">※ 年齢は「その年に迎える満年齢」の目安です。海流・海況の割り当ては決定済みの皇紀式そのままです：皇紀 K（西暦＋660）として海流 ＝ (9＋(K−1)) mod 12（皇紀元年＝結束の海流）、海況 ＝ (((K−1) mod 4)×3 ＋ 4ヶ月ブロック[1〜4月=0／5〜8月=1／9〜12月=2]) mod 12（皇紀元年＝朝凪から）。検証：2026年＝創作の海流、2026年11月＝波立つ。</p>
+</section>
+<section id="chartRanking" class="anchor-target">
+  <div class="sec-head"><span class="sec-num">RANKING</span><h2>組み合わせランキング ― 内×外 全144通り</h2><span class="prop-badge">設計提案</span></div>
+  <p class="sec-desc">読みの核である 海況（内・12）×海流（外・12）＝全144通りを、調子のいい順に並べる設計提案です。下のスコアモデルは今回の提案であり、決定済みの仕様ではありません。内訳が見えるよう、モデルの中身をそのまま明示します。順位は上の海図フォームの名札（季節・−・A）に応じて変わります。</p>
+  <p class="howto"><b>これは何か：</b>海況（内・12種）×海流（外・12種）の全144通りの組み合わせを、調子のいい順に並べた表です。色が明るい（金色に近い）ほど調子のいい組み合わせです。<span class="hb"><b>どう判断するか：</b></span>調子のいい組み合わせの時期は新しいことを始める、悪い時期は守りに徹する、という判断の目安にします。「あなたの順位」に切り替えると、「−」や「A」で順位が標準からどう変わるかも見られます。</p>
+  <div class="card">
+    <h3 style="margin-top:0">スコアモデル <span class="prop-badge prop-badge-sm">設計提案</span></h3>
+    <ul class="clean">
+      <li><b>海況の基礎点（10点満点の目安）</b>：一山型の波に基づき、順風＝10を頂点、嵐＝1を底として ―― 朝凪5／さざ波6／満ち潮7／追い風9／順風10／波立つ6／うねり4／嵐1／嵐の目3／雨上がり6／引き潮4／夕凪5。</li>
+      <li><b>海流の相性点 ±2点</b>：暖かい季節（春・夏）の人は暖流と合うと＋2、寒流は−2。冷たい季節（秋・冬）の人は寒流と合うと＋2、暖流は−2。海流の強さ・速さは点にせず、テーマ（名前）としてのみ扱います。</li>
+      <li><b>合計 ＝ 海況点 ＋ 相性点</b> で順位を付けます（同点の場合は海況点の高い方を上位に並べます）。</li>
+      <li><b>「−」の人の補正</b>：相性点の符号が反転します。標準では追い風になる組み合わせが向かい風になる ―― 「いい海流が少ない」という決定済みの読みの実装で、順位が実際に入れ替わります。</li>
+      <li><b>「A」の人の補正（渦の増幅）</b>：合計の、144通りの平均からの差を1.5倍に広げます。調子のいい組み合わせは巻き込む力が増してさらに上へ、悪い組み合わせは飲み込まれる危険が増してさらに下へ。海況に「嵐」を含む組み合わせには「渦が強まる」印が付きます。</li>
+    </ul>
+  </div>
+  <p class="rank-guide" id="rankGuide"></p>
+  <div class="rank-controls">
+    <span class="seg" role="group" aria-label="表示形式の切り替え">
+      <button type="button" id="rankViewHeat" class="active">ヒートマップ</button>
+      <button type="button" id="rankViewList">ランキング</button>
+    </span>
+    <span class="seg" role="group" aria-label="順位の基準の切り替え">
+      <button type="button" id="rankProfStd" class="active">標準の順位</button>
+      <button type="button" id="rankProfMine">あなたの順位</button>
+    </span>
+  </div>
+  <p class="note" id="rankProfileLine" style="margin:2px 0 10px"></p>
+  <div id="rankHeatWrap">
+    <div class="rank-scroll"><div class="rank-heat" id="rankHeat" aria-label="組み合わせヒートマップ"></div></div>
+    <div class="rank-legend"><span>調子が悪い</span><span class="bar"></span><span>調子がいい</span></div>
+    <p class="note" style="margin-top:6px">縦軸＝海況（内）、横軸＝海流（外）。セルの数字は合計点です。セルをタップすると下に内訳が出ます。表は横にスクロールできます。</p>
+  </div>
+  <div id="rankListWrap" style="display:none">
+    <div class="rank-list" id="rankList" aria-label="組み合わせランキングリスト"></div>
+    <p class="note" style="margin-top:6px">上位10件と下位10件は色を強調しています。行をタップすると下に内訳が出ます。</p>
+  </div>
+  <div class="rank-detail" id="rankDetail">セルまたは行をタップすると、その組み合わせの内訳（海況点／相性点／符号・A補正／合計と順位）がここに表示されます。</div>
+</section>
+<div class="screen-end">― 「海図」はここまでです ―</div>
+</div>
+<div class="screen" id="screen-compat">
+<div class="screen-head"><h2>相性 ― 二人の海</h2><p class="screen-lead">二人の名札を並べて、季節の関係と深さの関係から、二人の海を読みます。</p></div>
+<p class="learn-line"><span class="ll-tag">分かること</span><span>この画面では、<b>二人の名札の組み合わせから、二人の関係の読み方</b>が分かります。</span></p>
+<section>
+<div class="prop-sub">
+    <h3>④ 相性「二人の海」 <span class="prop-badge prop-badge-sm">設計提案 ・ 簡易デモ</span></h3>
+    <p class="sec-desc">二人の名札を並べて、季節の関係から二人の海を読む提案です。下のデモは、上の計算機と<strong style="color:#fff">同じ名札計算</strong>（季節・数値・−・A）で二人分を計算し、その結果をそのまま使って一言を出します。季節の関係は3通り——同じ季節／となり合う季節／向かい合う季節（春と秋・夏と冬）——で読み、あわせて数値（深さ）の差からも一言を添えます。</p>
+    <p class="howto"><b>これは何か：</b>二人の名札の「季節の関係」と「深さの関係」から、二人の海を読むものです。<span class="hb"><b>どう判断するか：</b></span>「相性が良い・悪い」を決めるためではなく、違いがどこにあり、どう補い合えるかを知るために使います。この占いでは「相性が悪い」という読みは作りません。</p>
+    <div class="prop-card">
+      <div class="compat-grid">
+        <div class="person-box">
+          <h4>一人目</h4>
+          <label class="flabel" for="compatBirthA">生年月日</label>
+          <input type="date" id="compatBirthA" value="2001-08-11"/>
+          <label class="flabel" for="compatNameA">下の名前</label>
+          <input type="text" id="compatNameA" value="晴輝" autocomplete="off"/>
+          <div id="compatStrokesA"></div>
+        </div>
+        <div class="person-box">
+          <h4>二人目</h4>
+          <label class="flabel" for="compatBirthB">生年月日</label>
+          <input type="date" id="compatBirthB" value="1971-06-28"/>
+          <label class="flabel" for="compatNameB">下の名前</label>
+          <input type="text" id="compatNameB" value="ELON" autocomplete="off"/>
+          <div id="compatStrokesB"></div>
+        </div>
+      </div>
+      <p class="note" style="margin-top:10px">画数の入れ方は上の計算機と同じです：アルファベットは自動、かなは仮画数を初期表示、漢字は文字ごとに辞書画数を入力してください（例：晴12画・輝15画）。</p>
+      <button class="btn" id="compatBtn" type="button">二人の海を見る</button>
+      <div class="err" id="compatErr"></div>
+      <div class="compat-result" id="compatResult">
+        <div class="compat-labels">
+          <div><div class="cl" id="compatLabelA">―</div><div class="cwho" id="compatWhoA"></div></div>
+          <div class="compat-vs">×</div>
+          <div><div class="cl" id="compatLabelB">―</div><div class="cwho" id="compatWhoB"></div></div>
+        </div>
+        <p class="compat-word" id="compatWord"></p>
+        <p class="compat-why" id="compatWhy"></p>
+        <p class="compat-word2" id="compatDepth"></p>
+        <p class="compat-why" id="compatDepthWhy" style="font-size:13.5px"></p>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="screen-end">― 「相性」はここまでです ―</div>
+</div>
+<div class="screen" id="screen-notes">
+<div class="screen-head"><h2>設計ノート ― 決定の記録</h2><p class="screen-lead">この占いについて、すでに決まったことと、まだ決まっていないことの記録です。表側の占い画面ではなく、設計の参照用に置いてあります。</p></div>
+<p class="learn-line"><span class="ll-tag">分かること</span><span>この画面では、<b>この占いで決まったこと・まだ決まっていないこと</b>が分かります。占いを受けるだけなら、読まなくて大丈夫です。</span></p>
+<section class="prop-section" style="margin-top:20px"><div class="sec-head"><span class="prop-badge">設計提案 ・ ユーザー未承認</span><h2>これからの設計提案（未承認）</h2></div>
+  <p class="sec-desc" style="max-width:none">六星占術などにあって潮環占いにまだない要素を補うための<strong style="color:#f2c979">提案</strong>で、ユーザーの承認はまだ得ていません。決定事項・計算機（名札計算／皇紀起点ルール）には一切影響しません。各提案は、表側の各画面（今日の海／海の暦／相性）に、未承認バッジ付きで体験できる形で置いてあります。</p></section>
+<section id="summary">
+  <div class="sec-head"><span class="sec-num">06</span><h2>決定事項と、まだ決まっていないこと</h2></div>
+  <div class="grid2">
+    <div class="card">
+      <h3 style="margin-top:0">✅ 決まったこと</h3>
+      <ul class="clean decided">
+        <li>目的は「人生の生き方の羅針盤」。強制せず、求める時にいい方向へ向かわせる</li>
+        <li>世界観は「海」全体。結果は天体運行儀イメージ（二重の円）で表示</li>
+        <li>二重円：内＝海況12ステージ（4年周期）、外＝海流12種（12年周期）</li>
+        <li>周期は暦ベースで全員同時切り替わり（厄年と同じ共有タイミング）。個人差は名札との組み合わせで出す</li>
+        <li>円環の起点は皇紀で決定：年は皇紀（西暦＋660）で数え、皇紀元年（神武天皇即位）の状況で当てる——外側＝結束の海流、内側＝朝凪から始まる</li>
+        <li>海流は12種（40種案は不採用）。1海流＝1年</li>
+        <li>内側の頂点＝順風、底＝嵐。嵐は罰ではなく「出航しないのが正解の海」</li>
+        <li>海流の読みは「素の性質＋自分の季節との相性」の二段構え</li>
+        <li>マイナス＝向かい風体質（自力で漕ぐ人）。「+」記号は使わない</li>
+        <li>A＝渦（巻き込む／逃げられる対象／自分が最も飲み込まれる）</li>
+        <li>名前は「潮環占い」を仮名とする。条件：環を使う／「術」は六星占術に似るので不採用／「学」は学問ではないので不採用／分かりやすいが簡単そうではないこと</li>
+        <li>入力は生年月日＋下の名前の画数のみ。画数は現代字形の辞書画数、外国人はアルファベット画数表</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">⏳ まだ決まっていないこと</h3>
+      <ul class="clean undecided">
+        <li>正式名称（商標・既存の占い名との被りの確認前）</li>
+        <li>季節ごと・数値ごとの詳しい性格テキスト</li>
+        <li>海流と季節の相性表の本ルールなど、読みの詳細（このページの相性は仮ルール）</li>
+        <li>画数→数値の対応表の、実名データでの再校正</li>
+        <li>相性（2人）機能を作るかどうか</li>
+        <li>マネタイズの形・公開媒体</li>
+        <li>年の桁の偏り対策（方式E：年を桁和で圧縮）は採用保留中</li>
+      </ul>
+      <p class="note">検証メモ：200人の著名人で統計検定を行い、要素と経歴属性に有意な関連は出なかった（全て p&gt;0.19）。そのため意味づけは読みとして設計し、「数値＝早熟／晩成」のような読みは採用していません。</p>
+    </div>
+  </div>
+</section>
+<div class="screen-end">― 「設計ノート」はここまでです ―</div>
+</div>
+</main>
+
+
+<!-- CALCULATOR -->
+<!-- LABEL -->
+<!-- INNER -->
+<!-- OUTER -->
+<!-- MATRIX -->
+<!-- ORIGIN -->
+<!-- SUMMARY -->
+<!-- PROPOSALS (UNAPPROVED) -->
+<!-- MORNING ISSUE (UNAPPROVED PROPOSAL 6-1) -->
+<!-- EVENING SEA (UNAPPROVED PROPOSAL 7-1) -->
+<footer>
+  潮環占い（仮名）設計まとめ ／ 仕様 v1.2（2026-11-08確定分）＋ 2026-11-09 設計セッション決定を反映した試作ページです。「今」の割り当ては決定ルール（起点＝皇紀元年／外＝結束の海流・内＝朝凪）で計算し、相性のみ仮ルールです。
+</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+var INNER=[
+ {name:"朝凪",yomi:"あさなぎ",desc:"始まりの静けさ。休んで、備える",score:1},
+ {name:"さざ波",yomi:"",desc:"小さく動き始める。試しに漕ぎ出す",score:2},
+ {name:"満ち潮",yomi:"",desc:"潮が満ちて、物も人も集まり始める",score:3},
+ {name:"追い風",yomi:"",desc:"風が背中を押す。素直に進む",score:4},
+ {name:"順風",yomi:"じゅんぷう",desc:"一番速く進む。帆を張り切る",score:5,peak:true},
+ {name:"波立つ",yomi:"",desc:"ざわつき始める。変化の兆しに気づく",score:2},
+ {name:"うねり",yomi:"",desc:"遠くの嵐の気配が届く。見えない所で変わり始める",score:1},
+ {name:"嵐",yomi:"",desc:"一番荒れる。出航せず、守って耐える",score:0,trough:true},
+ {name:"嵐の目",yomi:"",desc:"中心だけ静か。ここで見極める",score:2},
+ {name:"雨上がり",yomi:"",desc:"空が澄む。立て直して再出発",score:3},
+ {name:"引き潮",yomi:"",desc:"潮が引く。手放す・整理する",score:1},
+ {name:"夕凪",yomi:"ゆうなぎ",desc:"終わりの静けさ。次の周期に備える",score:1}
+];
+var OUTER=[
+ {name:"出会いの海流",type:"暖流",desc:"人との縁の方へ運ぶ"},
+ {name:"実りの海流",type:"暖流",desc:"成果・収穫の方へ運ぶ"},
+ {name:"変化の海流",type:"寒流",desc:"環境が変わる方へ運ぶ。速い"},
+ {name:"蓄えの海流",type:"寒流",desc:"静かに力を溜める方へ。ゆっくり深い"},
+ {name:"挑戦の海流",type:"暖流",desc:"未知・フロンティアの方へ運ぶ。強い"},
+ {name:"回復の海流",type:"暖流",desc:"休養と立て直しの方へ運ぶ。穏やか"},
+ {name:"創作の海流",type:"暖流",desc:"ものづくり・表現の方へ運ぶ"},
+ {name:"発信の海流",type:"暖流",desc:"声が遠くへ届く方へ運ぶ。速い"},
+ {name:"探索の海流",type:"寒流",desc:"学び・探し物の方へ運ぶ。深い"},
+ {name:"結束の海流",type:"暖流",desc:"約束・チーム・家族の方へ運ぶ"},
+ {name:"解放の海流",type:"寒流",desc:"手放しと自由の方へ運ぶ"},
+ {name:"帰郷の海流",type:"寒流",desc:"原点・故郷・自分に戻る方へ運ぶ"}
+];
+var SEASONS=[
+ {key:"winter",name:"冬",act:"蓄える",color:"#8ecbff",cls:"season-winter"},
+ {key:"spring",name:"春",act:"始める",color:"#7ee2a0",cls:"season-spring"},
+ {key:"summer",name:"夏",act:"広げる",color:"#ffb26b",cls:"season-summer"},
+ {key:"autumn",name:"秋",act:"実らせる",color:"#f2c979",cls:"season-autumn"}
+]; // index = mod value: 0 winter,1 spring,2 summer,3 autumn
+var OPP={spring:"秋",summer:"冬",autumn:"春",winter:"夏"};
+
+/* build orrery dots */
+function polar(cx,cy,r,deg){var rad=(deg-90)*Math.PI/180;return [cx+r*Math.cos(rad), cy+r*Math.sin(rad)];}
+function buildRings(){
+  var og=document.getElementById("outerRing"), ig=document.getElementById("innerRing");
+  var s="",i,p;
+  for(i=0;i<12;i++){p=polar(300,300,248,i*30);
+    s+='<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="7" fill="'+(OUTER[i].type==="暖流"?"#ff9a7a":"#7ab8ff")+'" opacity=".9"/>';
+    s+='<text x="'+p[0].toFixed(1)+'" y="'+(p[1]-13).toFixed(1)+'" text-anchor="middle" font-size="10.5" fill="#cfe3ff">'+OUTER[i].name.replace("の海流","")+'</text>';
+  }
+  og.innerHTML=s; s="";
+  for(i=0;i<12;i++){p=polar(300,300,168,i*30);
+    s+='<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="5.5" fill="#5ec8d8" opacity=".9"/>';
+    s+='<text x="'+p[0].toFixed(1)+'" y="'+(p[1]-10).toFixed(1)+'" text-anchor="middle" font-size="10" fill="#a9e6ef">'+INNER[i].name+'</text>';
+  }
+  ig.innerHTML=s;
+}
+function setMarkers(innerIdx,outerIdx){
+  var mo=document.getElementById("markerOuter"), mi=document.getElementById("markerInner");
+  var po=polar(300,300,248,outerIdx*30), pi=polar(300,300,168,innerIdx*30);
+  mo.innerHTML='<circle cx="'+po[0]+'" cy="'+po[1]+'" r="13" fill="none" stroke="#f2c979" stroke-width="2.5"/><circle cx="'+po[0]+'" cy="'+po[1]+'" r="3.5" fill="#f2c979"/>';
+  mi.innerHTML='<circle cx="'+pi[0]+'" cy="'+pi[1]+'" r="11" fill="none" stroke="#f2c979" stroke-width="2.5"/><circle cx="'+pi[0]+'" cy="'+pi[1]+'" r="3" fill="#f2c979"/>';
+}
+/* lists */
+function buildLists(){
+  var il=document.getElementById("innerList"), ol=document.getElementById("outerList"), s="",i;
+  for(i=0;i<12;i++){var st=INNER[i];
+    s+='<div class="stage'+(st.peak?" peak":st.trough?" trough":"")+'"><div class="no">STAGE '+(i+1)+' ／ 4年周期</div><div class="name">'+st.name+(st.peak?'<span class="tag tag-peak">★ 波の頂点</span>':st.trough?'<span class="tag tag-trough">★ 波の底</span>':"")+'</div><div class="desc">'+st.desc+'</div></div>';
+  }
+  il.innerHTML=s; s="";
+  for(var j=0;j<12;j++){var cu=OUTER[j];
+    s+='<div class="stage"><div class="no">CURRENT '+(j+1)+' ／ 12年周期</div><div class="name" style="font-size:16px">'+cu.name+'<span class="tag '+(cu.type==="暖流"?"tag-warm":"tag-cold")+'">'+cu.type+'</span></div><div class="desc">'+cu.desc+'</div></div>';
+  }
+  ol.innerHTML=s;
+}
+/* matrix */
+var MATRIX={
+ gg:{t:"内◎ × 外◎ ― 身を任せるだけでうまくいく時",b:"海況も海流も味方です。流れに身を任せるだけで前に進めます。ただし、ずっと先を見つめていないと、海の上で寝てしまって何が起こるか分からない——見張りだけは続けてください。"},
+ gb:{t:"内◎ × 外× ― 楽に流される今、その先に苦労が待つ",b:"今の海は穏やかで、自分の意思に関係なく楽に流されていられます。でも流れの行き先は自分と逆らっています。快適さが罠になる組み合わせ。今のうちに行き先を確認し、備えを始める時です。"},
+ bg:{t:"内× × 外◎ ― 今は苦しいが、流れはいい方へ向かっている",b:"今の海は荒れていて苦しい時期です。けれど乗っている海流自体はいい方向へ運んでいます。無理に逆らわず、守って耐えれば、流れが運んでくれます。"},
+ bb:{t:"内× × 外× ― 最も備える時",b:"海況も海流も逆らう、一番備える組み合わせです。無理に出航せず、守りを固めて、流れが変わるのを待つのが正解の進み方です。待つことも航海の一部です。"}
+};
+function setMatrix(k){
+  var btns=document.querySelectorAll("#matrixBtns .mbtn");
+  for(var i=0;i<btns.length;i++){btns[i].classList.toggle("active", btns[i].getAttribute("data-k")===k);}
+  document.getElementById("matrixText").innerHTML="<b style='font-size:16px'>"+MATRIX[k].t+"</b><br>"+MATRIX[k].b;
+}
+document.getElementById("matrixBtns").addEventListener("click",function(e){
+  var b=e.target.closest(".mbtn"); if(b) setMatrix(b.getAttribute("data-k"));
+});
+
+/* ===== calculator ===== */
+var ALPHA={A:3,B:3,C:1,D:2,E:4,F:3,G:2,H:3,I:1,J:2,K:3,L:2,M:4,N:3,O:1,P:2,Q:2,R:3,S:1,T:2,U:1,V:2,W:4,X:2,Y:3,Z:3};
+var KANA={"あ":3,"い":2,"う":2,"え":2,"お":3,"か":3,"き":4,"く":1,"け":3,"こ":2,"さ":3,"し":1,"す":2,"せ":3,"そ":1,"た":4,"ち":2,"つ":1,"て":1,"と":2,"な":4,"に":3,"ぬ":2,"ね":2,"の":1,"は":3,"ひ":1,"ふ":4,"へ":1,"ほ":4,"ま":3,"み":2,"む":1,"め":2,"も":3,"や":3,"ゆ":2,"よ":2,"ら":2,"り":2,"る":1,"れ":2,"ろ":1,"わ":2,"を":3,"ん":1,
+"ア":2,"イ":2,"ウ":3,"エ":2,"オ":3,"カ":2,"キ":3,"ク":2,"ケ":3,"コ":2,"サ":3,"シ":2,"ス":2,"セ":2,"ソ":2,"タ":3,"チ":3,"ツ":3,"テ":2,"ト":2,"ナ":2,"ニ":2,"ヌ":2,"ネ":3,"ノ":1,"ハ":2,"ヒ":2,"フ":2,"ヘ":1,"ホ":4,"マ":3,"ミ":3,"ム":2,"メ":2,"モ":3,"ヤ":3,"ユ":2,"ヨ":3,"ラ":2,"リ":2,"ル":2,"レ":2,"ロ":2,"ワ":2,"ヲ":2,"ン":2,
+"が":4,"ぎ":5,"ぐ":2,"げ":4,"ご":3,"ざ":4,"じ":2,"ず":3,"ぜ":4,"ぞ":2,"だ":5,"ぢ":3,"づ":2,"で":2,"ど":3,"ば":4,"び":2,"ぶ":5,"べ":2,"ぼ":5,"ぱ":4,"ぴ":2,"ぷ":5,"ぺ":2,"ぽ":5,
+"ゃ":2,"ゅ":2,"ょ":2,"っ":1,"ャ":2,"ュ":2,"ョ":2,"ッ":2,"ー":1};
+var KANJI_DEFAULTS={"晴":12,"輝":15};
+function isAlphaCh(c){return /[A-Za-z]/.test(c);}
+function isKanaCh(c){return !!KANA[c];}
+var nameInput=document.getElementById("givenName"), strokeArea=document.getElementById("strokeArea"), noteEl=document.getElementById("nameModeNote");
+function currentChars(){return Array.from(nameInput.value.trim());}
+function renderStrokeInputs(){
+  var chars=currentChars(), html="", hasKanji=false, hasAlpha=false, hasKana=false, i,c;
+  if(!chars.length){strokeArea.innerHTML=""; noteEl.textContent=""; return;}
+  html='<label class="flabel">文字ごとの画数</label><div class="stroke-grid">';
+  for(i=0;i<chars.length;i++){c=chars[i];
+    if(isAlphaCh(c)){hasAlpha=true; var up=c.toUpperCase();
+      html+='<div class="stroke-cell"><div class="ch">'+up+'</div><div class="auto">自動：'+ALPHA[up]+'画</div><input type="hidden" class="stroke-val" data-auto="'+ALPHA[up]+'" value="'+ALPHA[up]+'"></div>';
+    } else if(isKanaCh(c)){hasKana=true;
+      html+='<div class="stroke-cell"><div class="ch">'+c+'</div><div class="auto">かな画数（仮）</div><input type="number" class="stroke-val" min="1" max="40" value="'+KANA[c]+'"></div>';
+    } else if(/\s/.test(c)){ continue;
+    } else {hasKanji=true; var def=KANJI_DEFAULTS[c];
+      html+='<div class="stroke-cell"><div class="ch">'+c+'</div><div class="auto">'+(def?"辞書画数（変更可）":"画数を入力")+'</div><input type="number" class="stroke-val" min="1" max="60" placeholder="画数"'+(def?' value="'+def+'"':"")+'></div>';
+    }
+  }
+  html+='</div>';
+  strokeArea.innerHTML=html;
+  var notes=[];
+  if(hasAlpha) notes.push("アルファベットは印刷体大文字の画数表で自動計算します。");
+  if(hasKana) notes.push("かなの画数は仮実装として一般的な画数を初期表示しています（変更できます）。");
+  if(hasKanji) notes.push("漢字は現代字形の辞書画数を文字ごとに入力してください（例：晴輝 → 晴12画・輝15画）。");
+  noteEl.textContent=notes.join(" ");
+}
+nameInput.addEventListener("input", renderStrokeInputs);
+
+function numFromTotal(t){
+  if(t<=9)return 1.0; if(t<=13)return 1.5; if(t<=16)return 2.0; if(t<=18)return 2.5;
+  if(t<=21)return 3.0; if(t<=23)return 3.5; if(t<=26)return 4.0; if(t<=29)return 4.5;
+  if(t<=34)return 5.0; return 5.5;
+}
+function binCounts(digits){
+  var z=0,o=0,i,b;
+  for(i=0;i<digits.length;i++){ b=digits[i].toString(2); for(var j=0;j<b.length;j++){ if(b[j]==="0")z++; else o++; } }
+  return {z:z,o:o};
+}
+function bandText(v){
+  if(v<=2.0) return "入口の帯（1.0〜2.0）：前の季節の名残を持ち、軽く速く動ける位置です。";
+  if(v<=3.5) return "盛りの帯（2.5〜3.5）：その季節の性質が最も純粋に出る位置です。";
+  return "出口・深部の帯（4.0〜5.5）：季節の深みと、次の季節の先取りが混ざる位置です。";
+}
+/* decided "now": Koki (K = Gregorian year + 660).
+   Origin at Koki year 1 (Emperor Jimmu's accession): outer ring starts at
+   index 9 (結束の海流), inner ring starts at index 0 (朝凪).
+   Check: 2026 -> K=2686 -> outer (9+2685)%12=6 創作の海流;
+   Nov 2026 -> inner ((2685%4)*3+2)%12=5 波立つ. */
+function nowIndices(d){
+  var y=d.getFullYear(), m=d.getMonth()+1;
+  var K=y+660;
+  var outerIdx=(9+(K-1))%12;
+  var innerIdx=(((K-1)%4)*3+Math.floor((m-1)/4))%12;
+  return {outer:outerIdx, inner:innerIdx, year:y, koki:K};
+}
+function compat(seasonKey, current, hasMinus){
+  var warm=(current.type==="暖流");
+  var good = warm ? (seasonKey==="spring"||seasonKey==="summer") : (seasonKey==="autumn"||seasonKey==="winter");
+  return good; // true = 追い風
+}
+function calculate(){
+  var err=document.getElementById("errBox"); err.style.display="none";
+  var bv=document.getElementById("birth").value;
+  if(!bv){err.textContent="生年月日を入力してください。"; err.style.display="block"; return;}
+  var parts=bv.split("-"); var Y=parseInt(parts[0],10), M=parseInt(parts[1],10), D=parseInt(parts[2],10);
+  var chars=currentChars();
+  if(!chars.length){err.textContent="下の名前を入力してください。"; err.style.display="block"; return;}
+  var inputs=strokeArea.querySelectorAll(".stroke-val");
+  var perChar=[], total=0, i, v;
+  // map inputs to non-space chars in order
+  var nonSpace=chars.filter(function(c){return !/\s/.test(c);});
+  if(inputs.length!==nonSpace.length){ renderStrokeInputs(); inputs=strokeArea.querySelectorAll(".stroke-val"); }
+  for(i=0;i<inputs.length;i++){
+    v=parseInt(inputs[i].value,10);
+    if(isNaN(v)||v<1){err.textContent="「"+nonSpace[i]+"」の画数を入力してください。"; err.style.display="block"; return;}
+    perChar.push(v); total+=v;
+  }
+  /* season */
+  var mod=((Y+M+D)%4+4)%4; var season=SEASONS[mod];
+  /* number */
+  var num=numFromTotal(total); var numStr=(num%1===0? num.toFixed(1): String(num));
+  /* minus: birthdate digits, year 4 digits, month/day no leading zero */
+  var bdStr=String(Y)+String(M)+String(D); var bdDigits=bdStr.split("").map(Number);
+  var PLUS={0:1,4:1,8:1}, MINUS={1:1,3:1,5:1,6:1,7:1};
+  var pc=0,mc=0;
+  bdDigits.forEach(function(d){ if(PLUS[d])pc++; else if(MINUS[d])mc++; });
+  var hasMinus=(pc===mc && pc>0);
+  /* A: birthdate digits + name digit decomposition */
+  var nameDigits=[];
+  perChar.forEach(function(n){ String(n).split("").forEach(function(ch){ nameDigits.push(Number(ch)); }); });
+  var allDigits=bdDigits.concat(nameDigits);
+  var bc=binCounts(allDigits); var hasA=(bc.z===bc.o);
+  /* label */
+  var label=season.name+(hasA?" A":"")+(hasMinus?"-":"")+numStr;
+  /* now */
+  var today=new Date(); var ni=nowIndices(today);
+  var inner=INNER[ni.inner], outer=OUTER[ni.outer];
+  var outerGood=compat(season.key, outer, hasMinus);
+  var innerGood=inner.score>=3;
+  /* fill orrery center */
+  document.getElementById("centerLabel").textContent=label;
+  document.getElementById("centerSub").textContent="今："+inner.name+" × "+outer.name.replace("の海流","")+"の海流";
+  setMarkers(ni.inner, ni.outer);
+  /* result */
+  document.getElementById("bigLabel").innerHTML='<span class="'+season.cls+'">'+season.name+'</span>'+(hasA?' A':'')+(hasMinus?'-':'')+numStr;
+  document.getElementById("resultMeta").textContent="生年月日 "+Y+"年"+M+"月"+D+"日 ／ 名前「"+nameInput.value.trim()+"」総画数 "+total+"画（"+perChar.join("＋")+"）／ 今日 "+today.getFullYear()+"年"+(today.getMonth()+1)+"月"+today.getDate()+"日 時点";
+  document.getElementById("rLabelTitle").textContent=season.name+" ― "+season.act+"人 ／ 数値 "+numStr;
+  document.getElementById("rLabelText").textContent="基本の気質は「"+season.act+"」季節の人。"+bandText(num)+" 対向の季節は "+OPP[season.key]+"（正反対の性質）です。";
+  document.getElementById("rLabelDetail").textContent="計算：季節 ("+Y+"+"+M+"+"+D+") mod 4 = "+mod+" ／ 総画数 "+total+"画 → 数値 "+numStr;
+  /* special */
+  var spT=document.getElementById("rSpecialTitle"), spX=document.getElementById("rSpecialText");
+  if(hasA&&hasMinus){ spT.innerHTML="A ＋ マイナス ― 最レア枠（約1.3%）"; spX.textContent="「渦」であり、向かい風体質でもある、特別枠の中の最上位。巻き込む力と自力で漕ぐ強さの両方を持ちます。自分が渦に飲み込まれない見張りが一番大事です。"; }
+  else if(hasA){ spT.innerHTML="A ― 渦（うず）"; spX.textContent="周りを巻き込むことができ、他者にとっては逃げたくなる対象にもなり、自分が最も飲み込まれる危険性もある——力と危険が同居する特別枠です。（二進数通算：0が"+bc.z+"個・1が"+bc.o+"個で同数）"; }
+  else if(hasMinus){ spT.innerHTML="マイナス ― 向かい風体質"; spX.textContent="生年月日の桁判定がプラス"+pc+"・マイナス"+mc+"で同数のため「−」が付きました。いい方向への海流が少ない分、流れ任せでなく自力で漕ぐ人です。罰ではありません。"; }
+  else { spT.innerHTML="特別枠なし（標準）"; spX.textContent="桁判定はプラス"+pc+"・マイナス"+mc+"で同数ではなく、二進数通算も 0が"+bc.z+"個・1が"+bc.o+"個で同数ではないため、Aもマイナスも付きません。表の気質がそのまま出る標準タイプです（全体の約86%）。"; }
+  /* inner/outer */
+  document.getElementById("rInnerTitle").innerHTML=inner.name+(inner.peak?' <span class="badge badge-good">波の頂点</span>':inner.trough?' <span class="badge badge-bad">波の底</span>':"")+"（ステージ "+(ni.inner+1)+"／12）";
+  document.getElementById("rInnerText").textContent=inner.desc+"。"+(inner.peak?"最も速く進める時です。帆を張り切ってください。":inner.trough?"「出航しないのが正解の海」です。守って耐えるのがこの時期の正しい進み方です。":"4年周期のうち今いる海です。次のステージへは4ヶ月ごとに進みます。")+"皇紀 "+ni.koki+"年（"+ni.year+"年）を、皇紀元年＝朝凪の起点から数えた位置です。";
+  document.getElementById("rOuterTitle").innerHTML=outer.name+' <span class="tag '+(outer.type==="暖流"?"tag-warm":"tag-cold")+'">'+outer.type+'</span> '+(outerGood?'<span class="badge badge-good">あなたには追い風</span>':'<span class="badge badge-bad">あなたには向かい風</span>');
+  document.getElementById("rOuterText").textContent=outer.desc+"。"+ni.year+"年は皇紀 "+ni.koki+"年で、この海流の年です（皇紀元年＝結束の海流から数える決定ルール）。あなたの季節「"+season.name+"」との相性では"+(outerGood?"追い風":"向かい風")+"として読みます（相性は仮ルール）"+(hasMinus&&!outerGood?"。マイナス持ちのため、向かい風は強めに読みます":"")+"。";
+  /* combo */
+  var key=(innerGood?"g":"b")+(outerGood?"g":"b");
+  var comboMap={gg:MATRIX.gg,gb:MATRIX.gb,bg:MATRIX.bg,bb:MATRIX.bb};
+  var cm=comboMap[key];
+  document.getElementById("rComboTitle").textContent=cm.t;
+  document.getElementById("rComboText").textContent=cm.b+"（内側「"+inner.name+"」× 外側「"+outer.name+"」・皇紀 "+ni.koki+"年時点の組み合わせ）";
+  var rb=document.getElementById("resultBox"); rb.classList.add("show");
+  rb.scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+document.getElementById("calcBtn").addEventListener("click", calculate);
+
+/* init */
+buildRings(); buildLists(); setMatrix("gg"); renderStrokeInputs();
+/* default markers for today */
+var t0=new Date(), n0=nowIndices(t0); setMarkers(n0.inner, n0.outer);
+calculate();
+})();
+</script>
+<script>
+(function(){
+"use strict";
+/* ===== Proposals (unapproved) — independent of the decided calculator above.
+   Sea-state indices reuse the decided Koki-origin rule; tide/moon use a
+   simple lunar-age approximation. Nothing here changes decided content. */
+var P_INNER=[
+ {name:"朝凪",desc:"始まりの静けさ。休んで、備える",score:1},
+ {name:"さざ波",desc:"小さく動き始める。試しに漕ぎ出す",score:2},
+ {name:"満ち潮",desc:"潮が満ちて、物も人も集まり始める",score:3},
+ {name:"追い風",desc:"風が背中を押す。素直に進む",score:4},
+ {name:"順風",desc:"一番速く進む。帆を張り切る",score:5},
+ {name:"波立つ",desc:"ざわつき始める。変化の兆しに気づく",score:2},
+ {name:"うねり",desc:"遠くの嵐の気配が届く。見えない所で変わり始める",score:1},
+ {name:"嵐",desc:"一番荒れる。出航せず、守って耐える",score:0},
+ {name:"嵐の目",desc:"中心だけ静か。ここで見極める",score:2},
+ {name:"雨上がり",desc:"空が澄む。立て直して再出発",score:3},
+ {name:"引き潮",desc:"潮が引く。手放す・整理する",score:1},
+ {name:"夕凪",desc:"終わりの静けさ。次の周期に備える",score:1}
+];
+var today=new Date();
+var Y=today.getFullYear(), MO=today.getMonth()+1;
+var K=Y+660;
+var innerIdx=(((K-1)%4)*3+Math.floor((MO-1)/4))%12;
+var inner=P_INNER[innerIdx];
+
+/* --- 1. Today's tide & moon (approximation) --- */
+var SYNODIC=29.5306;
+/* reference new moon: 2000-01-06 */
+var ref=Date.UTC(2000,0,6,0,0,0);
+var nowMs=Date.UTC(Y,today.getMonth(),today.getDate(),12,0,0);
+var age=((nowMs-ref)/86400000)%SYNODIC; if(age<0)age+=SYNODIC;
+function tideOf(a){
+  if(a<2||a>=28.5||(a>=13.8&&a<16.8)) return "大潮";
+  if((a>=5&&a<8.5)||(a>=20&&a<23.5)) return "小潮";
+  if((a>=8.5&&a<9.5)||(a>=23.5&&a<24.5)) return "長潮";
+  if((a>=9.5&&a<10.5)||(a>=24.5&&a<25.5)) return "若潮";
+  return "中潮";
+}
+function moonOf(a){
+  if(a<1.8) return "新月";
+  if(a<6) return "三日月";
+  if(a<9) return "半月（上弦）";
+  if(a<13) return "満ちていく月";
+  if(a<16.8) return "満月";
+  if(a<20) return "欠けていく月";
+  if(a<23.5) return "半月（下弦）";
+  if(a<27) return "有明月";
+  return "新月の手前";
+}
+var TIDE_TEXT={
+ "大潮":"海が大きく満ち引きする日。動くなら大きく、休むならしっかり——振れ幅の大きい一日です。",
+ "中潮":"満ち引きはほどほど。無理なく進める、標準の海の日です。",
+ "小潮":"満ち引きが小さい日。大きな勝負より、小さなことを丁寧に運ぶのに向きます。",
+ "長潮":"小潮の終わりの、ゆるやかな日。流れは弱く、のんびりと様子を見るのに向きます。",
+ "若潮":"潮が少しずつ元気を取り戻していく日。次の大きな流れへの助走が始まります。"
+};
+var tide=tideOf(age), moon=moonOf(age);
+document.getElementById("tideName").textContent=tide;
+document.getElementById("moonName").textContent=moon;
+document.getElementById("tideText").textContent=TIDE_TEXT[tide];
+var comboTail;
+if(tide==="大潮"){
+  comboTail = inner.score>=3 ? "大きな満ち引きが今の追い風をさらに押してくれます。動くなら今日のように大きく。" : "ざわつきが目立ちやすい組み合わせです。大きく動くより、足元を固めるのが安心です。";
+}else if(tide==="小潮"||tide==="長潮"){
+  comboTail = "静かな潮の日です。今の海のざわつきも、今日は少し落ち着いて見られるかもしれません。";
+}else if(tide==="若潮"){
+  comboTail = "潮が戻り始める日。今の海で感じている兆しが、少しずつ形になっていく助走の時期です。";
+}else{
+  comboTail = "ほどよい潮の日です。今の海の流れに、そのまま素直に乗っていけます。";
+}
+document.getElementById("tideCombo").textContent="あなたの今の海況『"+inner.name+"』と重ねると——"+comboTail;
+document.getElementById("tideNote").textContent="※ 近似計算です：2000年1月6日の新月を起点に、月の満ち欠けの周期（朔望月 約29.5306日）で今日の月齢（約"+age.toFixed(1)+"日）を割り出し、一般的な潮回りの並び（大潮→中潮→小潮→長潮→若潮→中潮→大潮…）に当てはめています。実際の潮は地域によってずれます。";
+
+/* --- 2. Three seas --- */
+var prev=P_INNER[(innerIdx+11)%12], next=P_INNER[(innerIdx+1)%12];
+document.getElementById("seaPrevName").textContent=prev.name;
+document.getElementById("seaPrevDesc").textContent=prev.desc+"。過ぎた海として、その余韻がまだ少し残っています。";
+document.getElementById("seaNowName").textContent=inner.name;
+document.getElementById("seaNowDesc").textContent=inner.desc+"。今いる海です。";
+document.getElementById("seaNextName").textContent=next.name;
+document.getElementById("seaNextDesc").textContent="予感："+next.desc+"。次の4ヶ月ブロックで、この海がやってきます。";
+var blockMonth=((MO-1)%4)+1;
+var phase = blockMonth===1 ? "入り" : (blockMonth===4 ? "名残" : "盛り");
+var chips=document.querySelectorAll("#phaseRow .phase-chip");
+for(var i=0;i<chips.length;i++){ chips[i].classList.toggle("on", chips[i].getAttribute("data-phase")===phase); }
+var PHASE_TEXT={
+ "入り":"今のステージ『"+inner.name+"』は、まだ「入り」の時期。様子を見ながら、この海に体を慣らしていく頃です。",
+ "盛り":"今のステージ『"+inner.name+"』は「盛り」の時期。この海の性質が一番はっきり出る、本番の頃です。",
+ "名残":"今のステージ『"+inner.name+"』は「名残」の時期。仕舞いかけの頃で、次の海『"+next.name+"』の気配が混ざり始めます。"
+};
+document.getElementById("phaseText").textContent=PHASE_TEXT[phase]+"（このステージの "+blockMonth+" ヶ月目）";
+
+/* --- 3. mark current row in the domain table --- */
+var rows=document.querySelectorAll(".dom-table tr[data-stage]");
+for(var j=0;j<rows.length;j++){ if(parseInt(rows[j].getAttribute("data-stage"),10)===innerIdx) rows[j].classList.add("is-now"); }
+document.getElementById("domNowNote").textContent="※ 青く光っている行が、今の海況『"+inner.name+"』です。今の注意分野として読む行になります。";
+})();
+</script>
+<script>
+(function(){
+"use strict";
+/* ===== Proposals round 2 (unapproved) — compatibility demo & voyage log.
+   The label calculation below is an exact copy of the decided calculator's
+   rules (season / number / minus / A, same stroke tables), applied to two
+   people. The decided calculator code above is untouched.
+   Voyage currents reuse the decided Koki-origin rule. ===== */
+var C_SEASONS=[
+ {key:"winter",name:"冬",cls:"season-winter"},
+ {key:"spring",name:"春",cls:"season-spring"},
+ {key:"summer",name:"夏",cls:"season-summer"},
+ {key:"autumn",name:"秋",cls:"season-autumn"}
+]; /* index = (Y+M+D) mod 4 */
+var C_POS={spring:0,summer:1,autumn:2,winter:3};
+var C_OUTER=[
+ {name:"出会いの海流",type:"暖流"},{name:"実りの海流",type:"暖流"},{name:"変化の海流",type:"寒流"},
+ {name:"蓄えの海流",type:"寒流"},{name:"挑戦の海流",type:"暖流"},{name:"回復の海流",type:"暖流"},
+ {name:"創作の海流",type:"暖流"},{name:"発信の海流",type:"暖流"},{name:"探索の海流",type:"寒流"},
+ {name:"結束の海流",type:"暖流"},{name:"解放の海流",type:"寒流"},{name:"帰郷の海流",type:"寒流"}
+];
+var C_ALPHA={A:3,B:3,C:1,D:2,E:4,F:3,G:2,H:3,I:1,J:2,K:3,L:2,M:4,N:3,O:1,P:2,Q:2,R:3,S:1,T:2,U:1,V:2,W:4,X:2,Y:3,Z:3};
+var C_KANA={"あ":3,"い":2,"う":2,"え":2,"お":3,"か":3,"き":4,"く":1,"け":3,"こ":2,"さ":3,"し":1,"す":2,"せ":3,"そ":1,"た":4,"ち":2,"つ":1,"て":1,"と":2,"な":4,"に":3,"ぬ":2,"ね":2,"の":1,"は":3,"ひ":1,"ふ":4,"へ":1,"ほ":4,"ま":3,"み":2,"む":1,"め":2,"も":3,"や":3,"ゆ":2,"よ":2,"ら":2,"り":2,"る":1,"れ":2,"ろ":1,"わ":2,"を":3,"ん":1,
+"ア":2,"イ":2,"ウ":3,"エ":2,"オ":3,"カ":2,"キ":3,"ク":2,"ケ":3,"コ":2,"サ":3,"シ":2,"ス":2,"セ":2,"ソ":2,"タ":3,"チ":3,"ツ":3,"テ":2,"ト":2,"ナ":2,"ニ":2,"ヌ":2,"ネ":3,"ノ":1,"ハ":2,"ヒ":2,"フ":2,"ヘ":1,"ホ":4,"マ":3,"ミ":3,"ム":2,"メ":2,"モ":3,"ヤ":3,"ユ":2,"ヨ":3,"ラ":2,"リ":2,"ル":2,"レ":2,"ロ":2,"ワ":2,"ヲ":2,"ン":2,
+"が":4,"ぎ":5,"ぐ":2,"げ":4,"ご":3,"ざ":4,"じ":2,"ず":3,"ぜ":4,"ぞ":2,"だ":5,"ぢ":3,"づ":2,"で":2,"ど":3,"ば":4,"び":2,"ぶ":5,"べ":2,"ぼ":5,"ぱ":4,"ぴ":2,"ぷ":5,"ぺ":2,"ぽ":5,
+"ゃ":2,"ゅ":2,"ょ":2,"っ":1,"ャ":2,"ュ":2,"ョ":2,"ッ":2,"ー":1};
+var C_KANJI={"晴":12,"輝":15};
+function cNumFromTotal(t){
+  if(t<=9)return 1.0; if(t<=13)return 1.5; if(t<=16)return 2.0; if(t<=18)return 2.5;
+  if(t<=21)return 3.0; if(t<=23)return 3.5; if(t<=26)return 4.0; if(t<=29)return 4.5;
+  if(t<=34)return 5.0; return 5.5;
+}
+function cBinCounts(digits){
+  var z=0,o=0,i,b,j;
+  for(i=0;i<digits.length;i++){ b=digits[i].toString(2); for(j=0;j<b.length;j++){ if(b[j]==="0")z++; else o++; } }
+  return {z:z,o:o};
+}
+/* --- per-person stroke inputs (same behaviour as the decided calculator) --- */
+function renderPersonStrokes(nameInput, area){
+  var chars=Array.from(nameInput.value.trim());
+  if(!chars.length){ area.innerHTML=""; return; }
+  var html='<label class="flabel">文字ごとの画数</label><div class="stroke-grid">', i, c;
+  for(i=0;i<chars.length;i++){ c=chars[i];
+    if(/[A-Za-z]/.test(c)){ var up=c.toUpperCase();
+      html+='<div class="stroke-cell"><div class="ch">'+up+'</div><div class="auto">自動：'+C_ALPHA[up]+'画</div><input type="hidden" class="c-stroke" value="'+C_ALPHA[up]+'"></div>';
+    } else if(C_KANA[c]){
+      html+='<div class="stroke-cell"><div class="ch">'+c+'</div><div class="auto">かな画数（仮）</div><input type="number" class="c-stroke" min="1" max="40" value="'+C_KANA[c]+'"></div>';
+    } else if(/\s/.test(c)){ continue;
+    } else { var def=C_KANJI[c];
+      html+='<div class="stroke-cell"><div class="ch">'+c+'</div><div class="auto">'+(def?"辞書画数（変更可）":"画数を入力")+'</div><input type="number" class="c-stroke" min="1" max="60" placeholder="画数"'+(def?' value="'+def+'"':"")+'></div>';
+    }
+  }
+  html+='</div>';
+  area.innerHTML=html;
+}
+/* --- label computation: identical rules to the decided calculator --- */
+function computePerson(birthVal, nameInput, area, who){
+  if(!birthVal) return {error:who+"の生年月日を入力してください。"};
+  var parts=birthVal.split("-");
+  var Y=parseInt(parts[0],10), M=parseInt(parts[1],10), D=parseInt(parts[2],10);
+  var chars=Array.from(nameInput.value.trim());
+  if(!chars.length) return {error:who+"の下の名前を入力してください。"};
+  var nonSpace=chars.filter(function(c){return !/\s/.test(c);});
+  var inputs=area.querySelectorAll(".c-stroke");
+  if(inputs.length!==nonSpace.length){ renderPersonStrokes(nameInput, area); inputs=area.querySelectorAll(".c-stroke"); }
+  var perChar=[], total=0, i, v;
+  for(i=0;i<inputs.length;i++){
+    v=parseInt(inputs[i].value,10);
+    if(isNaN(v)||v<1) return {error:who+"の名前「"+nonSpace[i]+"」の画数を入力してください。"};
+    perChar.push(v); total+=v;
+  }
+  var mod=((Y+M+D)%4+4)%4;
+  var season=C_SEASONS[mod];
+  var num=cNumFromTotal(total);
+  var numStr=(num%1===0? num.toFixed(1): String(num));
+  var bdStr=String(Y)+String(M)+String(D);
+  var bdDigits=bdStr.split("").map(Number);
+  var PLUS={0:1,4:1,8:1}, MINUS={1:1,3:1,5:1,6:1,7:1};
+  var pc=0, mc=0;
+  bdDigits.forEach(function(d){ if(PLUS[d])pc++; else if(MINUS[d])mc++; });
+  var hasMinus=(pc===mc && pc>0);
+  var nameDigits=[];
+  perChar.forEach(function(n){ String(n).split("").forEach(function(ch){ nameDigits.push(Number(ch)); }); });
+  var bc=cBinCounts(bdDigits.concat(nameDigits));
+  var hasA=(bc.z===bc.o);
+  return {season:season, num:num, numStr:numStr,
+    label:season.name+(hasA?" A":"")+(hasMinus?"-":"")+numStr,
+    name:nameInput.value.trim()};
+}
+var nameA=document.getElementById("compatNameA"), nameB=document.getElementById("compatNameB");
+var areaA=document.getElementById("compatStrokesA"), areaB=document.getElementById("compatStrokesB");
+nameA.addEventListener("input", function(){ renderPersonStrokes(nameA, areaA); });
+nameB.addEventListener("input", function(){ renderPersonStrokes(nameB, areaB); });
+renderPersonStrokes(nameA, areaA); renderPersonStrokes(nameB, areaB);
+
+document.getElementById("compatBtn").addEventListener("click", function(){
+  var err=document.getElementById("compatErr"); err.style.display="none";
+  var res=document.getElementById("compatResult"); res.classList.remove("show");
+  var a=computePerson(document.getElementById("compatBirthA").value, nameA, areaA, "一人目");
+  if(a.error){ err.textContent=a.error; err.style.display="block"; return; }
+  var b=computePerson(document.getElementById("compatBirthB").value, nameB, areaB, "二人目");
+  if(b.error){ err.textContent=b.error; err.style.display="block"; return; }
+  document.getElementById("compatLabelA").innerHTML='<span class="'+a.season.cls+'">'+a.season.name+'</span>'+a.label.slice(1);
+  document.getElementById("compatLabelB").innerHTML='<span class="'+b.season.cls+'">'+b.season.name+'</span>'+b.label.slice(1);
+  document.getElementById("compatWhoA").textContent="一人目「"+a.name+"」";
+  document.getElementById("compatWhoB").textContent="二人目「"+b.name+"」";
+  var diff=(C_POS[a.season.key]-C_POS[b.season.key]+4)%4;
+  var word, why;
+  if(diff===0){
+    word="同じ海を知る二人";
+    why="二人の季節は同じ「"+a.season.name+"」。進み方の呼吸が合い、言葉にしなくても海の見え方が近い二人です。";
+  } else if(diff===2){
+    word="潮目の二人";
+    why="季節は向かい合い（"+a.season.name+"と"+b.season.name+"）ます。二つの流れがぶつかる場所は波が立つけれど、実際の海ではいちばん魚が集まる豊かな場所——それが潮目です。違いがぶつかる所にこそ、豊かさが生まれます。";
+  } else {
+    word="橋渡しの二人";
+    why="季節はとなり合い（"+a.season.name+"と"+b.season.name+"）ます。性質が近くもあり違ってもいて、互いの海へ橋を架けられる二人です。一方の当たり前が、もう一方の新しい景色になります。";
+  }
+  document.getElementById("compatWord").textContent="季節の関係 ― "+word;
+  document.getElementById("compatWhy").textContent=why;
+  var dNum=Math.abs(a.num-b.num);
+  var dWord, dWhy;
+  if(dNum<=1.0){
+    dWord="同じ深さで泳ぐ二人";
+    dWhy="数値の差は "+dNum.toFixed(1)+" と小さく、二人はほぼ同じ深さの海を泳いでいます。物事の重さの感じ方が近く、歩幅が合いやすい二人です。";
+  } else {
+    var shallow = a.num<b.num ? "一人目" : "二人目";
+    var deep = a.num<b.num ? "二人目" : "一人目";
+    dWord="浅瀬の人と深海の人";
+    dWhy="数値の差は "+dNum.toFixed(1)+" と大きく、"+shallow+"が浅瀬側、"+deep+"が深海側です。同じ海でも見ている深さが違うからこそ、浅瀬の軽さと深海の濃さを持ち寄れる二人です。";
+  }
+  document.getElementById("compatDepth").textContent="深さの関係 ― "+dWord;
+  document.getElementById("compatDepthWhy").textContent=dWhy;
+  res.classList.add("show");
+  res.scrollIntoView({behavior:"smooth", block:"nearest"});
+});
+
+/* --- voyage log: 12 years around this year (decided Koki rule) --- */
+function outerIdxForYear(y){ var K=y+660; return (9+(K-1))%12; }
+var nowY=new Date().getFullYear();
+var list=document.getElementById("voyageList");
+var html="", y, idx, cur;
+for(y=nowY-5; y<=nowY+6; y++){
+  idx=outerIdxForYear(y); cur=C_OUTER[idx];
+  var isNow=(y===nowY);
+  html+='<div class="voyage-row'+(isNow?" is-now":"")+'">'
+    +'<div class="v-year">'+y+'年'+(isNow?'<span class="now-mark">今年</span>':"")
+    +'<span class="v-koki">皇紀 '+(y+660)+'年</span></div>'
+    +'<div class="v-cur">'+cur.name+'<span class="tag '+(cur.type==="暖流"?"tag-warm":"tag-cold")+'">'+cur.type+'</span></div>'
+    +'<input type="text" class="voyage-memo" placeholder="その年の一言メモ（保存されません）" aria-label="'+y+'年の一言メモ"/>'
+    +'</div>';
+}
+list.innerHTML=html;
+document.getElementById("voyageRangeTitle").textContent="12年分の海流 ― 航海日誌（"+(nowY-5)+"年〜"+(nowY+6)+"年）";
+function showChapter(){
+  var el=document.getElementById("voyageChapter");
+  var by=parseInt(document.getElementById("voyageBirthYear").value,10);
+  if(isNaN(by)||by<1||by>nowY){ el.textContent="誕生年には、今年（"+nowY+"年）以前の西暦を入れてください。"; return; }
+  var elapsed=nowY-by;
+  var cycle=Math.floor(elapsed/12)+1;
+  var chapter=(elapsed%12)+1;
+  var curName=C_OUTER[outerIdxForYear(nowY)].name;
+  el.innerHTML="あなたは今、人生<span class='hl'>"+cycle+"周目</span>の<span class='hl'>第"+chapter+"章</span>『"+curName+"』を航海中です。";
+}
+document.getElementById("voyageBtn").addEventListener("click", showChapter);
+showChapter();
+})();
+</script>
+<script>
+(function(){
+"use strict";
+/* ===== Morning issue (proposal 6-1, unapproved) — experience prototype.
+   Reuses the decided Koki-origin sea-state rule and the same lunar-age
+   approximation as proposal ①. Decided code above is untouched. ===== */
+var M_INNER=[
+ {name:"朝凪",domain:"体"},{name:"さざ波",domain:"心"},{name:"満ち潮",domain:"縁"},
+ {name:"追い風",domain:"仕事"},{name:"順風",domain:"仕事"},{name:"波立つ",domain:"心"},
+ {name:"うねり",domain:"心"},{name:"嵐",domain:"体"},{name:"嵐の目",domain:"心"},
+ {name:"雨上がり",domain:"縁"},{name:"引き潮",domain:"お金"},{name:"夕凪",domain:"体"}
+];
+var M_ESSAY={
+"朝凪":"朝凪の海は、風も波もなく、鏡のようだと言われます。何かを始めるには静かすぎるように見えて、実は、遠くの様子が一番よく見える時期です。この海では、急いで漕ぎ出す人より、まず水平線を眺める人が、遠くまで行きます。あなたの今日の静けさは、止まっているのではなく、見張りをしている静けさです。",
+"さざ波":"さざ波は、大きな変化のいちばん小さな始まりです。誰にも気づかれないくらいかすかに、それでも確かに水面は動き始めています。この時期に始めたことは、派手な音を立てません。その代わり、気づいたときにはもう、戻れないところまで来ている——そういう始まり方をします。",
+"満ち潮":"満ち潮の海では、昨日まで陸だった場所に、水が静かに入ってきます。人も物も、少しずつ集まってくる時期です。欲しいものに手を伸ばすことを、ためらわなくていい季節かもしれません。ただし、満ちるものは必ず引く、ということも、この海は静かに教えてくれます。",
+"追い風":"追い風の海では、自分の力以上の速さで進みます。それは気持ちのいいことですが、同時に、進路のずれも大きくなる時期です。風まかせにできる日だからこそ、時々は顔を上げて、行き先を確認してください。今日のあなたは、漕ぐ人であると同時に、見張る人でもあります。",
+"順風":"順風は、この航海でいちばん遠くまで行ける海です。帆いっぱいに風を受けて、迷いなく進める日々。ただし昔の船乗りは、順風のときほど眠気が来ると言いました。うまくいっている時期の危うさは、嵐とは別の顔をしています。遠くを見つめることを、忘れずに。",
+"波立つ":"波立つの海では、昨日まで穏やかだった水面が、少しずつざわつき始めます。不安になるかもしれませんが、波が立つのは、どこかで風が変わった証拠です。この時期のざわつきは、悪い知らせとは限りません。あなたの心の小さなざわめきも、変化のいちばん早い便りかもしれません。",
+"うねり":"うねりは、遠くで起きた嵐が、何日もかけて届いた波です。空は晴れているのに、海だけが高い——そういう日があります。目に見える理由がないのに心が揺れる時期があるとしたら、それはこの海です。原因を探して疲れるより、揺れながらでも進める進路を選んでください。",
+"嵐":"嵐の海では、出航しないことが、いちばん勇気のいる判断になります。進めない日が続くと、自分を責めたくなるかもしれません。でも、港で船を守ることも、航海のうちです。嵐は必ず過ぎます。この海にいる間は、終わりのあることだけを、静かに信じてください。",
+"嵐の目":"嵐の目の中は、不思議なほど静かです。周りではまだ嵐が続いているのに、中心だけが晴れている。この静けさは、終わりの合図ではありません。次に動く前に、自分の現在地を見極めるための、嵐がくれた短い猶予です。焦って飛び出さず、この静けさを味方にしてください。",
+"雨上がり":"雨上がりの海は、空気が洗われて、遠くの島まで見えることがあります。つらい時期を抜けた直後の心も、似たような景色をしています。この時期に見る景色は、嵐の前よりも少しだけ正直です。今のあなたの目に映るものを、疑わずに信じてみてください。",
+"引き潮":"引き潮の海では、水が引いて、普段は見えない海底が姿を現します。失ったように見えるものばかりが目につくかもしれません。でも、海の恵みを拾う人は、この時間に浜へ出ます。手放すことと、見つけることは、この海では同じ出来事なのです。",
+"夕凪":"夕凪は、一日の終わりの静けさです。この航海の区切りの時期、心も体も、少しペースを落としたくなるかもしれません。それは終わりの寂しさではなく、次の朝凪への準備です。今日まで漕いできた自分の手を、少し休ませてあげてください。"
+};
+var M_TIDE_SENT={
+"大潮":"今日は大潮。月の引力が最も強く働く日で、海は大きく満ち、大きく引きます。気持ちの振れ幅も、大きくていい日です。",
+"中潮":"今日は中潮。大潮と小潮のあいだの、ほどよい動きの日。無理のないペースで、着実に進める潮です。",
+"小潮":"今日は小潮。満ち引きの差が小さい日です。大きな変化は起きにくいけれど、その分、細かいことに目が届きます。",
+"長潮":"今日は長潮。潮の動きが最もゆるやかな日。だらだらと続くように感じる時間も、海にとっては必要な休みです。",
+"若潮":"今日は若潮。長潮を越えて、潮が若返り始める日。小さな動き出しを、大切にしたい日です。"
+};
+var M_PHASE_SENT={"入り":"この海に、入ったばかりの時期です。","盛り":"この海の、真ん中にいる時期です。","名残":"この海も、終わりが見えてきた時期です。"};
+var M_BANK={
+"押す型":[
+"今日の海は追い風。漕がなくても進む日です。ためらっていた一手を、今日は打っていい。",
+"満ちていく潮の日。欲しいものには、手を伸ばす方を選んで。",
+"若潮。止まっていたものが、今日から少しずつ動き出します。小さな一歩でいい、まず出す。"
+],
+"許す型":[
+"今日は嵐の海。進まないのは、あなたのせいではありません。港で船を守る日もあります。",
+"長潮。動きの鈍い日は、休むことが仕事です。今日は早く港に戻って。",
+"引き潮の日。できないことが増えて見えるのは、潮が引いて海底が見えているだけ。無理に泳がなくていい。"
+],
+"見通し型":[
+"中潮の日。午前は様子見、午後から少しずつ満ちてきます。一日の山は後半に置いて。",
+"嵐の目。周りは荒れていても中心は静かです。今日は決める日ではなく、見極める日。",
+"さざ波の海。大きなことは起きにくいけれど、小さな始まりにはちょうどいい日です。"
+],
+"節目型":[
+"今日で今の海が終わります。明日からは新しい海。今日は、ここまでの航海を一つだけ振り返って。",
+"新しい月の始まり。月が見えない夜は海も暗いけれど、潮はいちばん大きく動く日。新しいことは、心の中で始めて。"
+]};
+var M_RITUAL={
+"押す型":"今日の作法：出かける前に、今日いちばん大事なことを一つ、声に出して言う。",
+"許す型":"今日の作法：温かい飲み物を一杯、座って飲み切る。それが今日の作法です。",
+"見通し型":"今日の作法：空を見上げて、月の形を確かめる。今日の潮の答え合わせです。",
+"節目型":"今日の作法：昨日までの自分に、一言だけ礼を言う。"
+};
+var M_DRIFT=[
+["今日の問い：今日、誰かの一言に救われる場面があるとしたら、それは誰の、どんな一言だろう。答えは、夜に。",
+ "今日の問い：今日の終わりに『悪くなかった』と言えるために、午前中に一つだけやるなら何だろう。",
+ "今日の問い：最近の自分を、海の言葉で言うと、どの海を進んでいるだろう。"],
+["今日の漂着物：貝殻。今日は、小さな良いことを一つ拾う日。",
+ "今日の漂着物：流木。遠くから来たものが、今日のあなたに何かを運んでくるかもしれません。",
+ "今日の漂着物：ガラス玉。光に透かすと色が変わるものが、今日のどこかにあります。"],
+["今日の合図：帰り道、月が見えたら、今朝のこの文を思い出してください。",
+ "今日の合図：今日、誰かの『ありがとう』を聞いたら、それが今日の満ち潮です。",
+ "今日の合図：夕方、空の色が変わる瞬間を見たら、一日が無事に進んだ合図です。"]
+];
+/* tide from integer lunar age (rounded days) */
+var TIDE_SET={
+ "大潮":[29,0,1,2,14,15,16,17],
+ "中潮":[3,4,5,6,12,13,18,19,20,21,27,28],
+ "小潮":[7,8,9,22,23,24],
+ "長潮":[10,25],
+ "若潮":[11,26]
+};
+function tideFromAge(a){
+  for(var k in TIDE_SET){ if(TIDE_SET[k].indexOf(a)>=0) return k; }
+  return "中潮";
+}
+var SYNODIC=29.5306;
+var REF=Date.UTC(2000,0,6,0,0,0);
+function lunarAge(d){
+  var ms=Date.UTC(d.getFullYear(),d.getMonth(),d.getDate(),12,0,0);
+  var a=((ms-REF)/86400000)%SYNODIC; if(a<0)a+=SYNODIC;
+  return a;
+}
+function intAge(d){ return Math.round(lunarAge(d))%30; }
+function stageIdx(d){
+  var K=d.getFullYear()+660;
+  return (((K-1)%4)*3+Math.floor(d.getMonth()/4))%12;
+}
+function pad(n){ return (n<10?"0":"")+n; }
+function dateKey(d){ return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
+
+var today=new Date();
+var Y=today.getFullYear(), MO=today.getMonth()+1, DA=today.getDate();
+var ageI=intAge(today);
+var tide=tideFromAge(ageI);
+var sIdx=stageIdx(today);
+var stage=M_INNER[sIdx];
+var blockMonth=(MO-1)%4+1;
+var phase= blockMonth===1?"入り":(blockMonth===4?"名残":"盛り");
+var seed=Y*10000+MO*100+DA;
+
+/* special days */
+var isNewYear=(MO===1&&DA===1);
+var isStageChange=((MO===1||MO===5||MO===9)&&DA===1);
+var isNewMoon=(ageI<=1);
+var isFullMoon=(ageI>=14&&ageI<=16);
+var badges=[];
+if(isNewMoon)badges.push("新月");
+if(isFullMoon)badges.push("満月");
+if(tide==="大潮")badges.push("大潮の日");
+if(tide==="若潮")badges.push("若潮 ― 潮の若返り");
+if(isStageChange)badges.push("ステージの変わり目");
+if(isNewYear)badges.push("元日 ― 海流の変わり目");
+
+/* sentence type */
+var type;
+if(isStageChange||isNewYear||isNewMoon||isFullMoon) type="節目型";
+else if([2,3,4].indexOf(sIdx)>=0||tide==="大潮"||tide==="若潮") type="押す型";
+else if([6,7,10,11].indexOf(sIdx)>=0||tide==="長潮") type="許す型";
+else type="見通し型";
+var bank=M_BANK[type];
+var sentence=bank[seed%bank.length];
+
+/* fill: cover */
+var WD=["日","月","火","水","木","金","土"];
+document.getElementById("mDate").textContent=Y+"年"+MO+"月"+DA+"日（"+WD[today.getDay()]+"）の朝の号";
+document.getElementById("mTideName").textContent=tide;
+document.getElementById("mStageLine").textContent="今の海況は「"+stage.name+"」・"+phase+"（この海の "+blockMonth+" ヶ月目）";
+var bHtml="";
+for(var i=0;i<badges.length;i++){ bHtml+='<span class="m-badge">'+badges[i]+'</span>'; }
+document.getElementById("mBadges").innerHTML=bHtml;
+document.getElementById("mOneLiner").textContent=sentence;
+/* fill: layer 1 */
+document.getElementById("mTypeName").textContent="今日の文の型 ― "+type;
+document.getElementById("mTypeText").textContent=sentence;
+/* fill: layer 2 deep reading */
+document.getElementById("mEssay").textContent=M_ESSAY[stage.name];
+document.getElementById("mTideSentence").textContent=M_TIDE_SENT[tide];
+document.getElementById("mPhaseSentence").textContent=M_PHASE_SENT[phase];
+document.getElementById("mDomainLine").textContent="今日の分野は「"+stage.domain+"」。今年の海流という大きなテーマのうえで、今とくに気を配る分野として読む一行です（分野対応は提案1-3の対応表から）。";
+/* fill: drift */
+var kindIdx=seed%3;
+var itemIdx=Math.floor(seed/3)%3;
+document.getElementById("mDrift").textContent=M_DRIFT[kindIdx][itemIdx];
+/* fill: ritual */
+document.getElementById("mRitual").textContent=M_RITUAL[type];
+/* fill: tomorrow */
+var tomorrow=new Date(Y,MO-1,DA+1);
+document.getElementById("mTomorrow").innerHTML="明日の予告：明日の潮は <b>"+tideFromAge(intAge(tomorrow))+"</b> です。今日の問いの答えは、夜に。";
+
+/* --- journal (tide pools) --- */
+var JKEY="shiokan_journal";
+var storageOK=true;
+var memFallback=null;
+function loadJournal(){
+  try{
+    var raw=localStorage.getItem(JKEY);
+    return raw?JSON.parse(raw):{};
+  }catch(e){ storageOK=false; return memFallback||{}; }
+}
+function saveJournal(j){
+  try{ localStorage.setItem(JKEY, JSON.stringify(j)); return true; }
+  catch(e){ storageOK=false; return false; }
+}
+function streakOf(j){
+  var n=0, d=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+  if(!j[dateKey(d)]) d.setDate(d.getDate()-1);
+  while(j[dateKey(d)]){ n++; d.setDate(d.getDate()-1); }
+  return n;
+}
+function renderJournal(){
+  var j=loadJournal();
+  var grid=document.getElementById("mCalGrid");
+  var first=new Date(Y,MO-1,1);
+  var startDow=first.getDay();
+  var daysInMonth=new Date(Y,MO,0).getDate();
+  var html="";
+  for(var s=0;s<startDow;s++){ html+='<div class="j-day empty"></div>'; }
+  for(var d=1;d<=daysInMonth;d++){
+    var dt=new Date(Y,MO-1,d);
+    var key=dateKey(dt);
+    var rec=j[key];
+    var cls="j-day";
+    if(rec) cls+=" stamped";
+    else if(dt<new Date(Y,MO-1,DA)) cls+=" past-missed";
+    else if(d>DA) cls+=" future";
+    if(d===DA) cls+=" today";
+    var sub = rec ? rec.tide : (dt<new Date(Y,MO-1,DA) ? "引き潮" : (d===DA ? "今日" : ""));
+    html+='<div class="'+cls+'"><div class="j-d">'+d+'</div><div class="j-t">'+sub+'</div></div>';
+  }
+  grid.innerHTML=html;
+  document.getElementById("mCalTitle").textContent="今月の潮だまり ― "+Y+"年"+MO+"月";
+  var total=Object.keys(j).length;
+  var streak=streakOf(j);
+  var stats="通算の潮だまり："+total+" 日分。";
+  if(total>0) stats+="（参考：いまの連続は "+streak+" 日です）";
+  stats+=" 潮は引いても、必ず戻ります。";
+  document.getElementById("mJournalStats").textContent=stats;
+  var note=document.getElementById("mJournalNote");
+  if(!storageOK){
+    note.textContent="※ この環境では記録を保存できません（ブラウザの保存機能が使えないため）。刻印の表示だけお試しいただけます。";
+  } else {
+    var rec2=j[dateKey(today)];
+    note.textContent= rec2 ? "今日の刻印は押されています"+(rec2.memo?"（メモ："+rec2.memo+"）":"")+"。もう一度押すと上書きできます。" : "刻印はこの端末のブラウザにだけ保存されます。";
+  }
+  var memo=document.getElementById("mMemo");
+  var rec3=loadJournal()[dateKey(today)];
+  if(rec3&&rec3.memo&&!memo.value) memo.value=rec3.memo;
+}
+document.getElementById("mStampBtn").addEventListener("click", function(){
+  var j=loadJournal();
+  var memo=document.getElementById("mMemo").value.trim();
+  var prevRec=j[dateKey(today)]||{};
+  prevRec.tide=tide; prevRec.stage=stage.name; prevRec.memo=memo;
+  j[dateKey(today)]=prevRec;
+  var msg=document.getElementById("mStampMsg");
+  if(saveJournal(j)){
+    msg.textContent="今朝の刻印を押しました。今日の潮だまり："+tide+" × "+stage.name+"。";
+  }else{
+    memFallback=j;
+    msg.textContent="この環境では記録を保存できませんでした。この表示を開いている間だけ、刻印をカレンダーに反映します。";
+  }
+  renderJournal();
+});
+renderJournal();
+})();
+</script>
+<script>
+(function(){
+"use strict";
+/* ===== Layer 3 readings + Evening sea (proposal 7-1,
+   unapproved). This script recomputes the morning issue's selections with
+   the EXACT same formulas and text banks as the morning script above, so
+   the same day always yields the same sentence / drift in the morning and
+   at night. Decided code above is untouched. ===== */
+var E_STAGE_NAMES=["朝凪","さざ波","満ち潮","追い風","順風","波立つ","うねり","嵐","嵐の目","雨上がり","引き潮","夕凪"];
+var E_TIDE_SET={
+ "大潮":[29,0,1,2,14,15,16,17],
+ "中潮":[3,4,5,6,12,13,18,19,20,21,27,28],
+ "小潮":[7,8,9,22,23,24],
+ "長潮":[10,25],
+ "若潮":[11,26]
+};
+function eTideFromAge(a){ for(var k in E_TIDE_SET){ if(E_TIDE_SET[k].indexOf(a)>=0) return k; } return "中潮"; }
+var E_SYNODIC=29.5306;
+var E_REF=Date.UTC(2000,0,6,0,0,0);
+function eLunarAge(d){
+  var ms=Date.UTC(d.getFullYear(),d.getMonth(),d.getDate(),12,0,0);
+  var a=((ms-E_REF)/86400000)%E_SYNODIC; if(a<0)a+=E_SYNODIC;
+  return a;
+}
+function eIntAge(d){ return Math.round(eLunarAge(d))%30; }
+function eStageIdx(d){
+  var K=d.getFullYear()+660;
+  return (((K-1)%4)*3+Math.floor(d.getMonth()/4))%12;
+}
+function ePad(n){ return (n<10?"0":"")+n; }
+function eDateKey(d){ return d.getFullYear()+"-"+ePad(d.getMonth()+1)+"-"+ePad(d.getDate()); }
+
+var E_BANK={
+"押す型":[
+"今日の海は追い風。漕がなくても進む日です。ためらっていた一手を、今日は打っていい。",
+"満ちていく潮の日。欲しいものには、手を伸ばす方を選んで。",
+"若潮。止まっていたものが、今日から少しずつ動き出します。小さな一歩でいい、まず出す。"
+],
+"許す型":[
+"今日は嵐の海。進まないのは、あなたのせいではありません。港で船を守る日もあります。",
+"長潮。動きの鈍い日は、休むことが仕事です。今日は早く港に戻って。",
+"引き潮の日。できないことが増えて見えるのは、潮が引いて海底が見えているだけ。無理に泳がなくていい。"
+],
+"見通し型":[
+"中潮の日。午前は様子見、午後から少しずつ満ちてきます。一日の山は後半に置いて。",
+"嵐の目。周りは荒れていても中心は静かです。今日は決める日ではなく、見極める日。",
+"さざ波の海。大きなことは起きにくいけれど、小さな始まりにはちょうどいい日です。"
+],
+"節目型":[
+"今日で今の海が終わります。明日からは新しい海。今日は、ここまでの航海を一つだけ振り返って。",
+"新しい月の始まり。月が見えない夜は海も暗いけれど、潮はいちばん大きく動く日。新しいことは、心の中で始めて。"
+]};
+var E_DRIFT=[
+["今日の問い：今日、誰かの一言に救われる場面があるとしたら、それは誰の、どんな一言だろう。答えは、夜に。",
+ "今日の問い：今日の終わりに『悪くなかった』と言えるために、午前中に一つだけやるなら何だろう。",
+ "今日の問い：最近の自分を、海の言葉で言うと、どの海を進んでいるだろう。"],
+["今日の漂着物：貝殻。今日は、小さな良いことを一つ拾う日。",
+ "今日の漂着物：流木。遠くから来たものが、今日のあなたに何かを運んでくるかもしれません。",
+ "今日の漂着物：ガラス玉。光に透かすと色が変わるものが、今日のどこかにあります。"],
+["今日の合図：帰り道、月が見えたら、今朝のこの文を思い出してください。",
+ "今日の合図：今日、誰かの『ありがとう』を聞いたら、それが今日の満ち潮です。",
+ "今日の合図：夕方、空の色が変わる瞬間を見たら、一日が無事に進んだ合図です。"]
+];
+
+/* --- shared "today" state, identical to the morning script --- */
+var today=new Date();
+var Y=today.getFullYear(), MO=today.getMonth()+1, DA=today.getDate();
+var ageI=eIntAge(today);
+var tide=eTideFromAge(ageI);
+var sIdx=eStageIdx(today);
+var stageName=E_STAGE_NAMES[sIdx];
+var seed=Y*10000+MO*100+DA;
+var isNewYear=(MO===1&&DA===1);
+var isStageChange=((MO===1||MO===5||MO===9)&&DA===1);
+var isNewMoon=(ageI<=1);
+var isFullMoon=(ageI>=14&&ageI<=16);
+var type;
+if(isStageChange||isNewYear||isNewMoon||isFullMoon) type="節目型";
+else if([2,3,4].indexOf(sIdx)>=0||tide==="大潮"||tide==="若潮") type="押す型";
+else if([6,7,10,11].indexOf(sIdx)>=0||tide==="長潮") type="許す型";
+else type="見通し型";
+var bank=E_BANK[type];
+var sentence=bank[seed%bank.length];
+var kindIdx=seed%3;
+var itemIdx=Math.floor(seed/3)%3;
+var driftText=E_DRIFT[kindIdx][itemIdx];
+
+/* ===== Layer 3: sea readings (daily rotation of 8) ===== */
+var READINGS=[
+ ["潮の名前","大潮・中潮・小潮・長潮・若潮。日本の漁師たちは、月の満ち欠けで変わる潮に名前を付けて暮らしてきました。長潮は『動きの止まる日』、若潮は『潮が若返る日』。名前があると、ただの待ち時間が、意味のある時間に変わります。"],
+ ["月が海を引く","潮の満ち引きは、月の引力が海水を引っ張ることで起きます。新月と満月の頃、月と太陽の引力が重なって大潮に。半月の頃は打ち消し合って小潮に。今夜、月を見上げたら、今日の潮の答え合わせができます。"],
+ ["黒潮","黒潮は、世界の海流の中でも特に速く、濃い青黒色をしていることから名付けられました。沖縄の南から日本の太平洋側を北上し、暖かい水と一緒に、南方の魚たちを運んできます。あなたの今年の海流の、現実の先輩のような存在です。"],
+ ["潮目","暖かい海流と冷たい海流がぶつかる場所を『潮目』と言います。波が立って航行は難しいのに、プランクトンが集まり、魚が集まる、海でいちばん豊かな場所。違うもの同士が出会う場所は、騒がしいけれど、恵みも多いのです。"],
+ ["鳴門の渦","鳴門海峡では、潮の流れが速すぎて、海に巨大な渦ができます。渦は近づくものを巻き込みますが、その渦のおかげで栄養がかき混ぜられ、豊かな漁場も生まれます。渦は怖いだけの存在ではないのです。"],
+ ["凪の時間","朝凪と夕凪。陸と海の温度差がなくなる朝と夕方、風が止んで海が鏡のようになる時間があります。船乗りはこの凪を、休む時間ではなく『見張りの時間』として大切にしてきました。"],
+ ["神武の船旅","日本書紀に残る神武天皇の東征は、日向から船で瀬戸内海を進む、長い航海の記録です。途中、嵐に遭い、仲間を失いながらも進み続け、やがて大和にたどり着きました。潮環の円環の起点は、この船旅の終わりの年です。"],
+ ["潮だまり","引き潮のあと、岩のくぼみに海水が残ってできる小さな水たまりを『潮だまり』と言います。海が引いても、そこには小魚や貝の世界が残り続けます。来られなかった日があっても、あなたの日誌の潮だまりは、干上がりません。"]
+];
+var doy=Math.floor((Date.UTC(Y,MO-1,DA)-Date.UTC(Y,0,1))/86400000)+1;
+var rIdx=(doy-1)%8;
+document.getElementById("rTitle").textContent="今日の一編 ― 「"+READINGS[rIdx][0]+"」（全8編の "+(rIdx+1)+" 編目）";
+document.getElementById("rBody").textContent=READINGS[rIdx][1];
+document.getElementById("rNote").textContent="読み物は8編を日替わりで巡ります。朝の電車で読み切れなかった分は、帰りの「夜の読み物」として、そのまま続きを読めます。";
+
+/* ===== Evening sea ===== */
+/* 1. second reading: the very same morning sentence */
+document.getElementById("evSentence").textContent=sentence;
+document.getElementById("evTypeLine").textContent="今朝の文の型は「"+type+"」でした。今の海況は『"+stageName+"』、今日の潮は『"+tide+"』です。";
+/* 2. evening key: only when today's drift was a sign */
+if(kindIdx===2){
+  document.getElementById("evKeyBlock").style.display="";
+  document.getElementById("evKeyText").textContent=driftText;
+}
+/* 3. morning question: only when today's drift was a question */
+if(kindIdx===0){
+  document.getElementById("evMorningQBlock").style.display="";
+  document.getElementById("evMorningQ").textContent=driftText;
+}
+var E_STAGE_Q={
+"朝凪":"今日の静けさの中で、いちばん心に残った音は何でしたか。",
+"さざ波":"今日、かすかに動き始めたものは何でしたか。",
+"満ち潮":"今日、あなたのそばに集まってきたものは何でしたか。",
+"追い風":"今日の風は、あなたをどこまで運びましたか。",
+"順風":"今日いちばん遠くまで行けた場面を、思い出してください。",
+"波立つ":"今日の小さなざわつきは、何の知らせでしたか。",
+"うねり":"今日、心が揺れた理由は、どこか遠くにありましたか。",
+"嵐":"今日、嵐の中で守り抜けたものを一つ、数えてください。",
+"嵐の目":"今日の静かな中心で、見えたことは何でしたか。",
+"雨上がり":"嵐のあと、澄んだ目で見えた景色は何でしたか。",
+"引き潮":"今日、手放せたもの・見つけたものは何でしたか。",
+"夕凪":"今日の航海を、一言で名付けるとしたら何と名付けますか。"
+};
+document.getElementById("evStageQLabel").textContent="今の海『"+stageName+"』からの、夕方の問い";
+document.getElementById("evStageQ").textContent=E_STAGE_Q[stageName];
+/* 4. night sentence (priority: morning was 許す型 > full moon > stage) */
+var NIGHT_HODOKU="今日の波は、遠くの嵐のせいでした。あなたのせいじゃありません。今夜はもう、櫂（かい）を置いてください。一日を、ほどいて休む時間です。";
+var NIGHT_SHIMAU="今日の海に、名前をつけてみてください。『静かな追い風の日』でも、『思ったより頑張った日』でも。名前がついた一日は、きちんとしまえます。";
+var NIGHT_KAZOERU="今日、満ちてきたものを一つだけ数えてください。大きなことでなくていい。潮は、小さな満ち引きの積み重なりです。";
+var nightType, nightText;
+if(type==="許す型"){
+  nightType="夜の文 ― 今朝が「許す型」だった日の、専用の文";
+  nightText="今日は、休むことが仕事の日でした。休めたのなら、それが今日の実りです。休めなかったのなら、港まで戻ってきたことが、今日の実りです。";
+}else if(isFullMoon){
+  nightType="夜の文 ― 数える型（満月の夜）";
+  nightText=NIGHT_KAZOERU;
+}else if([5,6,7,10].indexOf(sIdx)>=0){
+  nightType="夜の文 ― ほどく型";
+  nightText=NIGHT_HODOKU;
+}else if([0,8,11].indexOf(sIdx)>=0){
+  nightType="夜の文 ― しまう型";
+  nightText=NIGHT_SHIMAU;
+}else{
+  nightType="夜の文 ― 数える型";
+  nightText=NIGHT_KAZOERU;
+}
+document.getElementById("evNightType").textContent=nightType;
+document.getElementById("evNightText").textContent=nightText;
+/* 6. tomorrow preview */
+var tomorrow=new Date(Y,MO-1,DA+1);
+var tText="明日の予告：明日の潮は <b>"+eTideFromAge(eIntAge(tomorrow))+"</b> です。";
+var tsIdx=eStageIdx(tomorrow);
+if(tsIdx!==sIdx){
+  tText+=" 明日から海況が「"+E_STAGE_NAMES[tsIdx]+"」に変わります。今の海『"+stageName+"』は、今日が最後の日です。";
+}
+document.getElementById("evTomorrow").innerHTML=tText;
+/* 3+5. shared input -> same-day journal record's evening field */
+var JKEY="shiokan_journal";
+function eLoadJournal(){
+  try{ var raw=localStorage.getItem(JKEY); return raw?JSON.parse(raw):{}; }
+  catch(e){ return null; }
+}
+function eSaveJournal(j){
+  try{ localStorage.setItem(JKEY, JSON.stringify(j)); return true; }
+  catch(e){ return false; }
+}
+var evInput=document.getElementById("evInput");
+var existing=eLoadJournal();
+if(existing && existing[eDateKey(today)] && existing[eDateKey(today)].evening){
+  evInput.value=existing[eDateKey(today)].evening;
+  document.getElementById("evMsg").textContent="今日の夕方の一行は、すでに日誌にしまわれています。書き直して、もう一度しまうこともできます。";
+}
+document.getElementById("evSaveBtn").addEventListener("click", function(){
+  var msg=document.getElementById("evMsg");
+  var line=evInput.value.trim();
+  if(!line){ msg.textContent="一行だけ、今日の海の言葉を書いてみてください。短くて大丈夫です。"; return; }
+  var j=eLoadJournal();
+  if(j===null){ msg.textContent="この環境では記録を保存できませんでした（ブラウザの保存機能が使えないため）。一行は心の中にしまってください。"; return; }
+  var key=eDateKey(today);
+  var rec=j[key]||{tide:tide, stage:stageName, memo:""};
+  rec.evening=line;
+  j[key]=rec;
+  if(eSaveJournal(j)){
+    msg.textContent="今日の一行を日誌にしまいました。今日の航海は、これで帰港です。";
+  }else{
+    msg.textContent="この環境では記録を保存できませんでした。一行は心の中にしまってください。";
+  }
+});
+})();
+</script>
+<script>
+(function(){
+"use strict";
+/* ===== Sea chart (design proposal, unapproved) =====
+   Currents / sea states reuse the decided Koki-origin formulas verbatim:
+   outer (year) = (9+(K-1))%12 ; inner (month) = (((K-1)%4)*3 + block)%12,
+   K = Gregorian year + 660, block = floor((month-1)/4).
+   Label computation is an exact copy of the decided calculator's rules
+   (same stroke tables), applied to the optional name input.
+   Memos are saved under a dedicated localStorage key that does not
+   collide with the journal key "shiokan_journal". */
+var H_INNER=[
+ {name:"朝凪",desc:"始まりの静けさ。休んで、備える"},
+ {name:"さざ波",desc:"小さく動き始める。試しに漕ぎ出す"},
+ {name:"満ち潮",desc:"潮が満ちて、物も人も集まり始める"},
+ {name:"追い風",desc:"風が背中を押す。素直に進む"},
+ {name:"順風",desc:"一番速く進む。帆を張り切る"},
+ {name:"波立つ",desc:"ざわつき始める。変化の兆しに気づく"},
+ {name:"うねり",desc:"遠くの嵐の気配が届く。見えない所で変わり始める"},
+ {name:"嵐",desc:"一番荒れる。出航せず、守って耐える"},
+ {name:"嵐の目",desc:"中心だけ静か。ここで見極める"},
+ {name:"雨上がり",desc:"空が澄む。立て直して再出発"},
+ {name:"引き潮",desc:"潮が引く。手放す・整理する"},
+ {name:"夕凪",desc:"終わりの静けさ。次の周期に備える"}
+];
+var H_OUTER=[
+ {name:"出会いの海流",type:"暖流"},{name:"実りの海流",type:"暖流"},{name:"変化の海流",type:"寒流"},
+ {name:"蓄えの海流",type:"寒流"},{name:"挑戦の海流",type:"暖流"},{name:"回復の海流",type:"暖流"},
+ {name:"創作の海流",type:"暖流"},{name:"発信の海流",type:"暖流"},{name:"探索の海流",type:"寒流"},
+ {name:"結束の海流",type:"暖流"},{name:"解放の海流",type:"寒流"},{name:"帰郷の海流",type:"寒流"}
+];
+var H_SEASON_CLS=["season-winter","season-spring","season-summer","season-autumn"];
+var H_SEASON_NAME=["冬","春","夏","秋"]; /* index = (Y+M+D) mod 4: 0冬 1春 2夏 3秋 */
+var H_ALPHA={A:3,B:3,C:1,D:2,E:4,F:3,G:2,H:3,I:1,J:2,K:3,L:2,M:4,N:3,O:1,P:2,Q:2,R:3,S:1,T:2,U:1,V:2,W:4,X:2,Y:3,Z:3};
+var H_KANA={"あ":3,"い":2,"う":2,"え":2,"お":3,"か":3,"き":4,"く":1,"け":3,"こ":2,"さ":3,"し":1,"す":2,"せ":3,"そ":1,"た":4,"ち":2,"つ":1,"て":1,"と":2,"な":4,"に":3,"ぬ":2,"ね":2,"の":1,"は":3,"ひ":1,"ふ":4,"へ":1,"ほ":4,"ま":3,"み":2,"む":1,"め":2,"も":3,"や":3,"ゆ":2,"よ":2,"ら":2,"り":2,"る":1,"れ":2,"ろ":1,"わ":2,"を":3,"ん":1,
+"ア":2,"イ":2,"ウ":3,"エ":2,"オ":3,"カ":2,"キ":3,"ク":2,"ケ":3,"コ":2,"サ":3,"シ":2,"ス":2,"セ":2,"ソ":2,"タ":3,"チ":3,"ツ":3,"テ":2,"ト":2,"ナ":2,"ニ":2,"ヌ":2,"ネ":3,"ノ":1,"ハ":2,"ヒ":2,"フ":2,"ヘ":1,"ホ":4,"マ":3,"ミ":3,"ム":2,"メ":2,"モ":3,"ヤ":3,"ユ":2,"ヨ":3,"ラ":2,"リ":2,"ル":2,"レ":2,"ロ":2,"ワ":2,"ヲ":2,"ン":2,
+"が":4,"ぎ":5,"ぐ":2,"げ":4,"ご":3,"ざ":4,"じ":2,"ず":3,"ぜ":4,"ぞ":2,"だ":5,"ぢ":3,"づ":2,"で":2,"ど":3,"ば":4,"び":2,"ぶ":5,"べ":2,"ぼ":5,"ぱ":4,"ぴ":2,"ぷ":5,"ぺ":2,"ぽ":5,
+"ゃ":2,"ゅ":2,"ょ":2,"っ":1,"ャ":2,"ュ":2,"ョ":2,"ッ":2,"ー":1};
+var H_KANJI={"晴":12,"輝":15};
+function hNumFromTotal(t){
+  if(t<=9)return 1.0; if(t<=13)return 1.5; if(t<=16)return 2.0; if(t<=18)return 2.5;
+  if(t<=21)return 3.0; if(t<=23)return 3.5; if(t<=26)return 4.0; if(t<=29)return 4.5;
+  if(t<=34)return 5.0; return 5.5;
+}
+function hBinCounts(digits){
+  var z=0,o=0,i,b,j;
+  for(i=0;i<digits.length;i++){ b=digits[i].toString(2); for(j=0;j<b.length;j++){ if(b[j]==="0")z++; else o++; } }
+  return {z:z,o:o};
+}
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+var chartBirth=document.getElementById("chartBirth");
+var chartName=document.getElementById("chartName");
+var chartStrokes=document.getElementById("chartStrokes");
+function renderChartStrokes(){
+  var chars=Array.from(chartName.value.trim());
+  if(!chars.length){ chartStrokes.innerHTML=""; return; }
+  var html='<label class="flabel">文字ごとの画数</label><div class="stroke-grid">', i, c;
+  for(i=0;i<chars.length;i++){ c=chars[i];
+    if(/[A-Za-z]/.test(c)){ var up=c.toUpperCase();
+      html+='<div class="stroke-cell"><div class="ch">'+esc(up)+'</div><div class="auto">自動：'+H_ALPHA[up]+'画</div><input type="hidden" class="h-stroke" value="'+H_ALPHA[up]+'"></div>';
+    } else if(H_KANA[c]){
+      html+='<div class="stroke-cell"><div class="ch">'+esc(c)+'</div><div class="auto">かな画数（仮）</div><input type="number" class="h-stroke" min="1" max="40" value="'+H_KANA[c]+'"></div>';
+    } else if(/\s/.test(c)){ continue;
+    } else { var def=H_KANJI[c];
+      html+='<div class="stroke-cell"><div class="ch">'+esc(c)+'</div><div class="auto">'+(def?"辞書画数（変更可）":"画数を入力")+'</div><input type="number" class="h-stroke" min="1" max="60" placeholder="画数"'+(def?' value="'+def+'"':"")+'></div>';
+    }
+  }
+  html+='</div>';
+  chartStrokes.innerHTML=html;
+}
+chartName.addEventListener("input", renderChartStrokes);
+renderChartStrokes();
+
+function computeChartLabel(Y,M,D){
+  var chars=Array.from(chartName.value.trim());
+  if(!chars.length) return null;
+  var nonSpace=chars.filter(function(c){return !/\s/.test(c);});
+  var inputs=chartStrokes.querySelectorAll(".h-stroke");
+  if(inputs.length!==nonSpace.length){ renderChartStrokes(); inputs=chartStrokes.querySelectorAll(".h-stroke"); }
+  var perChar=[], total=0, i, v;
+  for(i=0;i<inputs.length;i++){
+    v=parseInt(inputs[i].value,10);
+    if(isNaN(v)||v<1) return {error:"「"+nonSpace[i]+"」の画数を入力してください。"};
+    perChar.push(v); total+=v;
+  }
+  var mod=((Y+M+D)%4+4)%4;
+  var num=hNumFromTotal(total);
+  var numStr=(num%1===0? num.toFixed(1): String(num));
+  var bdDigits=(String(Y)+String(M)+String(D)).split("").map(Number);
+  var PLUS={0:1,4:1,8:1}, MINUS={1:1,3:1,5:1,6:1,7:1};
+  var pc=0, mc=0;
+  bdDigits.forEach(function(d){ if(PLUS[d])pc++; else if(MINUS[d])mc++; });
+  var hasMinus=(pc===mc && pc>0);
+  var nameDigits=[];
+  perChar.forEach(function(n){ String(n).split("").forEach(function(ch){ nameDigits.push(Number(ch)); }); });
+  var bc=hBinCounts(bdDigits.concat(nameDigits));
+  var hasA=(bc.z===bc.o);
+  return {mod:mod, label:H_SEASON_NAME[mod]+(hasA?" A":"")+(hasMinus?"-":"")+numStr, total:total, hasMinus:hasMinus, hasA:hasA};
+}
+
+/* --- decided Koki formulas, reused verbatim --- */
+function outerIdxForYear(y){ var K=y+660; return (9+(K-1))%12; }
+function innerIdxForYM(y,m){ var K=y+660; return (((K-1)%4)*3+Math.floor((m-1)/4))%12; }
+
+var MEMO_KEY="shiokan_chart_memo_v1";
+function loadMemos(){
+  try{ var raw=localStorage.getItem(MEMO_KEY); return raw?JSON.parse(raw):{}; }
+  catch(e){ return {}; }
+}
+function saveMemos(m){
+  try{ localStorage.setItem(MEMO_KEY, JSON.stringify(m)); return true; }
+  catch(e){ return false; }
+}
+
+var nowY=new Date().getFullYear();
+var currentBirthKey="";
+/* personal reception layer (design proposal): set from the computed label
+   in renderChart before rows are built. Calendar formulas are untouched;
+   these flags only change how the rows are annotated for this person. */
+var curHasMinus=false, curHasA=false;
+function yearHasStorm(y){
+  for(var m=1;m<=12;m++){ if(H_INNER[innerIdxForYM(y,m)].name.indexOf("嵐")>=0) return true; }
+  return false;
+}
+function specialHTML(lab){
+  if(!lab||(!lab.hasMinus&&!lab.hasA)) return "";
+  var html="";
+  if(lab.hasMinus&&lab.hasA){
+    html+='<div class="special-block"><h4>特別枠が二つ重なっています ― 最レア（約1.3%）<span class="prop-badge prop-badge-sm">設計提案</span></h4>'
+      +'<p>この名札は「−」（向かい風）と「A」（渦）の両方を持つ、特別枠の中でも最も珍しい組み合わせ（全体の約1.3%）です。下の二つの読みが、この海図では重なって効きます。</p></div>';
+  }
+  if(lab.hasMinus){
+    html+='<div class="special-block hw"><h4>− 向かい風タイプ<span class="prop-badge prop-badge-sm">設計提案</span></h4>'
+      +'<p>この人の海図では、乗る海流の行き先は標準と同じです。ただし受ける風は<strong style="color:#fff">向かい風</strong>——追い風になる海流が少なく、流れ任せではなく自分の力で漕ぐ航海になります。各年の行の「向かい風で受ける」の印が、その受け方を示します。罰ではありません。自力で進む人の海です。</p></div>';
+  }
+  if(lab.hasA){
+    html+='<div class="special-block vx"><h4>A ― 渦（うず）<span class="prop-badge prop-badge-sm">設計提案</span></h4>'
+      +'<p>この人の海図には「渦」の読みが重なります。渦には三つの面があります。</p>'
+      +'<ul><li>周りを<strong style="color:#fff">巻き込む</strong>ことができる</li>'
+      +'<li>人によっては<strong style="color:#fff">逃げたくなる対象</strong>にもなる</li>'
+      +'<li>そして<strong style="color:#fff">自分自身が最も飲み込まれる</strong>危険がある</li></ul>'
+      +'<p>海況に「嵐」を含む年は、年表の行に「渦が強まる年」の注記が付きます。</p></div>';
+  }
+  return html;
+}
+
+function monthsHTML(y){
+  var html='<div class="chart-month-grid">', m, idx, st;
+  for(m=1;m<=12;m++){
+    idx=innerIdxForYM(y,m); st=H_INNER[idx];
+    var vx=(curHasA && st.name.indexOf("嵐")>=0) ? '<span class="cm-vortex">渦が強まる</span>' : "";
+    html+='<div class="chart-month'+((m===1||m===5||m===9)?" is-block-start":"")+'"><div class="cm-m">'+m+'月</div><div class="cm-name">'+st.name+'</div><div class="cm-desc">'+st.desc+'</div>'+vx+'</div>';
+  }
+  html+='</div>';
+  return html;
+}
+function yearRowHTML(y, birthYear, isFuture){
+  var cur=H_OUTER[outerIdxForYear(y)];
+  var isNow=(y===nowY);
+  var age=y-birthYear;
+  var html='<div class="chart-row'+(isNow?" is-now":"")+(isFuture?" is-future":"")+'" data-year="'+y+'">'
+    +'<div class="chart-row-head">'
+    +'<span class="chart-year">'+y+'年'+(isNow?'<span class="now-mark">今年</span>':"")+(isFuture?'<span class="badge-paid">有料候補</span>':"")+'</span>'
+    +'<span class="chart-age">'+age+'歳の年</span>'
+    +'<span class="chart-koki">皇紀 '+(y+660)+'年</span>'
+    +'<span class="chart-cur">'+cur.name+'<span class="tag '+(cur.type==="暖流"?"tag-warm":"tag-cold")+'">'+cur.type+'</span>'+(curHasMinus?'<span class="mark-hw">− 向かい風で受ける</span>':"")+'</span>'
+    +'<button class="chart-toggle" type="button" data-toggle="'+y+'">月別を見る<span class="badge-paid">有料候補</span></button>'
+    +'</div>'
+    +(curHasA && yearHasStorm(y) ? '<div class="chart-vortex-note"><b>渦が強まる年</b> ― この年の海況には「嵐」が含まれます。周りを巻き込む力も、自分が飲み込まれる危険も大きくなる時期です。<span class="prop-badge prop-badge-sm">設計提案</span></div>' : "")
+    +'<div class="chart-months" id="chart-months-'+(isFuture?"f":"p")+'-'+y+'"></div>';
+  if(!isFuture){
+    html+='<div class="chart-memo"><label class="flabel" for="chart-memo-'+y+'" style="margin-top:8px">その年の一言メモ</label>'
+      +'<input type="text" id="chart-memo-'+y+'" data-memo-year="'+y+'" placeholder="その年に起きたことを一言で" autocomplete="off"/>'
+      +'<span class="cm-saved" data-saved-for="'+y+'"></span></div>';
+  }
+  html+='</div>';
+  return html;
+}
+
+function renderChart(){
+  var err=document.getElementById("chartErr"); err.style.display="none";
+  var bv=chartBirth.value;
+  if(!bv){ err.textContent="生年月日を入力してください。"; err.style.display="block"; return; }
+  var parts=bv.split("-");
+  var Y=parseInt(parts[0],10), M=parseInt(parts[1],10), D=parseInt(parts[2],10);
+  if(isNaN(Y)||Y<1900||Y>nowY){ err.textContent="生まれ年は1900年から今年（"+nowY+"年）の間で入力してください。"; err.style.display="block"; return; }
+  currentBirthKey=bv;
+  /* optional label, same logic as the decided calculator */
+  var resBox=document.getElementById("chartResult");
+  var lab=computeChartLabel(Y,M,D);
+  if(lab && lab.error){ err.textContent=lab.error; err.style.display="block"; return; }
+  if(lab){
+    curHasMinus=!!lab.hasMinus; curHasA=!!lab.hasA;
+    document.getElementById("chartBigLabel").innerHTML="名札："+esc(lab.label);
+    document.getElementById("chartMeta").textContent="生年月日 "+Y+"年"+M+"月"+D+"日 ／ 名前「"+chartName.value.trim()+"」総画数 "+lab.total+"画（名札計算機と同じ計算）";
+    var sp=document.getElementById("chartSpecial");
+    sp.innerHTML=specialHTML(lab);
+    sp.classList.toggle("show", !!sp.innerHTML);
+    resBox.classList.add("show");
+  } else {
+    curHasMinus=false; curHasA=false;
+    var spEl=document.getElementById("chartSpecial");
+    spEl.innerHTML=""; spEl.classList.remove("show");
+    resBox.classList.remove("show");
+  }
+  /* feed the combination ranking (design proposal below) */
+  rankCtx.lab=(lab && !lab.error)? lab : null;
+  rankCtx.birthMod=((Y+M+D)%4+4)%4;
+  renderRanking();
+  /* past timeline: birth year .. this year */
+  var pastHtml="", y;
+  for(y=Y;y<=nowY;y++){ pastHtml+=yearRowHTML(y, Y, false); }
+  document.getElementById("chartPastList").innerHTML=pastHtml;
+  /* future timeline: next year .. +12 years (one full current cycle) */
+  var futHtml="";
+  for(y=nowY+1;y<=nowY+12;y++){ futHtml+=yearRowHTML(y, Y, true); }
+  document.getElementById("chartFutureList").innerHTML=futHtml;
+  /* restore memos for this birthdate */
+  var memos=loadMemos();
+  var mine=memos[currentBirthKey]||{};
+  var inputs=document.querySelectorAll("#chartPastList input[data-memo-year]");
+  for(var i=0;i<inputs.length;i++){
+    var yy=inputs[i].getAttribute("data-memo-year");
+    if(mine[yy]) inputs[i].value=mine[yy];
+  }
+}
+/* ===== combination ranking: inner (sea state) x outer (current), all 144 =====
+   DESIGN PROPOSAL score model (shown on the page, not a decided spec):
+   - sea-state base points (peak 順風=10, trough 嵐=1):
+     朝凪5 さざ波6 満ち潮7 追い風9 順風10 波立つ6 うねり4 嵐1 嵐の目3 雨上がり6 引き潮4 夕凪5
+   - compatibility points: warm seasons (春・夏) score +2 with 暖流 / -2 with 寒流;
+     cold seasons (秋・冬) score +2 with 寒流 / -2 with 暖流.
+   - total = base + compatibility decides the rank.
+   - "-" holders: the compatibility sign flips (fewer favourable currents).
+   - "A" holders: the deviation from the 144-combination mean is widened x1.5
+     (vortex amplification); combinations whose sea state contains 嵐 get a
+     "渦が強まる" mark.
+   Season / hasMinus / hasA come from computeChartLabel (same decided rules). */
+var STAGE_PTS=[5,6,7,9,10,6,4,1,3,6,4,5]; /* index matches H_INNER order */
+var rankCtx={lab:null, birthMod:0};
+var rankView="heat", rankProf="std";
+function fmtScore(v){ var s=(Math.round(v*10)/10).toString(); return s.replace(/\.0$/,""); }
+function fmtSigned(v){ return (v>0?"+":"")+fmtScore(v); }
+function combosFor(mod, minus, hasA){
+  var warmSeason=(mod===1||mod===2);
+  var arr=[], i, j, k;
+  for(i=0;i<12;i++){ for(j=0;j<12;j++){
+    var warmCur=(H_OUTER[j].type==="暖流");
+    var good=warmSeason? warmCur : !warmCur;
+    var comp=good?2:-2;
+    if(minus) comp=-comp;
+    arr.push({si:i, ci:j, stage:STAGE_PTS[i], comp:comp, total:STAGE_PTS[i]+comp, score:STAGE_PTS[i]+comp, rank:0, pos:0});
+  }}
+  var mean=null;
+  if(hasA){
+    var sum=0; for(k=0;k<arr.length;k++) sum+=arr[k].total;
+    mean=sum/arr.length;
+    for(k=0;k<arr.length;k++) arr[k].score=mean+(arr[k].total-mean)*1.5;
+  }
+  var sorted=arr.slice().sort(function(a,b){
+    if(b.score!==a.score) return b.score-a.score;
+    if(b.stage!==a.stage) return b.stage-a.stage;
+    if(a.si!==b.si) return a.si-b.si;
+    return a.ci-b.ci;
+  });
+  for(k=0;k<sorted.length;k++){
+    sorted[k].pos=k;
+    sorted[k].rank=(k>0 && sorted[k].score===sorted[k-1].score)? sorted[k-1].rank : k+1;
+  }
+  var byKey={};
+  for(k=0;k<arr.length;k++) byKey[arr[k].si*12+arr[k].ci]=arr[k];
+  return {list:sorted, byKey:byKey, mean:mean};
+}
+/* heat colour scale: dark red / dark navy (bad) -> teal -> green -> bright gold (good) */
+var HEAT_STOPS=[[0,[91,35,51]],[0.35,[39,75,99]],[0.55,[31,122,109]],[0.78,[63,191,114]],[1,[242,201,121]]];
+function heatColor(t){
+  var a=HEAT_STOPS[0], b=HEAT_STOPS[HEAT_STOPS.length-1], i;
+  for(i=0;i<HEAT_STOPS.length-1;i++){
+    if(t>=HEAT_STOPS[i][0] && t<=HEAT_STOPS[i+1][0]){ a=HEAT_STOPS[i]; b=HEAT_STOPS[i+1]; break; }
+  }
+  var span=(b[0]-a[0])||1, f=(t-a[0])/span;
+  var r=Math.round(a[1][0]+(b[1][0]-a[1][0])*f), g=Math.round(a[1][1]+(b[1][1]-a[1][1])*f), bl=Math.round(a[1][2]+(b[1][2]-a[1][2])*f);
+  var lum=(0.299*r+0.587*g+0.114*bl)/255;
+  return {bg:"rgb("+r+","+g+","+bl+")", fg:(lum>0.62? "#071426":"#ffffff")};
+}
+function currentRankData(){
+  var lab=rankCtx.lab;
+  var mod=lab? lab.mod : rankCtx.birthMod;
+  var std=combosFor(mod,false,false);
+  var mine=lab? combosFor(lab.mod, lab.hasMinus, lab.hasA) : null;
+  var useMine=(rankProf==="mine" && !!lab);
+  return {lab:lab, mod:mod, std:std, mine:mine, useMine:useMine, data:(useMine? mine:std)};
+}
+function isStormStage(si){ return H_INNER[si].name.indexOf("嵐")>=0; }
+function renderRanking(){
+  var rd=currentRankData();
+  document.getElementById("rankViewHeat").classList.toggle("active", rankView==="heat");
+  document.getElementById("rankViewList").classList.toggle("active", rankView==="list");
+  document.getElementById("rankProfStd").classList.toggle("active", !rd.useMine);
+  document.getElementById("rankProfMine").classList.toggle("active", rd.useMine);
+  var guide=document.getElementById("rankGuide");
+  if(!rd.lab){
+    guide.style.display="block";
+    guide.textContent="生年月日と名前を入れると、あなたの順位に変わります。今は標準の順位を表示しています（名前が未入力・未確定のため、−・Aの補正は反映されていません）。";
+  } else { guide.style.display="none"; }
+  var warmSeason=(rd.mod===1||rd.mod===2);
+  var seasonDesc=H_SEASON_NAME[rd.mod]+"（"+(warmSeason?"暖かい季節":"冷たい季節")+"）";
+  var line;
+  if(rd.useMine){
+    line="表示中：あなたの順位 ― 名札「"+rd.lab.label+"」／季節は"+seasonDesc+"／−："+(rd.lab.hasMinus?"あり（相性点の符号が反転）":"なし")+"／A："+(rd.lab.hasA?"あり（渦の増幅）":"なし")+"。順位の横の矢印は標準の順位からの変動です。";
+    if(!rd.lab.hasMinus && !rd.lab.hasA) line+="−もAも付いていないため、標準と同じ順位になります。";
+  } else {
+    line="表示中：標準の順位 ― 季節は"+seasonDesc+"で、−・Aの補正がない基準の順位です。";
+  }
+  document.getElementById("rankProfileLine").textContent=line;
+  renderHeat(rd);
+  renderRankList(rd);
+  document.getElementById("rankHeatWrap").style.display=(rankView==="heat")? "":"none";
+  document.getElementById("rankListWrap").style.display=(rankView==="list")? "":"none";
+}
+function renderHeat(rd){
+  var data=rd.data, min=Infinity, max=-Infinity, k, i, j;
+  for(k=0;k<data.list.length;k++){ if(data.list[k].score<min)min=data.list[k].score; if(data.list[k].score>max)max=data.list[k].score; }
+  var showVortex=rd.useMine && rd.lab && rd.lab.hasA;
+  var html='<div class="rh-corner">内＼外</div>';
+  for(j=0;j<12;j++){ html+='<div class="rh-col">'+H_OUTER[j].name.replace("の海流","")+'<span class="'+(H_OUTER[j].type==="暖流"?"rh-warm":"rh-cold")+'">'+H_OUTER[j].type+'</span></div>'; }
+  for(i=0;i<12;i++){
+    html+='<div class="rh-row">'+H_INNER[i].name+'</div>';
+    for(j=0;j<12;j++){
+      var c=data.byKey[i*12+j];
+      var t=(max>min)? (c.score-min)/(max-min) : 0.5;
+      var col=heatColor(t);
+      html+='<button type="button" class="rh-cell" data-combo="'+(i*12+j)+'" aria-label="'+H_INNER[i].name+'と'+H_OUTER[j].name+'の組み合わせ" style="background:'+col.bg+';color:'+col.fg+'">'+fmtScore(c.score)+((showVortex&&isStormStage(i))?'<span class="rh-vortex">渦</span>':"")+'</button>';
+    }
+  }
+  document.getElementById("rankHeat").innerHTML=html;
+}
+function renderRankList(rd){
+  var data=rd.data, html="", k;
+  var showVortex=rd.useMine && rd.lab && rd.lab.hasA;
+  for(k=0;k<data.list.length;k++){
+    var c=data.list[k];
+    var cls="rank-row"+(k<10?" top":(k>=data.list.length-10?" bottom":""));
+    var delta="";
+    if(rd.useMine){
+      var d=rd.std.byKey[c.si*12+c.ci].rank-c.rank;
+      if(d>0) delta='<span class="delta delta-up">↑'+d+'</span>';
+      else if(d<0) delta='<span class="delta delta-down">↓'+(-d)+'</span>';
+      else delta='<span class="delta delta-same">→0</span>';
+    }
+    var brk="海況 "+c.stage+"点 ／ 相性 "+fmtSigned(c.comp)+"点";
+    if(showVortex) brk+=" ／ 合計 "+fmtScore(c.total)+"点 → 渦の増幅で "+fmtScore(c.score)+"点";
+    html+='<button type="button" class="'+cls+'" data-combo="'+(c.si*12+c.ci)+'">'
+      +'<span class="rk-no">'+c.rank+'位</span>'
+      +'<span class="rk-name">'+H_INNER[c.si].name+' × '+H_OUTER[c.ci].name+((showVortex&&isStormStage(c.si))?' <span class="cm-vortex">渦が強まる</span>':"")+'<span class="rk-break">'+brk+'</span></span>'
+      +'<span class="rk-score">'+fmtScore(c.score)+'点'+delta+'</span>'
+      +'</button>';
+  }
+  document.getElementById("rankList").innerHTML=html;
+}
+function showComboDetail(key){
+  var rd=currentRankData();
+  var c=rd.data.byKey[key]; if(!c) return;
+  var si=c.si, ci=c.ci;
+  var warmSeason=(rd.mod===1||rd.mod===2);
+  var warmCur=(H_OUTER[ci].type==="暖流");
+  var fit=(warmSeason===warmCur)? "合う組み合わせ" : "合わない組み合わせ";
+  var html='<div class="rd-title">'+H_INNER[si].name+' × '+H_OUTER[ci].name+'<span class="rk-badge">'+c.rank+'位 ／ 144通り中</span></div><div class="rd-lines">';
+  html+='海況点：'+c.stage+'点（'+H_INNER[si].name+'）<br>';
+  html+='相性点：'+fmtSigned(c.comp)+'点（'+H_SEASON_NAME[rd.mod]+'は'+(warmSeason?"暖かい季節":"冷たい季節")+' ／ '+H_OUTER[ci].name+'は'+H_OUTER[ci].type+' ― '+fit+'）';
+  if(rd.useMine && rd.lab && rd.lab.hasMinus){
+    html+='<br>−補正：相性点の符号を反転しています（標準では '+fmtSigned(-c.comp)+'点）。';
+  }
+  if(rd.useMine && rd.lab && rd.lab.hasA){
+    html+='<br>A補正（渦の増幅）：合計 '+fmtScore(c.total)+'点 → 144通りの平均 '+fmtScore(rd.data.mean)+'点からの差を1.5倍に広げて <b style="color:#fff">'+fmtScore(c.score)+'点</b>';
+    if(isStormStage(si)) html+='<br><span class="cm-vortex">渦が強まる</span> 海況に「嵐」を含む組み合わせです。巻き込む力も、飲み込まれる危険も強まります。';
+  } else {
+    html+='<br>合計：<b style="color:#fff">'+fmtScore(c.score)+'点</b>';
+  }
+  if(rd.useMine){
+    var s=rd.std.byKey[key], d=s.rank-c.rank;
+    html+='<br>標準の順位は '+s.rank+'位 → あなたの順位は '+c.rank+'位（'+(d>0?'<span class="delta-up">↑'+d+' 上がりました</span>':(d<0?'<span class="delta-down">↓'+(-d)+' 下がりました</span>':"変動なし"))+'）';
+  }
+  html+='</div>';
+  document.getElementById("rankDetail").innerHTML=html;
+  var cells=document.querySelectorAll("#screen-chart [data-combo]");
+  for(var i=0;i<cells.length;i++){ cells[i].classList.toggle("sel", parseInt(cells[i].getAttribute("data-combo"),10)===key); }
+}
+document.getElementById("rankViewHeat").addEventListener("click", function(){ rankView="heat"; renderRanking(); });
+document.getElementById("rankViewList").addEventListener("click", function(){ rankView="list"; renderRanking(); });
+document.getElementById("rankProfStd").addEventListener("click", function(){ rankProf="std"; renderRanking(); });
+document.getElementById("rankProfMine").addEventListener("click", function(){ rankProf="mine"; renderRanking(); });
+document.getElementById("screen-chart").addEventListener("click", function(e){
+  var cell=e.target.closest ? e.target.closest("[data-combo]") : null;
+  if(cell) showComboDetail(parseInt(cell.getAttribute("data-combo"),10));
+});
+
+document.getElementById("chartBtn").addEventListener("click", renderChart);
+
+/* expand / collapse monthly sea states (built lazily on first open) */
+document.getElementById("screen-chart").addEventListener("click", function(e){
+  var btn=e.target.closest ? e.target.closest("[data-toggle]") : null;
+  if(!btn) return;
+  var row=btn.closest(".chart-row");
+  var panel=row.querySelector(".chart-months");
+  var y=parseInt(btn.getAttribute("data-toggle"),10);
+  var isFuture=row.classList.contains("is-future");
+  if(!panel.getAttribute("data-built")){
+    panel.innerHTML='<p class="note" style="margin:0 0 8px">'+y+'年の月別海況 ― 4ヶ月ごとにステージが進みます（既存の海況計算そのまま）<span class="badge-paid">有料候補</span></p>'+monthsHTML(y);
+    panel.setAttribute("data-built","1");
+  }
+  var open=panel.classList.toggle("open");
+  btn.firstChild.textContent=open?"月別を閉じる":"月別を見る";
+});
+
+/* memo saving (delegated; key is separate from the journal) */
+document.getElementById("chartPastList").addEventListener("change", function(e){
+  var inp=e.target.closest ? e.target.closest("input[data-memo-year]") : null;
+  if(!inp||!currentBirthKey) return;
+  var memos=loadMemos();
+  if(!memos[currentBirthKey]) memos[currentBirthKey]={};
+  var yy=inp.getAttribute("data-memo-year");
+  var val=inp.value.trim();
+  if(val) memos[currentBirthKey][yy]=val; else delete memos[currentBirthKey][yy];
+  var savedEl=document.querySelector('[data-saved-for="'+yy+'"]');
+  if(saveMemos(memos)){
+    if(savedEl) savedEl.textContent="保存しました（この端末のみ）";
+  }else{
+    if(savedEl) savedEl.textContent="この環境では保存できませんでした";
+  }
+});
+
+document.getElementById("chartJumpBtn").addEventListener("click", function(){
+  var row=document.querySelector('#chartPastList .chart-row.is-now');
+  if(row){ row.scrollIntoView({behavior:"smooth", block:"center"}); }
+});
+chartBirth.addEventListener("change", renderChart);
+renderChart();
+})();
+</script>
+<script>
+(function(){
+"use strict";
+var btns=document.querySelectorAll(".tabbtn");
+function show(name){
+  var screens=document.querySelectorAll(".screen");
+  for(var i=0;i<screens.length;i++){ screens[i].classList.toggle("active", screens[i].id==="screen-"+name); }
+  for(var j=0;j<btns.length;j++){ btns[j].classList.toggle("active", btns[j].getAttribute("data-screen")===name); }
+  window.scrollTo({top:0, behavior:"instant" in window ? "instant" : "auto"});
+}
+for(var k=0;k<btns.length;k++){
+  btns[k].addEventListener("click", function(){ show(this.getAttribute("data-screen")); });
+}
+/* in-page anchors that point at a section living in another screen switch first */
+document.addEventListener("click", function(e){
+  var a=e.target.closest ? e.target.closest('a[href^="#"]') : null;
+  if(!a) return;
+  var target=document.querySelector(a.getAttribute("href"));
+  if(!target) return;
+  var scr=target.closest(".screen");
+  if(scr && !scr.classList.contains("active")){ show(scr.id.replace("screen-","")); }
+});
+})();
+</script>
+<script>
+(function(){
+"use strict";
+/* guide buttons: jump to another screen via the tab nav */
+document.addEventListener("click", function(e){
+  var b=e.target.closest ? e.target.closest("[data-goto]") : null;
+  if(!b) return;
+  var tab=document.querySelector('.tabbtn[data-screen="'+b.getAttribute("data-goto")+'"]');
+  if(tab) tab.click();
+});
+})();
+</script>
+</body>
+</html>
