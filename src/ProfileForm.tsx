@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Image } from 'expo-image';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
-import { gods, harbor } from './art';
+import { harbor } from './art';
+import { GodAnimation } from './GodAnimation';
 import { type Inputs, unknownChars, validate } from './domain';
 import { Button, C, Card, Chip, Heading, S } from './ui';
 
@@ -37,9 +38,9 @@ export function ProfileForm({ initial, persist, onSubmit, title, submitLabel }: 
       <View style={[StyleSheet.absoluteFill, styles.shade]} />
       <View style={styles.intro}>
         <Heading tag="YOUR TIDE CARD" title={title ?? '潮札をつくる'} />
-        <Text style={[S.body, styles.introText]}>生年月日と下の名前から、変わらない名札と今の海を重ねます。</Text>
+        <Text style={[S.body, styles.introText]}>生年月日と下の名前から、あなたの占いタイプと今日の運勢を読みます。</Text>
       </View>
-      <Image source={gods[4]} style={styles.guide} contentFit="contain" accessible={false} />
+      <GodAnimation index={4} style={styles.guide} />
     </View>
     <Card>
       <Text style={S.h3}>生年月日</Text>
@@ -88,7 +89,7 @@ const styles = StyleSheet.create({
   shade: { backgroundColor: '#071c28bf' },
   intro: { flex: 1, minWidth: 0, gap: 5 },
   introText: { color: C.ink },
-  guide: { width: '29%', maxWidth: 108, aspectRatio: 1 },
+  guide: { width: '29%', maxWidth: 108 },
   dateRow: { flexDirection: 'row', gap: 8 },
   datePart: { flex: 1, minWidth: 0, gap: 3 },
   year: { flex: 1.5 },

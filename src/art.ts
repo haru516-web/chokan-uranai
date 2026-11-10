@@ -1,9 +1,27 @@
 export const harbor: number = require('../assets/art/harbor.webp');
 export const seal: number = require('../assets/art/app-icon.png');
-export const gods: number[] = [
-  require('../assets/art/god-winter.webp'), require('../assets/art/god-spring.webp'),
-  require('../assets/art/god-summer.webp'), require('../assets/art/god-autumn.webp'),
-  require('../assets/art/god-origin.webp'),
+export const godSheets: number[] = [
+  require('../img/sheet-winter.webp'), require('../img/sheet-spring.webp'),
+  require('../img/sheet-summer.webp'), require('../img/sheet-autumn.webp'),
+  require('../img/sheet-origin.webp'),
+];
+export const residentArt: number[] = [
+  require('../assets/art/resident-01.webp'),
+  require('../assets/art/resident-02.webp'),
+  require('../assets/art/resident-03.webp'),
+  require('../assets/art/resident-04.webp'),
+  require('../assets/art/resident-05.webp'),
+  require('../assets/art/resident-06.webp'),
+  require('../assets/art/resident-07.webp'),
+  require('../assets/art/resident-08.webp'),
+  require('../assets/art/resident-09.webp'),
+  require('../assets/art/resident-10.webp'),
+  require('../assets/art/resident-11.webp'),
+  require('../assets/art/resident-12.webp'),
+  require('../assets/art/resident-13.webp'),
+  require('../assets/art/resident-14.webp'),
+  require('../assets/art/resident-15.webp'),
+  require('../assets/art/resident-16.webp'),
 ];
 export const currents: number[] = [
   require('../assets/art/current-01.webp'),

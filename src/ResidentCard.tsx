@@ -1,13 +1,12 @@
-import { useRef, useState } from 'react';
-import { Image } from 'expo-image';
+import { useRef, useState, type ReactNode } from 'react';
 import { Platform, Share, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Svg, { Circle, G, Path, Rect, Text as SvgText } from 'react-native-svg';
-import { gods } from './art';
-import { readDay, type Profile } from './domain';
+import { dateLabel, type readDay, type Profile } from './domain';
 import { DailyRank } from './DailyRank';
-import { labelOf, SEASON } from './scoring';
+import { GodAnimation } from './GodAnimation';
+import { OUTER, SEASON, STAGES } from './scoring';
 import { TideWheel } from './TideCharts';
-import { Button, C, Card, Chip, Chips, S } from './ui';
+import { Button, C, Card, S } from './ui';
 import { headwind, ownResident, residents, vortex } from './voyage';
 
 type Entry = typeof residents[number];
@@ -37,37 +36,40 @@ export function TideMarks({ profile }: { profile: Profile }) {
     {profile.t.A && <><Text style={S.h3}>A　渦の印</Text><Text style={S.body}>{vortex}</Text></>}</>;
 }
 
-export function TideCard({ profile, today, showRanks, showCalendar }: {
-  profile: Profile; today: Date; showRanks: () => void;
-  showCalendar: (date: Date, mode: 'current' | 'stage') => void;
+export function TideSummary({ profile, reading, isToday = true, children }: {
+  profile: Profile; reading: ReturnType<typeof readDay>;
+  isToday?: boolean; children?: ReactNode;
 }) {
   const entry = ownResident(profile);
   const season = profile.t.mod;
-  const reading = readDay(today, profile);
   const { context } = reading;
   return <View style={[S.card, S.pad, styles.crest]}>
-    <Text style={S.kicker}>MY TIDE CARD</Text>
+    <Text style={S.kicker}>あなたの占いタイプ</Text>
     <Text style={[S.title, styles.center]} accessibilityRole="header">{entry.band}</Text>
     <Text style={[S.body, styles.center]}>{entry.subtitle}</Text>
+    <Text style={[S.tiny, styles.center]}>{dateLabel(context)}</Text>
     <View style={styles.resultRow}>
-      <Image source={gods[season]} style={styles.god} contentFit="contain" accessibilityLabel={SEASON[season].n + 'の神'} accessible />
-      <View style={styles.rank}><DailyRank reading={reading} onPress={showRanks} /></View>
+      <GodAnimation index={season} style={styles.god} label={SEASON[season].n + 'の神'} />
+      <View style={styles.rank}><DailyRank reading={reading} isToday={isToday} /></View>
     </View>
+    <Text style={[S.tiny, styles.center]}>{OUTER[context.outer].n}　／　{STAGES[context.stage].n}　／　{context.moon}</Text>
+    {children}
+  </View>;
+}
+
+export function TideFlow({ profile, context, showCalendar }: {
+  profile: Profile; context: ReturnType<typeof readDay>['context'];
+  showCalendar: (date: Date, mode: 'current' | 'stage') => void;
+}) {
+  return <Card>
     <View style={styles.flow}>
       <Text style={[S.h2, styles.center]} accessibilityRole="header">運勢の流れ</Text>
       <Text style={[S.tiny, styles.center]}>外側は12年の海流、内側は月と4か月ごとの海況です。</Text>
       <TideWheel context={context} profile={profile}
         onYear={year => showCalendar(new Date(Date.UTC(year, context.MO - 1, 1)), 'current')}
         onMonth={month => showCalendar(new Date(Date.UTC(context.Y, month - 1, 1)), 'stage')} />
-      <Button quiet onPress={() => showCalendar(today, 'current')}>運勢の流れを詳しく見る</Button>
     </View>
-    <Text style={[S.h3, styles.center]}>{entry.hook}</Text>
-    <Text style={[S.tiny, styles.center]}>正確な名札　{labelOf(profile.t)}</Text>
-    {(profile.t.minus || profile.t.A) && <Chips>
-      {profile.t.minus && <Chip>− 向かい風</Chip>}
-      {profile.t.A && <Chip>A 渦</Chip>}
-    </Chips>}
-  </View>;
+  </Card>;
 }
 
 export function ShareTideCard({ profile }: { profile: Profile }) {
@@ -135,7 +137,7 @@ const styles = StyleSheet.create({
   crest: { alignItems: 'center', paddingVertical: 25, borderColor: '#746344', backgroundColor: '#18243b' },
   center: { textAlign: 'center' },
   resultRow: { ...S.row, width: '100%', maxWidth: 355, marginVertical: 6 },
-  god: { width: '43%', maxWidth: 150, aspectRatio: 1 },
+  god: { width: '43%', maxWidth: 150 },
   rank: { flex: 1, minWidth: 0 },
-  flow: { width: '100%', maxWidth: 420, gap: 8, marginTop: 6, marginBottom: 12 },
+  flow: { width: '100%', maxWidth: 420, alignSelf: 'center', gap: 8 },
 });

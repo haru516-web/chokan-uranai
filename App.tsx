@@ -6,11 +6,10 @@ import { StatusBar } from 'expo-status-bar';
 import { AppState, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { harbor, seal } from './src/art';
-import { blankInputs, dateKey, jstToday, makeProfile, residentIndex, validate, type Inputs } from './src/domain';
+import { blankInputs, dateKey, jstToday, makeProfile, validate, type Inputs } from './src/domain';
 import { LifeChart, QuestionTrail, ReflectionEditor } from './src/LifeChart';
 import { ProfileForm } from './src/ProfileForm';
 import { PairReading } from './src/PairReading';
-import { NameReading } from './src/NameReading';
 import { QuestionAnswer, QuestionSea } from './src/Questions';
 import { ShareTideCard } from './src/ResidentCard';
 import { Today } from './src/Today';
@@ -28,7 +27,6 @@ const tabs = [
 type Tab = typeof tabs[number]['id'];
 type Detail =
   | { kind: 'profile'; questionId?: string }
-  | { kind: 'name'; questionId?: string }
   | { kind: 'question'; id: string; personal?: boolean }
   | { kind: 'compare'; id: string }
   | { kind: 'homecoming'; year: number }
@@ -60,8 +58,11 @@ function Voyage() {
   const [today, setToday] = useState(jstToday);
   const [tab, setTab] = useState<Tab>('questions');
   const [path, setPath] = useState<Detail[]>([]);
+  const [todayVisit, setTodayVisit] = useState(0);
+  const [selectedQuestionId, setSelectedQuestionId] = useState<string>();
   const detail = path[path.length - 1];
   const profile = inputs ? makeProfile(inputs) : null;
+  const selectedQuestion = findQuestion(selectedQuestionId);
   const day = dateKey(today);
 
   useEffect(() => {
@@ -105,7 +106,6 @@ function Voyage() {
   const openChapter = (index: number) => open({ kind: 'chapter', index });
   const openNote = (day: string) => open({ kind: 'note', day });
   const editProfile = () => open({ kind: 'profile' });
-  const openName = () => open({ kind: 'name' });
   const openRanking = (date: Date) => open({ kind: 'rank', date });
   const openQuestion = (id: string, personal = false) => open({ kind: 'question', id, personal });
   const openCalendar = (date?: Date, mode?: 'current' | 'stage') => open({ kind: 'calendar', date, mode });
@@ -131,23 +131,33 @@ function Voyage() {
   function saveProfile(next: Inputs, remember: boolean, questionId?: string) {
     setInputs(next);
     setStored(previous => ({ ...previous, inputs: remember ? next : null }));
-    setPath(previous => [...previous.slice(0, -1), { kind: 'name', questionId }]);
+    setSelectedQuestionId(questionId);
+    setTodayVisit(previous => previous + 1);
+    setPath([]);
+    setTab('today');
     if (Platform.OS === 'ios') void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
   }
 
   const body = {
-    today: <Today today={today} profile={profile} goMyth={openMyth} openCalendar={openCalendar} create={editProfile} openName={openName}
+    today: <Today today={today} profile={profile} goMyth={openMyth} openCalendar={openCalendar} create={editProfile}
       ranks={openRanking} onSave={openNote} questions={stored.questions} reflections={stored.reflections}
-      openQuestion={id => openQuestion(id, true)} openChart={() => go('chart')} openQuestions={() => go('questions')}
+      openQuestion={id => openQuestion(id, true)} openQuestions={() => go('questions')}
+      shareTideCard={() => open({ kind: 'share' })}
+      selectedQuestion={selectedQuestion ? {
+        question: selectedQuestion,
+        saved: stored.questions.some(entry => entry.id === selectedQuestion.id && entry.day === day),
+        toggle: () => toggleQuestion(selectedQuestion.id),
+        compare: () => compare(selectedQuestion.id),
+      } : undefined}
       openHomecoming={() => open({ kind: 'homecoming', year: today.getUTCFullYear() - 12 })} />,
     questions: <QuestionSea open={openQuestion} create={profile ? undefined : editProfile} />,
     chart: <LifeChart today={today} profile={profile} create={editProfile} calendar={() => openCalendar()}
       write={writeReflection} showToday={() => go('today')} records={stored.reflections} edit={editReflection} />,
     atlas: <Atlas profile={profile} favorites={stored.favorites} open={openResident} myth={openMyth} pair={() => open({ kind: 'pair' })} />,
-    journal: <Journal profile={profile} notes={stored.notes} edit={editProfile} pair={() => open({ kind: 'pair' })} openName={openName}
+    journal: <Journal profile={profile} notes={stored.notes} edit={editProfile} pair={() => open({ kind: 'pair' })} showToday={() => go('today')}
       questions={stored.questions} reflections={stored.reflections} openTrail={openTrail} editReflection={editReflection} openChart={() => go('chart')}
       create={() => openNote(dateKey(today))} openNote={openNote}
-      onForget={() => { setInputs(null); setStored(previous => ({ ...previous, inputs: null })); }} />,
+      onForget={() => { setInputs(null); setSelectedQuestionId(undefined); setStored(previous => ({ ...previous, inputs: null })); }} />,
   }[tab];
 
   function detailBody(detail: Detail) {
@@ -155,11 +165,6 @@ function Voyage() {
       case 'profile':
         return <ProfileForm title="あなたの海を、ひらきます。" initial={inputs ?? blankInputs} persist={!!stored.inputs}
           onSubmit={(next, remember) => saveProfile(next, remember, detail.questionId)} />;
-      case 'name':
-        return profile && <NameReading profile={profile} today={today} showRanks={() => openRanking(today)} showCalendar={openCalendar}
-          showToday={() => go('today')} showResident={() => openResident(residentIndex(profile.t))}
-          showAtlas={() => go('atlas')} share={() => open({ kind: 'share' })}
-          questionId={detail.questionId} readQuestion={id => openQuestion(id, true)} />;
       case 'question': {
         const question = findQuestion(detail.id);
         return question && <QuestionAnswer question={question} profile={profile} today={today} personal={!!detail.personal && !!profile}
@@ -245,7 +250,7 @@ function Voyage() {
       </View>
       {storageError && <Text accessibilityRole="alert" style={[S.tiny, layout.error]}>端末の保存領域にアクセスできませんでした。この画面で続けられます。</Text>}
       {ready ? <>
-        <ScrollView key={tab} style={[layout.scroll, detail && layout.hidden]} contentContainerStyle={layout.content}
+        <ScrollView key={tab === 'today' ? `today-${todayVisit}` : tab} style={[layout.scroll, detail && layout.hidden]} contentContainerStyle={layout.content}
           keyboardShouldPersistTaps="handled">
           {body}
         </ScrollView>
@@ -258,7 +263,7 @@ function Voyage() {
       <View accessibilityRole="tablist" style={layout.nav}>
         {tabs.map(item => {
           const active = tab === item.id;
-          return <Pressable key={item.id} accessibilityRole="tab" accessibilityState={{ selected: active }} onPress={() => go(item.id)}
+          return <Pressable key={item.id} accessibilityRole="tab" aria-selected={active} onPress={() => go(item.id)}
             style={({ pressed }) => [layout.navItem, active && layout.navActive, pressed && { opacity: 0.65 }]}>
             <Text aria-hidden style={[layout.mark, active && { color: C.gold }]}>{item.mark}</Text>
             <Text style={[layout.navLabel, active && { color: C.gold }]}>{item.label}</Text>

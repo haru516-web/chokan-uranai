@@ -38,13 +38,44 @@ export function QuestionSea({ open, create }: { open: (id: string) => void; crea
   </View>;
 }
 
+export function PersonalQuestionReading({ question, profile }: { question: Question; profile: Profile }) {
+  const entry = ownResident(profile);
+  return <Card>
+    <Text style={S.kicker}>あなたの海から、もう一つ</Text>
+    <View style={S.row}>
+      <ResidentSymbol entry={entry} profile={profile} size={57} />
+      <View style={{ flex: 1 }}>
+        <Text style={S.h2}>{entry.band}</Text>
+        <Text style={S.body}>{entry.subtitle}</Text>
+      </View>
+    </View>
+    <Text style={S.h3}>{entry.summary}</Text>
+    <Text style={styles.prose}>{residentLens(profile, question)}</Text>
+    <TideMarks profile={profile} />
+    <Text style={S.tiny}>あなたの占いタイプから、この問いを別の角度で考えるヒントです。</Text>
+  </Card>;
+}
+
+export function SelectedQuestionReading({ question, profile }: {
+  question: Question; profile: Profile;
+}) {
+  return <>
+    <Section title="選んだ問いを、私の海で読む" />
+    <Card>
+      <Text style={S.h3}>{question.question}</Text>
+      <Text style={S.tiny}>みんなに共通する読み</Text>
+      <Text style={S.body}>{question.title}</Text>
+    </Card>
+    <PersonalQuestionReading question={question} profile={profile} />
+  </>;
+}
+
 export function QuestionAnswer({ question, profile, today, personal, saved, toggle, readOwn, browse, history, showToday }: {
   question: Question; profile: Profile | null; today: Date; personal: boolean; saved: boolean; toggle: () => void;
   readOwn: () => void; browse: () => void; history: () => void; showToday: () => void;
 }) {
   const [reaction, setReaction] = useState<'near' | 'different' | null>(null);
   const reading = personal && profile ? readDay(today, profile) : null;
-  const entry = profile && ownResident(profile);
 
   return <View style={S.stack}>
     <Heading tag={personal ? '同じ問い、違う海' : '問いの海　' + question.id} title={question.question}
@@ -54,21 +85,8 @@ export function QuestionAnswer({ question, profile, today, personal, saved, togg
       <Text style={S.h2}>{question.title}</Text>
       {!personal && <Text style={styles.prose} selectable>{question.answer}</Text>}
     </Card>
-    {personal && reading && entry && profile ? <>
-      <Card>
-        <Text style={S.kicker}>あなたの海から、もう一つ</Text>
-        <View style={S.row}>
-          <ResidentSymbol entry={entry} profile={profile} size={57} />
-          <View style={{ flex: 1 }}>
-            <Text style={S.h2}>{entry.band}</Text>
-            <Text style={S.body}>{entry.subtitle}</Text>
-          </View>
-        </View>
-        <Text style={S.h3}>{entry.summary}</Text>
-        <Text style={styles.prose}>{residentLens(profile, question)}</Text>
-        <TideMarks profile={profile} />
-        <Text style={S.tiny}>住人を象徴にした、問いを読み直すための視点です。</Text>
-      </Card>
+    {personal && reading && profile ? <>
+      <PersonalQuestionReading question={question} profile={profile} />
       <Card>
         <Text style={S.h2}>いまの海を重ねる</Text>
         <Text style={[S.body, { color: tierColors[reading.layers.year] }]}>{reading.context.Y}年の海流　{OUTER[reading.context.outer].n} ／ {tiers[reading.layers.year]}</Text>

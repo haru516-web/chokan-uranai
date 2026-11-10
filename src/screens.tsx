@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Image } from 'expo-image';
 import { Pressable, Text, TextInput, View } from 'react-native';
-import { currents, gods, scenes, stages } from './art';
+import { currents, residentArt, scenes, stages } from './art';
 import { addDays, calendarEvents, content, cycleFor, cycleTier, dateLabel, lifeFields, residentIndex, shortDate, tierColors, tiers, type Profile } from './domain';
 import { ReflectionCards } from './LifeChart';
-import { ResidentSymbol, TideMarks } from './ResidentCard';
+import { GodAnimation } from './GodAnimation';
+import { TypeTraits } from './NameReading';
+import { TideMarks } from './ResidentCard';
 import { ctxFor, dayTable, labelOf, OUTER, SEASON, STAGES, yearScoreOf, blockScoreOf } from './scoring';
 import { TideWheel } from './TideCharts';
 import { Art, Button, C, Card, Chip, Chips, Heading, S, Section, Tile } from './ui';
@@ -142,9 +144,9 @@ export function Atlas({ profile, favorites, open, myth, pair }: {
       [resident.band, resident.subtitle].some(text => text.includes(query.trim()));
   });
   return <View style={S.stack}>
-    <Heading tag="THE RESIDENT ATLAS" title="海の住人図鑑" body="四季と四つの深さから生まれる、16の海の住人。" />
-    <TextInput accessibilityLabel="住人を検索" value={query} onChangeText={setQuery}
-      style={S.field} placeholder="住人名・役柄で検索" placeholderTextColor={C.muted} />
+    <Heading tag="図鑑" title="潮環占いの16タイプ" body="生年月日で決まる季節と、名前の画数で決まる深さを組み合わせた占いタイプです。気になるタイプを選ぶと、考え方や人との関わり方を読めます。" />
+    <TextInput accessibilityLabel="占いタイプを検索" value={query} onChangeText={setQuery}
+      style={S.field} placeholder="例：冬の深海、番人" placeholderTextColor={C.muted} />
     <Chips>
       <Chip active={season === null} onPress={() => setSeason(null)}>すべての季節</Chip>
       {['春', '夏', '秋', '冬'].map((name, i) => <Chip key={name} active={season === i} onPress={() => setSeason(season === i ? null : i)}>{name}</Chip>)}
@@ -153,23 +155,21 @@ export function Atlas({ profile, favorites, open, myth, pair }: {
       {['浅瀬', '沿岸', '沖合', '深海'].map((name, i) => <Chip key={name} active={depth === i} onPress={() => setDepth(depth === i ? null : i)}>{name}</Chip>)}
       <Chip active={onlySaved} onPress={() => setOnlySaved(!onlySaved)}>☆ お気に入り</Chip>
     </Chips>
-    <Text style={S.tiny}>{visible.length} / 16　·　お気に入り {favorites.length}体</Text>
+    <Text style={S.tiny}>{visible.length} / 16　·　お気に入り {favorites.length}件</Text>
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 12 }}>
       {visible.map(resident => <Pressable key={resident.id} accessibilityRole="button" onPress={() => open(resident.index)}
-        accessibilityLabel={[resident.band, resident.subtitle, resident.index === own ? 'あなたの住人' : ''].filter(Boolean).join('、')}
+        accessibilityLabel={[resident.band, resident.subtitle, resident.index === own ? 'あなたのタイプ' : ''].filter(Boolean).join('、')}
         style={[S.card, { width: '48.5%' }]}>
         <View style={{ padding: 11, gap: 3 }}>
           <Text style={S.kicker}>NO. {resident.id}{resident.index === own ? ' · あなた' : ''}{favorites.includes(resident.index) ? ' · ★' : ''}</Text>
           <Text style={S.h2}>{resident.band}</Text>
           <Text style={S.body}>{resident.subtitle}</Text>
         </View>
-        <View style={{ alignItems: 'center', padding: 12, backgroundColor: C.base }}>
-          <ResidentSymbol entry={resident} />
-        </View>
+        <Image source={residentArt[resident.index]} style={{ width: '100%', aspectRatio: 1 }} contentFit="cover" accessible={false} />
         <Text style={[S.tiny, { padding: 11 }]}>{resident.summary}</Text>
       </Pressable>)}
     </View>
-    {visible.length === 0 && <Card><Text style={S.body}>条件に合う住人がいません。</Text><Button quiet onPress={() => { setSeason(null); setDepth(null); setOnlySaved(false); setQuery(''); }}>絞り込みをリセット</Button></Card>}
+    {visible.length === 0 && <Card><Text style={S.body}>条件に合うタイプが見つかりません。</Text><Button quiet onPress={() => { setSeason(null); setDepth(null); setOnlySaved(false); setQuery(''); }}>絞り込みをリセット</Button></Card>}
     <Button quiet onPress={pair}>二人の海をみる</Button>
     <Section title="潮環の世界" />
     <Tile source={scenes[0]} subtitle="潮環神話" title="見られなかった海" onPress={myth} />
@@ -182,8 +182,10 @@ export function Resident({ index, profile, favorite, toggle }: { index: number; 
   const season = SEASON[(Math.floor(index / 4) + 1) % 4];
   const depth = own && content.depths[own.t.ni];
   return <View style={S.stack}>
-    <Heading tag={'RESIDENT NO. ' + entry.id} title={entry.band} body={entry.subtitle} />
-    <View style={[S.card, { alignItems: 'center', padding: 24 }]}><ResidentSymbol entry={entry} size={128} profile={own ?? undefined} /></View>
+    <Heading tag={'占いタイプ ' + entry.id + '／16'} title={entry.band} body={entry.subtitle} />
+    <View style={[S.card, { width: '100%', maxWidth: 360, alignSelf: 'center' }]}>
+      <Image source={residentArt[index]} style={{ width: '100%', aspectRatio: 1 }} contentFit="cover" accessible accessibilityLabel={entry.band + 'のイラスト'} />
+    </View>
     <Chips>
       <Chip>{season.act}</Chip><Chip active={favorite} onPress={toggle}>{favorite ? '★ お気に入り済み' : '☆ お気に入りに入れる'}</Chip>
     </Chips>
@@ -191,9 +193,8 @@ export function Resident({ index, profile, favorite, toggle }: { index: number; 
       <Text style={S.h3}>{entry.hook}</Text>
       <Text style={S.body}>{entry.inner}</Text>
     </Card>
-    {([['人間関係', entry.relation], ['長所が裏返る瞬間', entry.shadow], ['ひとつの問い', entry.question], ['試せること', entry.action]] as const)
-      .map(([title, text]) => <Card key={title}><Text style={S.h3}>{title}</Text><Text style={S.body}>{text}</Text></Card>)}
-    <Text style={S.tiny}>16の住人は、暮らしや自分の傾向を読み直すための物語の象徴です。</Text>
+    <TypeTraits entry={entry} />
+    <Text style={S.tiny}>この占いタイプは、自分の考え方や日々の過ごし方を振り返るためのヒントです。</Text>
     {own && depth && <Card>
       <Text style={S.kicker}>YOUR EXACT TIDE CARD</Text><Text style={S.h2}>{labelOf(own.t)}</Text>
       <Text style={S.body}>深さ {depth[0]}　{depth[1]}。{depth[2]}で持ち味が出やすく、{depth[3]}には余白を取ってみましょう。</Text>
@@ -221,7 +222,7 @@ export function Myth({ open, read }: { open: (index: number) => void; read: numb
     <Section title="五柱の神" note="潮環神話に登場する神々。" />
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 7 }}>
       {godOrder.map((god, index) => <View key={god} style={[S.card, { width: '18.5%' }]}>
-        <Art source={gods[god]} height={67} />
+        <GodAnimation index={god} style={{ width: '100%' }} />
         <Text style={[S.tiny, { textAlign: 'center', paddingVertical: 6 }]}>{godNames[index]}</Text>
       </View>)}
     </View>
@@ -241,9 +242,9 @@ export function Chapter({ index, read, done, open }: { index: number; read: bool
   </View>;
 }
 
-export function Journal({ profile, notes, edit, pair, create, openNote, openName, onForget, questions, reflections, openTrail, editReflection, openChart }: {
+export function Journal({ profile, notes, edit, pair, create, openNote, showToday, onForget, questions, reflections, openTrail, editReflection, openChart }: {
   profile: Profile | null; notes: Note[]; edit: () => void; pair: () => void; create: () => void;
-  openNote: (day: string) => void; openName: () => void; onForget: () => void;
+  openNote: (day: string) => void; showToday: () => void; onForget: () => void;
   questions: SavedQuestion[]; reflections: Reflection[]; openTrail: (id: string) => void;
   editReflection: (record: Reflection) => void; openChart: () => void;
 }) {
@@ -258,7 +259,7 @@ export function Journal({ profile, notes, edit, pair, create, openNote, openName
         <Text style={S.kicker}>MY TIDE CARD</Text><Text style={S.h2}>{resident.band}</Text>
         <Text style={S.body}>{resident.subtitle}</Text>
         <Text style={S.tiny}>正確な名札 {labelOf(profile.t)}</Text>
-        <Button onPress={openName}>私の名札を読む</Button>
+        <Button onPress={showToday}>私の占い結果を見る</Button>
         <Button quiet onPress={edit}>入力内容を変更</Button>
         {confirm ? <View style={S.stack}><Text style={S.body}>この端末の潮札と入力内容を削除しますか？</Text>
           <Chips><Chip onPress={() => setConfirm(false)}>キャンセル</Chip><Chip active onPress={() => { onForget(); setConfirm(false); }}>潮札を削除</Chip></Chips>

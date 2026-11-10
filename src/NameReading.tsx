@@ -1,42 +1,50 @@
-import { useState } from 'react';
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
 import { content, type Profile } from './domain';
 import readingText from './reading-text.json';
-import { TideCard, TideMarks } from './ResidentCard';
+import { TideMarks } from './ResidentCard';
 import { labelOf, SEASON, STAGES } from './scoring';
 import { Meter } from './TideCharts';
-import { Button, Card, S } from './ui';
-import { ownResident } from './voyage';
+import { Card, Chip, Chips, S, Section } from './ui';
+import { ownResident, residents } from './voyage';
 
 const seasonOrder = [1, 2, 3, 0];
 
-export function NameReading({ profile, today, showRanks, showCalendar, showToday, showResident, showAtlas, share, questionId, readQuestion }: {
-  profile: Profile; today: Date; showRanks: () => void;
-  showCalendar: (date: Date, mode: 'current' | 'stage') => void;
-  showToday: () => void; showResident: () => void; showAtlas: () => void; share: () => void;
-  questionId?: string; readQuestion: (id: string) => void;
-}) {
-  const [expanded, setExpanded] = useState(false);
+export function BornSea({ profile }: { profile: Profile }) {
+  const resident = ownResident(profile);
+  const { t } = profile;
+  return <Card>
+    <Text accessibilityRole="header" style={S.kicker}>生まれ持った海</Text>
+    <Text style={S.h2}>{resident.hook}</Text>
+    <Text style={S.body}>{resident.inner}</Text>
+    <Text style={S.tiny}>あなたの名札　{labelOf(t)}</Text>
+    {(t.minus || t.A) && <Chips>
+      {t.minus && <Chip>− 向かい風</Chip>}
+      {t.A && <Chip>A 渦</Chip>}
+    </Chips>}
+  </Card>;
+}
+
+export function TypeTraits({ entry }: { entry: typeof residents[number] }) {
+  const traits = [
+    ['人間関係', entry.relation],
+    ['長所が裏返る瞬間', entry.shadow],
+    ['ひとつの問い', entry.question],
+    ['試せること', entry.action],
+  ];
+  return <>{traits.map(([title, text]) => <Card key={title}><Text style={S.h3}>{title}</Text><Text style={S.body}>{text}</Text></Card>)}</>;
+}
+
+export function NameReadingDetails({ profile }: { profile: Profile }) {
   const { t, Y, M, D, name, total, pc, mc, z, o } = profile;
   const season = SEASON[t.mod];
   const nature = readingText.SEASON_INFO[t.mod];
   const bandIndex = t.num <= 2 ? 0 : t.num <= 3.5 ? 1 : 2;
   const band = readingText.BAND[bandIndex];
-  const resident = ownResident(profile);
   const depth = content.depths[t.ni];
   const spread = (t.num - 3.25) / 2.25;
   const strengths = [1 - 0.1 * Math.abs(spread), .55 + .2 * spread, .3, .55 - .2 * spread];
-
-  return <View style={S.stack}>
-    <TideCard profile={profile} today={today} showRanks={showRanks} showCalendar={showCalendar} />
-    <Card><Text style={S.body}>{resident.inner.split('。')[0]}。</Text></Card>
-    {questionId && <Button onPress={() => readQuestion(questionId)}>選んだ問いを、私の海で読み直す</Button>}
-    <Button quiet={!!questionId} onPress={showToday}>今日の海を見る</Button>
-    <Button quiet onPress={showResident}>私の住人をもっと読む</Button>
-    <Button quiet onPress={showAtlas}>16の海の住人を見る</Button>
-    <Button quiet onPress={share}>私の潮札を画像で共有</Button>
-    <Button quiet onPress={() => setExpanded(!expanded)}>{expanded ? '名札の詳細を閉じる' : '正確な名札のしくみを読む'}</Button>
-    {expanded && <>
+  return <>
+    <Section title="占いタイプと名札の決まり方" note="「冬の深海」などのタイプ名は季節と深さの組み合わせです。名札には、深さの数値と「−」「A」の有無も表れます。" />
     <Card>
       <Text style={S.kicker}>壱　季節</Text>
       <Text style={S.h2}>{season.n}の海 · {nature.act}</Text>
@@ -68,6 +76,5 @@ export function NameReading({ profile, today, showRanks, showCalendar, showToday
       {seasonOrder.map(mod => <Meter key={mod} title={SEASON[mod].act + '力'}
         color={SEASON[mod].col} value={strengths[(mod - t.mod + 4) % 4]} />)}
     </Card>
-    </>}
-  </View>;
+  </>;
 }
