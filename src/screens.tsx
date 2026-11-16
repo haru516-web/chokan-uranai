@@ -146,6 +146,9 @@ const seasonGods = [
   { god: 0, name: '冬凪', season: '冬', role: '静かに、石の下まで問い直す神。' },
 ];
 
+// はじまりの神。最初の海を作ったと言われる神。四季の神様の上に、1枚だけ、広いカードで出す。
+const originGod = { god: 4, name: '潮祖', role: '最初の海を作ったと言われる、白い衣の神。海という名前を、いちばん最初に知らなかった神。' };
+
 export function Atlas({ profile, favorites, open, myth, pair, create }: {
   profile: Profile | null; favorites: number[]; open: OpenResident; myth: () => void; pair: () => void; create: () => void;
 }) {
@@ -153,7 +156,13 @@ export function Atlas({ profile, favorites, open, myth, pair, create }: {
   const own = profile ? residentIndex(profile.t) : -1;
   const visible = residents.map((resident, index) => ({ ...resident, index }));
   return <View style={S.stack}>
-    <Section title="四季の神様" note="16のタイプを季節ごとに見守る、四柱の神様。" />
+    <Section title="神様たち" note="最初の海を作った「はじまりの神」と、16のタイプを季節ごとに見守る、四柱の神様。" />
+    <View style={[S.card, { alignItems: 'center', padding: 14, gap: 4 }]}>
+      <GodAnimation forcePlay index={originGod.god} style={{ width: 112 }} label={originGod.name + '（はじまりの神）'} />
+      <Text style={S.kicker}>はじまりの神</Text>
+      <Text style={S.h2}>{originGod.name}</Text>
+      <Text style={[S.tiny, { textAlign: 'center' }]}>{originGod.role}</Text>
+    </View>
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 12 }}>
       {seasonGods.map(item => <View key={item.name} style={[S.card, { width: columnWidth, alignItems: 'center', padding: 12, gap: 4 }]}>
         <GodAnimation forcePlay index={item.god} style={{ width: 96 }} label={item.name + '（' + item.season + '）'} />
