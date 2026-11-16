@@ -22,7 +22,7 @@ import { findQuestion, type Reflection, type SavedQuestion } from './voyage';
 import { mainTabs, TabBar, type MainTab } from './PetNavigation';
 
 const detailTitles: Record<string, string> = {
-  explanation: 'タイプ解説', upgrade: '有料版', settings: '設定', terms: '利用規約', privacy: 'プライバシーポリシー', profile: '自分の海をひらく',
+  explanation: 'タイプ解説', upgrade: '有料版', settings: '設定', terms: '利用規約', privacy: 'プライバシーポリシー', tokushoho: '特定商取引法に基づく表記', profile: '自分の海をひらく',
   question: '問いを読む', compare: 'あの頃の海と比べる', homecoming: '帰郷の年', reflection: '振り返りを書く',
   share: '潮札を共有', myth: '潮環神話', resident: '住人の紹介', chapter: '神話を読む',
   rank: '160名札の順位', people: '人の管理・リセット',
@@ -35,7 +35,7 @@ import { Opening } from './Opening';
 import { PeopleManager, type Person } from './People';
 import { Upgrade } from './Upgrade';
 import { Settings } from './Settings';
-import { Privacy, Terms } from './Legal';
+import { Privacy, Terms, Tokushoho } from './Legal';
 import { UPGRADE } from './entitlement';
 type Detail =
   | { kind: 'explanation' }
@@ -43,6 +43,7 @@ type Detail =
   | { kind: 'settings' }
   | { kind: 'terms' }
   | { kind: 'privacy' }
+  | { kind: 'tokushoho' }
   | { kind: 'profile'; questionId?: string; add?: boolean }
   | { kind: 'people' }
   | { kind: 'question'; id: string; personal?: boolean }
@@ -278,6 +279,8 @@ function Voyage({ hold }: { hold: boolean }) {
         return <Settings openUpgrade={() => open({ kind: 'upgrade' })} openPeople={() => open({ kind: 'people' })} openLegal={kind => open({ kind })} />;
       case 'terms':
         return <Terms />;
+      case 'tokushoho':
+        return <Tokushoho />;
       case 'privacy':
         return <Privacy />;
       case 'profile':

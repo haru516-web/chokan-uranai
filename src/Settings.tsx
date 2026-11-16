@@ -8,7 +8,7 @@ import { Button, C, Card, Chip, Chips, Heading, S } from './ui';
 const dateOf = (seconds: number) => new Date(seconds * 1000).toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
 
 export function Settings({ openUpgrade, openPeople, openLegal }: {
-  openUpgrade: () => void; openPeople: () => void; openLegal: (kind: 'terms' | 'privacy') => void;
+  openUpgrade: () => void; openPeople: () => void; openLegal: (kind: 'terms' | 'privacy' | 'tokushoho') => void;
 }) {
   const account = useAccount();
   const plan = usePlan();
@@ -51,7 +51,7 @@ export function Settings({ openUpgrade, openPeople, openLegal }: {
 
     <Card>
       <Text style={S.kicker}>規約・表記</Text>
-      <Chips><Chip onPress={() => openLegal('terms')}>利用規約</Chip><Chip onPress={() => openLegal('privacy')}>プライバシーポリシー</Chip></Chips>
+      <Chips><Chip onPress={() => openLegal('terms')}>利用規約</Chip><Chip onPress={() => openLegal('privacy')}>プライバシーポリシー</Chip><Chip onPress={() => openLegal('tokushoho')}>特定商取引法に基づく表記</Chip></Chips>
     </Card>
 
     <Card>

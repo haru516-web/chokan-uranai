@@ -54,7 +54,11 @@ export async function startBilling() {
       const products = await IAP.fetchProducts({ skus: [PRODUCT_ID], type: 'subs' });
       const product = products?.[0];
       if (product && 'displayPrice' in product) set({ price: String(product.displayPrice) });
-    } catch { /* 価格が取れなくても、確認は進める */ }
+      else set({ error: '現在、お申込みの準備ができていません。通信をお確かめのうえ、しばらくしてから、もう一度、開いてください。' });
+    } catch {
+      // 価格が取れなくても、確認は進める。申込みの画面には、理由を出す。
+      set({ error: '価格を読み込めませんでした。通信をお確かめのうえ、しばらくしてから、もう一度、開いてください。' });
+    }
     // アプリに戻ってきたときにも確かめる（開いたまま期限が切れた・更新された場合のため）。
     AppState.addEventListener('change', status => { if (status === 'active') void refresh(); });
     await refresh();

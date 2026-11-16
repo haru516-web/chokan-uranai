@@ -14,7 +14,7 @@ const INCLUDED = [
 
 const dateOf = (seconds: number) => new Date(seconds * 1000).toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
 
-export function Upgrade({ openLegal }: { openLegal: (kind: 'terms' | 'privacy') => void }) {
+export function Upgrade({ openLegal }: { openLegal: (kind: 'terms' | 'privacy' | 'tokushoho') => void }) {
   const account = useAccount();
   const plan = usePlan();
   const paid = plan === 'paid' && account.available && account.active;
@@ -61,6 +61,7 @@ export function Upgrade({ openLegal }: { openLegal: (kind: 'terms' | 'privacy') 
       <Chips>
         <Chip onPress={() => openLegal('terms')}>利用規約</Chip>
         <Chip onPress={() => openLegal('privacy')}>プライバシーポリシー</Chip>
+        <Chip onPress={() => openLegal('tokushoho')}>特定商取引法に基づく表記</Chip>
       </Chips>
       <Button onPress={() => { void nativeBilling.buy(); }} disabled={!account.price || account.busy}>
         {account.busy ? '少しお待ちください…' : '申し込む'}

@@ -30,6 +30,10 @@ npx eas-cli submit --platform ios --profile production --latest
    - 「App内課金およびサブスクリプション」に、サブスク（Premium Monthly）を追加（最初のサブスクは、アプリのバージョンと一緒に審査へ）
 3. 「審査用に追加」→ 提出
 
+## 公開ページの更新（未反映）
+- 特定商取引法の表記ページ（`support-site/public/tokushoho/`）を、リポジトリには追加したが、**Cloudflare上の公開ページには、まだ反映していない**（アプリ内の画面には、入っている）。
+- 反映するには、`support-site` で `npx wrangler login` → `npx wrangler deploy`（ログインの許可は、本人の操作が必要）。アドレスは、`chokan-uranai-site` のまま、更新できる。
+
 ## 決めておくこと
 - **リリース方法**：いまは「承認後に、自動でリリース」。公開日を、自分で決めたいなら「手動」に変える。
 
