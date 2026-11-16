@@ -26,7 +26,7 @@ export function TabBar({ activeTab, onSelect, wide }: {
         {...({ dataSet: { ui: 'tab', active } } as object)}
         style={({ pressed }) => [s.topTab, { '--accent': item.accent } as object, active && { backgroundColor: item.accent + '14' }, pressed && { opacity: .6 }]}>
         {(() => { const icon = uiIcon('tab-' + item.id + (active ? '-on' : '-off')); return icon
-          ? <View {...({ dataSet: { ui: 'tab-mark' } } as object)}><Image source={icon} style={{ width: 26, height: 26 }} contentFit="contain" accessible={false} /></View>
+          ? <View {...({ dataSet: { ui: 'tab-mark' } } as object)}><Image source={icon} style={{ width: 34, height: 34 }} contentFit="contain" accessible={false} /></View>
           : <Text {...({ dataSet: { ui: 'tab-mark' } } as object)} style={[s.mark, { color: active ? item.accent : '#6c7896' }]}>{item.mark}</Text>; })()}
         <Text numberOfLines={1} style={[s.topLabel, wide && { fontSize: 14 }, active && { color: item.accent }]}>{wide ? item.title.replace('（航海帳）', '') : item.label}</Text>
       </Pressable>;
@@ -36,7 +36,7 @@ export function TabBar({ activeTab, onSelect, wide }: {
 
 const s = StyleSheet.create({
   top: { flexDirection: 'row', flexGrow: 0, flexShrink: 0, backgroundColor: 'rgba(13,19,36,.94)', borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.line, zIndex: 5 },
-  topTab: { flex: 1, minWidth: 0, minHeight: 56, paddingHorizontal: 2, paddingTop: 6, paddingBottom: 4, gap: 2, alignItems: 'center', justifyContent: 'center' },
-  mark: { fontSize: 20, lineHeight: 24 },
-  topLabel: { fontSize: 10.5, lineHeight: 14, fontWeight: '800', color: C.muted },
+  topTab: { flex: 1, minWidth: 0, minHeight: 66, paddingHorizontal: 2, paddingTop: 8, paddingBottom: 6, gap: 3, alignItems: 'center', justifyContent: 'center' },
+  mark: { fontSize: 28, lineHeight: 34 },
+  topLabel: { fontSize: 12.5, lineHeight: 16, fontWeight: '800', color: C.muted },
 });

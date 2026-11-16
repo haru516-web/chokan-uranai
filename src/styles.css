@@ -1,11 +1,16 @@
+/* 画面は、ページ全体を動かさない。スクロールするのは、中の ScrollView だけにして、下部ナビバーは、常に画面の下に出す。
+   （body を画面に固定し、高さを「最低でも」ではなく、ぴったり画面にする。iPhone のアプリ内（WebView）で、ページごと流れるのを防ぐ。） */
 html, body, #root {
-  min-height: 100%;
+  height: 100%;
   margin: 0;
 }
-html { background: #10172a; }
+html { background: #10172a; overflow: hidden; overscroll-behavior: none; }
 body {
+  position: fixed;
+  inset: 0;
+  width: 100%;
   min-width: 320px;
-  min-height: 100vh;
+  overflow: hidden;
   color: #fbf3e0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Yu Gothic UI", Meiryo, sans-serif;
   overscroll-behavior-y: none;
@@ -21,10 +26,12 @@ button, input, textarea, select { font: inherit; }
 .web-safe-area-root {
   display: flex;
   width: 100%;
-  min-height: 100vh;
-  min-height: 100dvh;
-  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  height: 100%;
+  min-height: 0;
+  /* 下の余白は、ナビバー側で取る（[role="tablist"]）。バーの背景を、ホームバーの裏まで届かせるため。 */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);
 }
+[role="tablist"] { padding-bottom: env(safe-area-inset-bottom); }
 
 .pet-navigation-layer {
   position: fixed;

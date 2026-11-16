@@ -401,8 +401,8 @@ function Voyage({ hold }: { hold: boolean }) {
 }
 
 const layout = StyleSheet.create({
-  root: { flex: 1, backgroundColor: C.base, alignItems: 'center' },
-  frame: { flex: 1, width: '100%', maxWidth: 780, backgroundColor: C.base, alignSelf: 'center', overflow: 'hidden' },
+  root: { flex: 1, minHeight: 0, backgroundColor: C.base, alignItems: 'center' },
+  frame: { flex: 1, minHeight: 0, width: '100%', maxWidth: 780, backgroundColor: C.base, alignSelf: 'center', overflow: 'hidden' },
   frameDesktop: { maxWidth: 1120 },
   contentDesktop: { paddingHorizontal: 32, paddingTop: 24 },
   header: { minHeight: 62, paddingHorizontal: 14, gap: 12, flexDirection: 'row', alignItems: 'center', borderBottomColor: C.line, borderBottomWidth: StyleSheet.hairlineWidth },
@@ -416,7 +416,7 @@ const layout = StyleSheet.create({
   helpMarkText: { color: C.dark, fontSize: 16, lineHeight: 20, fontWeight: '900' },
   helpText: { color: C.ink, fontSize: 14, lineHeight: 18, fontWeight: '900' },
   wash: { position: 'absolute', top: 0, left: 0, right: 0, height: 300 },
-  scroll: { flex: 1 },
+  scroll: { flex: 1, minHeight: 0 },
   hidden: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0, pointerEvents: 'none', visibility: 'hidden' } as object,
   content: { padding: 16, paddingBottom: 32 },
   error: { backgroundColor: '#4b2c29', padding: 8, color: C.error },

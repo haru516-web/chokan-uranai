@@ -54,6 +54,29 @@
         }
       ]
     ],
-    "scheme": "chokanuranai"
+    "scheme": "chokanuranai",
+    "extra": {
+      "eas": {
+        "build": {
+          "experimental": {
+            "ios": {
+              "appExtensions": [
+                {
+                  "targetName": "ExpoWidgetsTarget",
+                  "bundleIdentifier": "jp.chokanuranai.app.widgets",
+                  "entitlements": {
+                    "com.apple.security.application-groups": [
+                      "group.jp.chokanuranai.app"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "projectId": "43896fc9-176b-4ccc-9062-4a8141f3baad"
+      }
+    },
+    "owner": "obana.h"
   }
 }
