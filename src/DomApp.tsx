@@ -33,11 +33,12 @@ type Props = {
   onRestore?: () => Promise<void>;
   onManage?: () => Promise<void>;
   onRequestReview?: () => Promise<void>;
+  onUpdateWidget?: (entries: import('./widgetPayload').WidgetEntry[]) => Promise<void>;
   dom?: import('expo/dom').DOMProps;
 };
 
 /** Web 版の App をそのまま iOS ネイティブの WebView 内で動かす（Expo DOM コンポーネント）。 */
-export default function DomApp({ onHaptic, onOpenUrl, onShareImage, billing, onBuy, onRestore, onManage, onRequestReview }: Props) {
+export default function DomApp({ onHaptic, onOpenUrl, onShareImage, billing, onBuy, onRestore, onManage, onRequestReview, onUpdateWidget }: Props) {
   useEffect(() => {
     if (!started) {
       started = true;
@@ -50,9 +51,9 @@ export default function DomApp({ onHaptic, onOpenUrl, onShareImage, billing, onB
       startCardGlow();
     }
     setHapticHandler(onHaptic);
-    setNativeBridge({ openUrl: onOpenUrl, shareImage: onShareImage, buy: onBuy, restore: onRestore, manage: onManage, requestReview: onRequestReview });
+    setNativeBridge({ openUrl: onOpenUrl, shareImage: onShareImage, buy: onBuy, restore: onRestore, manage: onManage, requestReview: onRequestReview, updateWidget: onUpdateWidget });
     return () => { setHapticHandler(undefined); setNativeBridge({}); };
-  }, [onHaptic, onOpenUrl, onShareImage, onBuy, onRestore, onManage, onRequestReview]);
+  }, [onHaptic, onOpenUrl, onShareImage, onBuy, onRestore, onManage, onRequestReview, onUpdateWidget]);
   // 購入状態は、変わるたびに、画面側へ反映する。
   useEffect(() => { setBilling(billing ?? noBilling); }, [billing]);
   return <StrictMode><App /></StrictMode>;

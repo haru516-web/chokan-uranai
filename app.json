@@ -30,7 +30,30 @@
           "image": "./assets/art/app-icon.png",
           "imageWidth": 160
         }
+      ],
+      [
+        "expo-widgets",
+        {
+          "bundleIdentifier": "jp.chokanuranai.app.widgets",
+          "groupIdentifier": "group.jp.chokanuranai.app",
+          "widgets": [
+            {
+              "name": "ChokanWidget",
+              "displayName": "潮環占い",
+              "description": "今日の海と、あなたのタイプのキャラクター",
+              "ios": {
+                "supportedFamilies": [
+                  "systemSmall",
+                  "systemMedium",
+                  "systemLarge"
+                ],
+                "initialLayout": "widgets/chokanWidget.tsx"
+              }
+            }
+          ]
+        }
       ]
-    ]
+    ],
+    "scheme": "chokanuranai"
   }
 }

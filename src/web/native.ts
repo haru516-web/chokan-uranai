@@ -40,6 +40,7 @@ type Bridge = {
   restore?: () => Promise<void> | void;
   manage?: () => Promise<void> | void;
   requestReview?: () => Promise<void> | void;
+  updateWidget?: (entries: import('../widgetPayload').WidgetEntry[]) => Promise<void> | void;
 };
 let bridge: Bridge = {};
 export function setNativeBridge(next: Bridge) { bridge = next; }
@@ -48,6 +49,11 @@ export const nativeBilling = {
   restore: () => bridge.restore?.(),
   manage: () => bridge.manage?.(),
 };
+
+/** ホーム画面ウィジェットの内容を、ネイティブに渡す（iPhoneのアプリ以外では、何もしない）。 */
+export function updateNativeWidget(entries: import('../widgetPayload').WidgetEntry[]) {
+  try { void Promise.resolve(bridge.updateWidget?.(entries)).catch(() => {}); } catch { /* ウィジェットが使えなくても、占いは動く */ }
+}
 
 /** App Store の評価依頼を、ネイティブに頼む。頼めたら true（iPhoneのアプリ以外では false）。 */
 export async function requestNativeReview(): Promise<boolean> {

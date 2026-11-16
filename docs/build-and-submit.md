@@ -40,3 +40,10 @@ npx eas-cli submit --platform ios --profile production --latest
 ## 注意
 - 評価依頼のダイアログ（`expo-store-review`）は、実機で確認する。開発中のビルドでは出て、TestFlight や本番では、出ないことがある（Apple の仕様）。
 - ネイティブ部品（`expo-iap`、`expo-store-review`、`expo-splash-screen`）が入っているため、Expo Go では動かない。
+
+## ホーム画面ウィジェット
+- 小・中・大の3サイズ。占って「保存する」にした自分がいれば、そのタイプのキャラクターと今日の海・これからの5日分。いなければ、はじめかたの案内。
+- 内容は、無料で読める範囲（海況・順位・タイプ名）だけ。有料版の読みの文は、載せない。
+- 内容は、アプリを開いたときに7日分を渡す（日付が変わる日本時間0時に、自動で切り替わる）。
+- ビルドの前提: `app.json` の expo-widgets の設定（App Group `group.jp.chokanuranai.app`、拡張 `jp.chokanuranai.app.widgets`）。EAS が Apple Developer に、拡張のID と App Group を登録する。
+- 実機で確認すること: ホーム画面に追加できる、3サイズの見た目、保存した人でキャラクターが出る、保存していない人で案内が出る、タップでアプリが開く。

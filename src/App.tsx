@@ -37,6 +37,9 @@ import { Upgrade } from './Upgrade';
 import { Settings } from './Settings';
 import { Privacy, Terms, Tokushoho } from './Legal';
 import { UPGRADE } from './entitlement';
+import { widgetEntries } from './widgetPayload';
+import { usePlan } from './plan';
+import { updateNativeWidget } from './web/native';
 type Detail =
   | { kind: 'explanation' }
   | { kind: 'upgrade' }
@@ -72,6 +75,7 @@ function Voyage({ hold }: { hold: boolean }) {
   const windowWidth = useWindowDimensions().width;
   const wide = windowWidth >= 720;
   const desktop = windowWidth >= 1000;
+  const plan = usePlan();
   const [ready, setReady] = useState(false);
   const [storageError, setStorageError] = useState(false);
   const [stored, setStored] = useState<Saved>(empty);
@@ -123,6 +127,12 @@ function Voyage({ hold }: { hold: boolean }) {
       .finally(() => { if (mounted) setReady(true); });
     return () => { mounted = false; };
   }, []);
+
+  // ホーム画面ウィジェットへ、今日から7日分の内容を渡す。保存した「自分」がいなければ、はじめかたの案内になる。
+  useEffect(() => {
+    if (!ready) return;
+    try { updateNativeWidget(widgetEntries(people, plan === 'paid', today)); } catch { /* ウィジェットが作れなくても、占いは動く */ }
+  }, [ready, people, today, plan]);
 
   useEffect(() => {
     if (!ready || stored === empty) return;

@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import * as Haptics from 'expo-haptics';
 import * as StoreReview from 'expo-store-review';
 import DomApp from './src/DomApp';
+import { updateWidget } from './src/widgetNative';
 import { buy, manage, restore, startBilling, useBilling } from './src/billing';
 
 async function onHaptic(kind: string) {
@@ -45,6 +46,7 @@ export default function Root() {
         onRestore={restore}
         onManage={manage}
         onRequestReview={onRequestReview}
+        onUpdateWidget={updateWidget}
         dom={{ style: { flex: 1 }, contentInsetAdjustmentBehavior: 'never', bounces: false, overScrollMode: 'never', automaticallyAdjustContentInsets: false }}
       />
     </View>
