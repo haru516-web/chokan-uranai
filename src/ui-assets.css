@@ -1,0 +1,16 @@
+/* 画像素材の差し込み口。Codex が作った画像を assets/ui/ に置き、下の変数の url(...) を有効にするだけで、全画面に反映される。
+   画像が無いあいだは、いまの見た目（色と枠）のまま。依頼メモは docs/codex-ui-assets.md。 */
+:root {
+  --ui-card-bg: url('../assets/ui/card.webp');      /* 全カード（Card 部品と、直接カード風に作った画面も含む）の背景（例: url('../assets/ui/card.webp')） */
+  --ui-button-bg: url('../assets/ui/button-gold.webp');    /* 金色の主要ボタン（例: url('../assets/ui/button-gold.webp')） */
+  --ui-quiet-bg: url('../assets/ui/button-quiet.webp');     /* 控えめなボタン・チップ（例: url('../assets/ui/button-quiet.webp')） */
+  --ui-tabbar-bg: url('../assets/ui/tabbar.webp');    /* 下部タブバーの背景（例: url('../assets/ui/tabbar.webp')） */
+}
+[data-ui="card"], [data-glow-card] { background-image: var(--ui-card-bg); background-size: 100% 100%; background-repeat: no-repeat; }
+[data-ui="gold"] { background-image: var(--ui-button-bg); background-size: 100% 100%; background-repeat: no-repeat; }
+[data-ui="quiet"], [data-ui="chip"] { background-image: var(--ui-quiet-bg); background-size: 100% 100%; background-repeat: no-repeat; }
+[accessibilityrole="tablist"], [role="tablist"] { background-image: var(--ui-tabbar-bg); background-size: 100% 100%; background-repeat: no-repeat; }
+
+/* 右側のスクロールバーは出さない（スクロールはそのまま動く）。 */
+* { scrollbar-width: none; -ms-overflow-style: none; }
+*::-webkit-scrollbar { display: none; width: 0; height: 0; }
