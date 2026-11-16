@@ -47,7 +47,8 @@
                   "systemMedium",
                   "systemLarge"
                 ],
-                "initialLayout": "widgets/chokanWidget.tsx"
+                "initialLayout": "widgets/chokanWidget.tsx",
+                "contentMarginsDisabled": true
               }
             }
           ]

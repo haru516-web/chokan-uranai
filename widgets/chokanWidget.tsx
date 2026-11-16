@@ -45,7 +45,7 @@ const Layout = (props: ChokanWidgetProps, environment: { widgetFamily?: string }
   if (props.kind !== 'saved' || !props.today) {
     const small = family === 'systemSmall';
     return wrap(
-      <VStack spacing={small ? 4 : 6} modifiers={[padding({ all: 12 })]}>
+      <VStack spacing={small ? 4 : 6} modifiers={[padding({ all: 16 })]}>
         {props.image ? picture(props.image, small ? 60 : 84) : <Spacer />}
         <Text modifiers={[font({ size: 15, weight: 'bold' }), foregroundStyle(gold)]}>潮環占い</Text>
         <Text modifiers={[font({ size: 12 }), foregroundStyle(ink), lineLimit(small ? 3 : 2)]}>
@@ -60,7 +60,7 @@ const Layout = (props: ChokanWidgetProps, environment: { widgetFamily?: string }
 
   if (family === 'systemSmall') {
     return wrap(
-      <VStack spacing={2} modifiers={[padding({ all: 8 })]}>
+      <VStack spacing={2} modifiers={[padding({ all: 14 })]}>
         <Text modifiers={[font({ size: 11 }), foregroundStyle(muted)]}>{`${props.date ?? ''} 今日の海`}</Text>
         {props.image ? picture(props.image, 68) : <Spacer />}
         <Text modifiers={[font({ size: 22, weight: 'bold' }), foregroundStyle(today.color)]}>{today.tier}</Text>
@@ -71,7 +71,7 @@ const Layout = (props: ChokanWidgetProps, environment: { widgetFamily?: string }
 
   if (family === 'systemMedium') {
     return wrap(
-      <HStack spacing={14} modifiers={[padding({ all: 12 })]}>
+      <HStack spacing={14} modifiers={[padding({ all: 16 })]}>
         {props.image ? picture(props.image, 104) : <Spacer />}
         <VStack spacing={3} alignment="leading">
           <Text modifiers={[font({ size: 11 }), foregroundStyle(muted)]}>{`${props.date ?? ''} 今日の海`}</Text>
@@ -86,7 +86,7 @@ const Layout = (props: ChokanWidgetProps, environment: { widgetFamily?: string }
 
   // 大（と、iPadの特大）：キャラクター、今日の海。「これからの海」は、有料版の人だけ。
   return wrap(
-    <VStack spacing={10} modifiers={[padding({ all: 14 })]}>
+    <VStack spacing={10} modifiers={[padding({ all: 18 })]}>
       <HStack spacing={14}>
         {props.image ? picture(props.image, 124) : <Spacer />}
         <VStack spacing={3} alignment="leading">
