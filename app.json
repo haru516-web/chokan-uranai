@@ -22,7 +22,15 @@
     },
     "plugins": [
       "expo-asset",
-      "expo-iap"
+      "expo-iap",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#10172a",
+          "image": "./assets/art/app-icon.png",
+          "imageWidth": 160
+        }
+      ]
     ]
   }
 }

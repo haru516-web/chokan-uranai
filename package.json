@@ -14,6 +14,7 @@
     "expo-asset": "~58.0.21",
     "expo-haptics": "~58.0.7",
     "expo-iap": "^6.5.0",
+    "expo-splash-screen": "~58.0.14",
     "expo-status-bar": "~58.0.4",
     "expo-store-review": "~58.0.3",
     "react": "19.3.0",
@@ -24,7 +25,7 @@
   },
   "devDependencies": {
     "@types/react": "~19.3.0",
-    "@types/react-dom": "^19.1.0",
+    "@types/react-dom": "~19.3.0",
     "typescript": "~6.0.3"
   }
 }
