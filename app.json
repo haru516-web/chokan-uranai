@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "潮環占い",
+    "slug": "chokan-uranai",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "icon": "./assets/art/app-icon.png",
+    "backgroundColor": "#10172a",
+    "ios": {
+      "bundleIdentifier": "jp.chokanuranai.app",
+      "supportsTablet": true,
+      "requireFullScreen": true,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/art/favicon.png"
+    },
+    "plugins": [
+      "expo-asset",
+      "expo-iap"
+    ]
+  }
+}
