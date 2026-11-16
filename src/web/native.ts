@@ -2,7 +2,7 @@
 // Web 版（ブラウザー）では何も登録されないので、それぞれ Web のやり方で動く。
 
 /** 規約などのページを置いている公開サイト。アプリの中には無いので、Safari で開く。 */
-export const SITE_URL = 'https://chokan-uranai.chokanuranai.workers.dev/';
+export const SITE_URL = 'https://chokan-uranai-site.chokanuranai.workers.dev/';
 
 /** お問い合わせ先。設定画面に出す。 */
 export const CONTACT_EMAIL = 'chokanuranai@gmail.com';
