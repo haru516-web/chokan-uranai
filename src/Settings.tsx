@@ -2,7 +2,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { useAccount } from './entitlement';
 import { usePlan } from './plan';
-import { CONTACT_EMAIL, nativeBilling, openLink } from './web/native';
+import { CONTACT_EMAIL, nativeBilling, openLink, WRITE_REVIEW_URL } from './web/native';
 import { Button, C, Card, Chip, Chips, Heading, S } from './ui';
 
 const dateOf = (seconds: number) => new Date(seconds * 1000).toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -57,7 +57,7 @@ export function Settings({ openUpgrade, openPeople, openLegal }: {
     <Card>
       <Text style={S.kicker}>お問い合わせ</Text>
       <Text style={S.tiny}>ご意見・不具合のご連絡は、こちらのメールアドレスまで。</Text>
-      <Chips><Chip onPress={() => openLink('mailto:' + CONTACT_EMAIL)}>{'✉ ' + CONTACT_EMAIL}</Chip></Chips>
+      <Chips><Chip onPress={() => openLink('mailto:' + CONTACT_EMAIL)}>{'✉ ' + CONTACT_EMAIL}</Chip><Chip onPress={() => openLink(WRITE_REVIEW_URL)}>★ App Storeで評価する</Chip></Chips>
     </Card>
 
     <Card>

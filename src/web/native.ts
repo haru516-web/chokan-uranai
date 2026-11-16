@@ -39,6 +39,7 @@ type Bridge = {
   buy?: () => Promise<void> | void;
   restore?: () => Promise<void> | void;
   manage?: () => Promise<void> | void;
+  requestReview?: () => Promise<void> | void;
 };
 let bridge: Bridge = {};
 export function setNativeBridge(next: Bridge) { bridge = next; }
@@ -47,6 +48,15 @@ export const nativeBilling = {
   restore: () => bridge.restore?.(),
   manage: () => bridge.manage?.(),
 };
+
+/** App Store の評価依頼を、ネイティブに頼む。頼めたら true（iPhoneのアプリ以外では false）。 */
+export async function requestNativeReview(): Promise<boolean> {
+  if (!bridge.requestReview) return false;
+  try { await bridge.requestReview(); return true; } catch { return false; }
+}
+
+/** App Store の、このアプリの「レビューを書く」画面。公開されてから、開ける。 */
+export const WRITE_REVIEW_URL = 'https://apps.apple.com/app/id6835385589?action=write-review';
 
 /** 外部のページを開く。ネイティブ版では Safari、Web 版ではそのページへ移る。 */
 export function openLink(href: string) {

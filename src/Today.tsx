@@ -3,6 +3,7 @@ import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { ReactNode } from 'react';
 import { currents, godArt, residentArt, scenes, stages, tierArt } from './art';
 import { Image } from './web/image';
+import { noteResultViewed } from './review';
 import { blobToDataUrl, canShareNatively, shareImage } from './web/native';
 import { LayeredReading } from './DailyReading';
 import { addDays, calendarEvents, dateKey, dateLabel, readDay, residentIndex, shortDate, tierColors, tiers, type Profile } from './domain';
@@ -58,6 +59,8 @@ export function Today({ people, activeId, onSwitch, onAdd, onManage, today, prof
   const playKey = seenKey + '-' + replay;
   const wasSeen = useMemo(() => replay === 0 && seenResults.has(seenKey), [seenKey, replay]);
   useEffect(() => { seenResults.add(seenKey); }, [seenKey]);
+  // 今日の結果を見たことを記録し、条件がそろっていたら、App Store の評価をお願いする（review.ts）。
+  useEffect(() => { if (profile && offset === 0) noteResultViewed(today); }, [seenKey, !!profile]);
   const instant = wasSeen || skipKey === playKey;
   const reading = profile && readDay(date, profile);
   const c = reading?.context ?? ctxFor(date);
