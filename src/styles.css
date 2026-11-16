@@ -1,0 +1,279 @@
+html, body, #root {
+  min-height: 100%;
+  margin: 0;
+}
+html { background: #10172a; }
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  color: #fbf3e0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Yu Gothic UI", Meiryo, sans-serif;
+  overscroll-behavior-y: none;
+}
+button, input, textarea, select { font: inherit; }
+[role="button"], [role="tab"] { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+[role="button"]:focus-visible, [role="tab"]:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: 2px solid #eacc8c;
+  outline-offset: 2px;
+}
+* { box-sizing: border-box; }
+
+.web-safe-area-root {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+.pet-navigation-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+}
+.pet-menu-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: rgba(5, 9, 19, .22);
+  pointer-events: auto;
+}
+.pet-main-button {
+  position: fixed;
+  z-index: 2;
+  display: grid;
+  width: 82px;
+  height: 82px;
+  padding: 7px;
+  place-items: center;
+  border: 1px solid var(--pet-tint);
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 32%, #2e3a59 0, #17213a 65%, #11192e 100%);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .42), 0 0 24px color-mix(in srgb, var(--pet-tint) 28%, transparent);
+  color: #fbf3e0;
+  cursor: grab;
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+  transform: translate(-50%, -50%);
+  transition: left .18s ease, top .18s ease, box-shadow .18s ease;
+  outline: none;
+}
+.pet-main-button:hover,
+.pet-main-button:focus-visible {
+  box-shadow: 0 10px 32px rgba(0, 0, 0, .52), 0 0 30px color-mix(in srgb, var(--pet-tint) 48%, transparent);
+}
+.pet-main-button:focus-visible {
+  outline: 2px solid #fbf3e0;
+  outline-offset: 5px;
+}
+.pet-main-button[data-dragging="true"] {
+  cursor: grabbing;
+  transition: none;
+}
+.pet-aura {
+  position: absolute;
+  inset: -7px;
+  border: 1px solid color-mix(in srgb, var(--pet-tint) 52%, transparent);
+  border-radius: 50%;
+  animation: pet-breathe 3.2s ease-in-out infinite;
+  pointer-events: none;
+}
+.pet-sprite {
+  position: absolute;
+  top: 2px;
+  display: block;
+  width: 58px;
+  height: 58px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.pet-name {
+  position: absolute;
+  bottom: 5px;
+  max-width: 72px;
+  padding: 1px 5px;
+  border: 1px solid rgba(234, 204, 140, .3);
+  border-radius: 10px;
+  background: rgba(16, 23, 42, .94);
+  color: #fbf3e0;
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 13px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.pet-orbit-button {
+  position: fixed;
+  z-index: 1;
+  display: flex;
+  width: 68px;
+  height: 68px;
+  padding: 6px 3px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  border: 1px solid color-mix(in srgb, var(--pet-tint) 62%, #414e6a);
+  border-radius: 50%;
+  background: rgba(26, 36, 60, .98);
+  box-shadow: 0 7px 21px rgba(0, 0, 0, .38);
+  color: #bac6dd;
+  cursor: pointer;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(.38);
+  transition: left .18s ease, top .18s ease, opacity .16s ease, transform .22s cubic-bezier(.2,.8,.2,1);
+  transition-delay: 0ms;
+}
+.pet-orbit-button[data-open="true"] {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+  transition-delay: var(--pet-delay);
+}
+.pet-orbit-button[data-active="true"] {
+  border-color: var(--pet-tint);
+  background: #2a3652;
+  color: #fbf3e0;
+  box-shadow: 0 0 0 2px rgba(234, 204, 140, .15), 0 7px 21px rgba(0, 0, 0, .38);
+}
+.pet-orbit-button:focus-visible {
+  outline: 2px solid #fbf3e0;
+  outline-offset: 3px;
+}
+.pet-orbit-mark {
+  color: var(--pet-tint);
+  font-size: 21px;
+  line-height: 23px;
+}
+.pet-orbit-label {
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 14px;
+  white-space: nowrap;
+}
+@keyframes pet-breathe {
+  0%, 100% { transform: scale(.98); opacity: .48; }
+  50% { transform: scale(1.06); opacity: .95; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pet-aura { animation: none; }
+  .pet-main-button, .pet-orbit-button { transition-duration: 0ms; }
+}
+
+/* 演出アニメーション。OS の「動きを減らす」設定に左右されず動かす（装飾のみ）。
+   遅延は各要素の inline style(animation-delay) で指定する。 */
+@keyframes fx-pop { 0% { opacity: 0; transform: scale(.8) translateY(16px); } 60% { opacity: 1; transform: scale(1.05) translateY(0); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+@keyframes fx-slam { 0% { opacity: 0; transform: scale(2.4); filter: blur(6px); } 55% { opacity: 1; transform: scale(.94); filter: blur(0); } 72% { transform: scale(1.04) rotate(-1deg); } 100% { opacity: 1; transform: scale(1) rotate(0); } }
+@keyframes fx-up { 0% { opacity: 0; transform: translateY(22px); } 100% { opacity: 1; transform: translateY(0); } }
+@keyframes fx-fade { 0% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes fx-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes fx-twinkle { 0%, 100% { opacity: .15; transform: scale(.6); } 50% { opacity: 1; transform: scale(1.25); } }
+@keyframes fx-pulse { 0%, 100% { opacity: .2; } 50% { opacity: 1; } }
+@keyframes fx-wave { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+[data-fx="pop"] { animation-name: fx-pop !important; animation-duration: .62s !important; animation-timing-function: cubic-bezier(.2,.8,.2,1) !important; animation-fill-mode: both !important; }
+[data-fx="slam"] { animation-name: fx-slam !important; animation-duration: .7s !important; animation-timing-function: cubic-bezier(.2,.9,.2,1) !important; animation-fill-mode: both !important; }
+[data-fx="up"] { animation-name: fx-up !important; animation-duration: .6s !important; animation-timing-function: cubic-bezier(.2,.8,.2,1) !important; animation-fill-mode: both !important; }
+[data-fx="fade"] { animation-name: fx-fade !important; animation-duration: .6s !important; animation-fill-mode: both !important; }
+[data-fx="float"] { animation: fx-float 3.2s ease-in-out infinite !important; }
+[data-fx="twinkle"] { animation: fx-twinkle 2.4s ease-in-out infinite !important; }
+[data-fx="pulse"] { animation: fx-pulse 2.6s ease-in-out infinite !important; }
+.fx-wave-a { animation: fx-wave 9s linear infinite; }
+.fx-wave-b { animation: fx-wave 14s linear infinite reverse; }
+
+/* 順位が確定した瞬間の演出 */
+@keyframes fx-confirm { 0% { transform: scale(1); filter: brightness(1); } 35% { transform: scale(1.035); filter: brightness(1.35); } 100% { transform: scale(1); filter: brightness(1); } }
+@keyframes fx-punch { 0% { transform: scale(1); } 35% { transform: scale(1.3); } 65% { transform: scale(.94); } 100% { transform: scale(1); } }
+@keyframes fx-jump { 0% { transform: translateY(0) scale(1); } 40% { transform: translateY(-22px) scale(1.12); } 100% { transform: translateY(0) scale(1); } }
+@keyframes fx-ring { 0% { transform: scale(.2); opacity: .95; } 100% { transform: scale(7); opacity: 0; } }
+@keyframes fx-burst { 0% { opacity: 1; transform: translate(0, 0) scale(1.2); } 100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(.4); } }
+[data-fx="confirm"] { animation-name: fx-confirm !important; animation-duration: .7s !important; animation-fill-mode: none !important; }
+[data-fx="punch"] { animation-name: fx-punch !important; animation-duration: .6s !important; animation-timing-function: cubic-bezier(.3,1.4,.5,1) !important; }
+[data-fx="jump"] { animation-name: fx-jump !important; animation-duration: .65s !important; animation-timing-function: cubic-bezier(.3,1.4,.5,1) !important; }
+[data-fx="ring"] { animation-name: fx-ring !important; animation-duration: 1s !important; animation-timing-function: ease-out !important; animation-fill-mode: both !important; }
+[data-fx="burst"] { animation-name: fx-burst !important; animation-duration: .95s !important; animation-timing-function: cubic-bezier(.1,.8,.3,1) !important; animation-fill-mode: both !important; }
+[data-fx="burst"][data-i="0"] { --tx: 160px; --ty: 0px; }
+[data-fx="burst"][data-i="1"] { --tx: 104px; --ty: 60px; }
+[data-fx="burst"][data-i="2"] { --tx: 80px; --ty: 139px; }
+[data-fx="burst"][data-i="3"] { --tx: 0px; --ty: 120px; }
+[data-fx="burst"][data-i="4"] { --tx: -80px; --ty: 139px; }
+[data-fx="burst"][data-i="5"] { --tx: -104px; --ty: 60px; }
+[data-fx="burst"][data-i="6"] { --tx: -160px; --ty: 0px; }
+[data-fx="burst"][data-i="7"] { --tx: -104px; --ty: -60px; }
+[data-fx="burst"][data-i="8"] { --tx: -80px; --ty: -139px; }
+[data-fx="burst"][data-i="9"] { --tx: 0px; --ty: -120px; }
+[data-fx="burst"][data-i="10"] { --tx: 80px; --ty: -139px; }
+[data-fx="burst"][data-i="11"] { --tx: 104px; --ty: -60px; }
+
+/* 神様が画面のすぐ近くからこちらを覗き、ゆらゆら離れて定位置に収まる */
+@keyframes fx-peek {
+  0%   { opacity: 0; transform: translate(0, 70px) scale(3.8) rotate(-4deg); }
+  12%  { opacity: 1; transform: translate(-6px, 66px) scale(3.6) rotate(3deg); }
+  28%  { transform: translate(-16px, 58px) scale(3.4) rotate(6deg); }
+  44%  { transform: translate(12px, 42px) scale(3) rotate(-6deg); }
+  62%  { transform: translate(-8px, 18px) scale(1.9) rotate(5deg); }
+  78%  { transform: translate(5px, -6px) scale(1.18) rotate(-4deg); }
+  90%  { transform: translate(-2px, 3px) scale(.97) rotate(2deg); }
+  100% { opacity: 1; transform: translate(0, 0) scale(1) rotate(0); }
+}
+[data-fx="peek"] { animation-name: fx-peek !important; animation-duration: 2.3s !important; animation-timing-function: ease-in-out !important; animation-fill-mode: both !important; position: relative; z-index: 20; }
+
+@keyframes fx-heave { 0%, 100% { transform: translateY(8px); } 50% { transform: translateY(-14px); } }
+
+/* タロット：選んだ札が回りながら画面へ近づき、最後に大きく開く。 */
+@keyframes tarot-fly {
+  0%   { transform: translate(var(--dx), var(--dy)) scale(var(--s)) rotateY(0deg) rotateZ(-8deg); }
+  55%  { transform: translate(calc(var(--dx) * .15), calc(var(--dy) * .15 - 30px)) scale(.8) rotateY(720deg) rotateZ(6deg); }
+  100% { transform: translate(0, 0) scale(1) rotateY(1260deg) rotateZ(0deg); }
+}
+@keyframes tarot-land { 0%, 100% { box-shadow: 0 0 0 rgba(234, 204, 140, 0); } 50% { box-shadow: 0 0 46px rgba(234, 204, 140, .55); } }
+@keyframes tarot-backdrop { from { opacity: 0; } to { opacity: 1; } }
+@keyframes tarot-caption { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+[data-ui="tarot-overlay"] {
+  position: fixed !important; inset: 0 !important; z-index: 1000 !important;
+  display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 22px !important;
+  background: rgba(5, 9, 22, .9) !important; cursor: pointer;
+  animation: tarot-backdrop .4s ease both;
+}
+[data-ui="tarot-stage"] { perspective: 1100px; display: flex !important; align-items: center !important; justify-content: center !important; }
+[data-ui="tarot-card"] {
+  position: relative !important; transform-style: preserve-3d;
+  animation: tarot-fly 1.7s cubic-bezier(.22, .7, .2, 1) both;
+  border-radius: 13px; will-change: transform;
+}
+[data-ui="tarot-face-back"], [data-ui="tarot-face-front"] {
+  position: absolute !important; inset: 0 !important; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 13px; overflow: hidden;
+}
+[data-ui="tarot-face-front"] { transform: rotateY(180deg); animation: tarot-land 1.4s ease 1.6s 1 both; }
+[data-ui="tarot-caption"] { display: flex !important; flex-direction: column !important; gap: 4px !important; align-items: center !important; animation: tarot-caption .6s ease 1.5s both; }
+
+/* 運勢の輪：外側 → 中 → 内側の順に、回って所定の位置に落ち着く。 */
+@keyframes tide-ring-settle {
+  0%   { transform: rotate(var(--from)) scale(.9); opacity: 0; animation-timing-function: cubic-bezier(.14, .7, .2, 1); }
+  14%  { opacity: 1; }
+  80%  { transform: rotate(var(--over)) scale(1.01); animation-timing-function: ease-in-out; }
+  92%  { transform: rotate(calc(var(--over) * -.35)) scale(1); animation-timing-function: ease-in-out; }
+  100% { transform: rotate(0deg) scale(1); opacity: 1; }
+}
+@keyframes tide-lock { 0% { opacity: 0; transform: scale(1); } 25% { opacity: .95; } 100% { opacity: 0; transform: scale(1.07); } }
+@keyframes tide-center-in { 0% { opacity: 0; transform: scale(.7); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes tide-pointer-tick { 0% { transform: translateY(-12px); opacity: 0; } 60% { transform: translateY(2px); opacity: 1; } 100% { transform: translateY(0); opacity: 1; } }
+.tide-wheel .tide-ring, .tide-wheel .tide-lock, .tide-wheel .tide-center, .tide-wheel .tide-pointer { transform-origin: 150px 150px; opacity: 0; }
+.tide-wheel[data-play="1"] .tide-ring { animation: tide-ring-settle var(--dur, 1.8s) linear var(--delay, 0s) both; }
+.tide-wheel[data-play="1"] .tide-lock { animation: tide-lock .9s ease-out var(--delay, 0s) both; }
+.tide-wheel[data-play="1"] .tide-center { animation: tide-center-in .7s cubic-bezier(.2, .9, .2, 1) 3.0s both; }
+.tide-wheel[data-play="1"] .tide-pointer { animation: tide-pointer-tick .6s cubic-bezier(.2, .9, .2, 1) 3.2s both; transform-origin: 150px 6px; }
+
+/* 詳細画面は右からすっと入る。中身の順次表示は止めて、画面ごと動かす。 */
+@keyframes screen-push { from { opacity: 0; transform: translateX(34px); } to { opacity: 1; transform: translateX(0); } }
+[data-layer="detail"] { animation: screen-push .3s cubic-bezier(.2, .8, .2, 1) backwards; }
+[data-layer="detail"] > div > div > * { animation: none !important; }
+.tide-wheel[data-play="2"] .tide-ring, .tide-wheel[data-play="2"] .tide-center, .tide-wheel[data-play="2"] .tide-pointer { animation: none; opacity: 1; }

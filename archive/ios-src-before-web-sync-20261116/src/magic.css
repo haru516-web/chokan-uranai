@@ -1,0 +1,268 @@
+/* ===== 追加の演出（用語ポップ・儀式・タップの魔法・画面の登場） ===== */
+@keyframes fx-star { 0% { opacity: 0; transform: scale(.2) rotate(-70deg); } 60% { opacity: 1; transform: scale(1.45) rotate(8deg); } 100% { opacity: 1; transform: scale(1) rotate(0); } }
+@keyframes fx-orb { 0%, 100% { transform: translateY(0) scale(1); filter: brightness(1); } 50% { transform: translateY(-5px) scale(1.06); filter: brightness(1.18); } }
+@keyframes fx-nudge { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(3px, -3px); } }
+@keyframes fx-spin { to { transform: rotate(360deg); } }
+@keyframes fx-shimmer { 0% { transform: translateX(-130%) skewX(-18deg); } 55%, 100% { transform: translateX(360%) skewX(-18deg); } }
+@keyframes fx-breathe { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.16); } }
+@keyframes fx-kenburns { 0% { transform: scale(1) translate(0, 0); } 100% { transform: scale(1.12) translate(-2%, -2%); } }
+@keyframes fx-drift { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(6%, -5%) scale(1.15); } 100% { transform: translate(0, 0) scale(1); } }
+@keyframes fx-rise { 0% { transform: translateY(0); opacity: 0; } 12% { opacity: .9; } 100% { transform: translateY(-105vh); opacity: 0; } }
+@keyframes fx-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+[data-fx="star"] { animation: fx-star .5s cubic-bezier(.3,1.5,.5,1) both !important; }
+[data-fx="orb"] { animation: fx-orb 3.4s ease-in-out infinite !important; }
+[data-fx="nudge"] { display: inline-block; animation: fx-nudge 1.4s ease-in-out infinite !important; }
+[data-fx="spin"] { animation: fx-spin 26s linear infinite !important; }
+[data-fx="breathe"] { animation: fx-breathe 3.2s ease-in-out infinite !important; }
+
+/* 画面を切り替えたとき、上から順にふわっと現れる */
+[data-screen] > div > div > * { animation: fx-up .55s cubic-bezier(.2,.8,.2,1) backwards; }
+[data-screen] > div > div > *:nth-child(2) { animation-delay: 60ms; }
+[data-screen] > div > div > *:nth-child(3) { animation-delay: 120ms; }
+[data-screen] > div > div > *:nth-child(4) { animation-delay: 180ms; }
+[data-screen] > div > div > *:nth-child(5) { animation-delay: 240ms; }
+[data-screen] > div > div > *:nth-child(6) { animation-delay: 300ms; }
+[data-screen] > div > div > *:nth-child(7) { animation-delay: 360ms; }
+[data-screen] > div > div > *:nth-child(n+8) { animation-delay: 420ms; }
+
+/* ボタン・カードの手ざわり */
+[data-ui="gold"] { position: relative; overflow: hidden; transition: transform .16s ease, box-shadow .2s ease; box-shadow: 0 6px 22px rgba(234,204,140,.22); }
+[data-ui="gold"]::after { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 38%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent); animation: fx-shimmer 3.6s ease-in-out infinite; pointer-events: none; }
+[data-ui="gold"]:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(234,204,140,.4); }
+[data-ui="gold"]:active, [data-ui="quiet"]:active, [data-ui="chip"]:active, [data-ui="tap"]:active { transform: scale(.96); }
+[data-ui="quiet"], [data-ui="chip"], [data-ui="tap"] { transition: transform .16s ease, border-color .2s ease, box-shadow .2s ease, background-color .2s ease; }
+[data-ui="quiet"]:hover, [data-ui="chip"]:hover, [data-ui="tap"]:hover { border-color: #eacc8c; box-shadow: 0 0 22px rgba(234,204,140,.2); transform: translateY(-2px); }
+[data-ui="fold-body"] { animation: fx-up .42s cubic-bezier(.2,.8,.2,1) both; }
+[data-ui="fold-mark"] { transition: transform .3s cubic-bezier(.3,1.4,.5,1); }
+[data-ui="fold-mark"][data-open="true"] { transform: rotate(180deg); }
+[data-ui="art"] { overflow: hidden; }
+[data-ui="art"] > * { animation: fx-kenburns 16s ease-in-out infinite alternate; }
+[data-ui="tab"] { position: relative; }
+[data-ui="tab"][data-active="true"]::after { content: ""; position: absolute; left: 16%; right: 16%; bottom: -3px; height: 3px; border-radius: 3px; background: var(--accent); box-shadow: 0 0 14px 2px var(--accent); animation: fx-pop .4s cubic-bezier(.2,.8,.2,1) both; }
+[data-ui="tab"][data-active="true"] [data-ui="tab-mark"] { animation: fx-jump .55s cubic-bezier(.3,1.4,.5,1); text-shadow: 0 0 12px var(--accent); }
+[data-ui="field"] { transition: border-color .2s ease, box-shadow .25s ease; }
+[data-ui="field"]:focus { border-color: #eacc8c !important; box-shadow: 0 0 0 3px rgba(234,204,140,.18), 0 0 26px rgba(234,204,140,.22); outline: none; }
+[data-ui="field"][data-ok="true"] { border-color: #9fd8c7 !important; }
+[data-ui="seal"] { animation: fx-breathe 3.2s ease-in-out infinite; box-shadow: 0 0 18px rgba(234,204,140,.35); }
+
+/* 鑑定書の章をつなぐ糸 */
+@keyframes fx-thread { from { transform: scaleY(0); opacity: 0; } to { transform: scaleY(1); opacity: 1; } }
+[data-fx="thread"] { transform-origin: top; animation: fx-thread 1.4s .3s cubic-bezier(.2,.8,.2,1) both !important; }
+
+/* 人生の波 */
+@keyframes wave-draw { from { stroke-dashoffset: 1400; } to { stroke-dashoffset: 0; } }
+@keyframes wave-pulse { 0%, 100% { opacity: .9; transform: scale(.8); } 50% { opacity: .2; transform: scale(1.35); } }
+@keyframes fx-grow-up { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+.wave-draw { stroke-dasharray: 1400; animation: wave-draw 1.8s cubic-bezier(.4,0,.2,1) both; }
+.wave-area { animation: fx-fade 1.2s .8s both; }
+.wave-dot { animation: fx-pop .5s cubic-bezier(.3,1.5,.5,1) both; transform-box: fill-box; transform-origin: center; }
+.wave-pulse { animation: wave-pulse 2.2s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+[data-fx="grow-up"] { transform-origin: bottom; animation: fx-grow-up .6s cubic-bezier(.2,.8,.2,1) both !important; }
+
+/* 背景：ゆっくり漂う光と、立ちのぼる星くず */
+.ambient { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.ambient b { position: absolute; width: 60%; aspect-ratio: 1; border-radius: 50%; filter: blur(70px); opacity: .2; background: var(--accent, #eacc8c); transition: background-color 1.2s ease; animation: fx-drift 22s ease-in-out infinite; }
+.ambient b:nth-child(1) { left: -22%; top: -12%; }
+.ambient b:nth-child(2) { right: -26%; top: 34%; opacity: .12; animation-duration: 30s; animation-direction: reverse; background: #6f8fe0; }
+.ambient b:nth-child(3) { left: 8%; bottom: -30%; opacity: .13; animation-duration: 26s; }
+.ambient i { position: absolute; bottom: -20px; font-style: normal; color: var(--accent, #eacc8c); opacity: 0; animation: fx-rise linear infinite; transition: color 1.2s ease; }
+
+/* タップした場所から散る光 */
+.magic-layer { position: fixed; inset: 0; z-index: 3000; pointer-events: none; overflow: hidden; }
+.magic-ring { position: absolute; width: 16px; height: 16px; margin: -8px 0 0 -8px; border: 2px solid #eacc8c; border-radius: 50%; animation: magic-ring .7s ease-out both; }
+.magic-spark { position: absolute; margin: -8px 0 0 -6px; color: #fbf3e0; text-shadow: 0 0 8px #eacc8c; animation: magic-spark .7s cubic-bezier(.1,.8,.3,1) both; }
+@keyframes magic-ring { from { transform: scale(.3); opacity: .9; } to { transform: scale(4.2); opacity: 0; } }
+@keyframes magic-spark { from { transform: translate(0, 0) scale(1.2); opacity: 1; } to { transform: translate(var(--mx), var(--my)) scale(.3) rotate(120deg); opacity: 0; } }
+
+/* 用語ポップ */
+.gloss-layer { position: fixed; inset: 0; z-index: 2000; display: flex; align-items: flex-end; justify-content: center; }
+.gloss-scrim { position: absolute; inset: 0; border: 0; padding: 0; background: rgba(5, 9, 19, .62); backdrop-filter: blur(5px); animation: fx-fade .25s both; cursor: pointer; }
+.gloss-sheet { position: relative; width: 100%; max-width: 520px; max-height: 82dvh; overflow-y: auto; margin: 0 10px calc(10px + env(safe-area-inset-bottom)); padding: 12px 20px 18px; border: 1.5px solid var(--gloss); border-radius: 26px; color: #fbf3e0;
+  background: linear-gradient(165deg, color-mix(in srgb, var(--gloss) 22%, #17213a) 0%, #141e37 55%); box-shadow: 0 -8px 60px color-mix(in srgb, var(--gloss) 30%, transparent), 0 20px 50px rgba(0,0,0,.6);
+  animation: gloss-in .42s cubic-bezier(.2,.9,.25,1.08) both; font-family: "Zen Maru Gothic", "Yu Gothic UI", sans-serif; }
+.gloss-layer[data-closing="true"] .gloss-sheet { animation: gloss-out .22s ease-in both; }
+.gloss-layer[data-closing="true"] .gloss-scrim { animation: fx-fade .22s reverse both; }
+@keyframes gloss-in { from { transform: translateY(60%) scale(.94); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+@keyframes gloss-out { to { transform: translateY(40%); opacity: 0; } }
+.gloss-grip { display: block; width: 44px; height: 4px; margin: 0 auto 12px; border-radius: 2px; background: #5a6788; }
+.gloss-head { display: flex; align-items: center; gap: 14px; }
+.gloss-mark { position: relative; display: grid; place-items: center; flex: none; width: 58px; height: 58px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--gloss) 60%, #fff) 0, var(--gloss) 45%, color-mix(in srgb, var(--gloss) 50%, #10172a) 100%); color: #1b2436; animation: fx-pop .5s .08s cubic-bezier(.3,1.5,.5,1) both; }
+.gloss-mark b { font: 400 26px/1 "Dela Gothic One", "Zen Maru Gothic", sans-serif; }
+.gloss-ring { position: absolute; inset: -7px; border: 1px dashed var(--gloss); border-radius: 50%; animation: fx-spin 14s linear infinite; }
+.gloss-kicker { margin: 0; color: var(--gloss); font-size: 12px; font-weight: 800; letter-spacing: 2px; }
+.gloss-title { margin: 0; font-size: 24px; line-height: 1.35; font-weight: 900; }
+.gloss-body { margin: 14px 0 0; font-size: 16px; line-height: 1.8; animation: fx-up .45s .12s both; }
+.gloss-more { margin: 12px 0 0; padding: 10px 12px; border-radius: 14px; background: rgba(13, 19, 36, .7); border: 1px solid #414e6a; color: #bac6dd; font-size: 14px; line-height: 1.7; animation: fx-up .45s .22s both; }
+.gloss-rows { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 8px; }
+.gloss-rows li { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 16px; border: 1px solid color-mix(in srgb, var(--row) 55%, #414e6a); background: color-mix(in srgb, var(--row) 10%, #111a31); font-size: 14px; line-height: 1.6; color: #bac6dd; animation: fx-up .45s both; }
+.gloss-rows li b { display: block; color: #fbf3e0; font-size: 15px; }
+.gloss-row-mark { flex: none; min-width: 52px; text-align: center; color: var(--row); font: 400 24px/1.2 "Dela Gothic One", "Zen Maru Gothic", sans-serif; }
+.gloss-close { display: block; width: 100%; min-height: 50px; margin-top: 16px; border: 1px solid var(--gloss); border-radius: 14px; background: transparent; color: var(--gloss); font-size: 16px; font-weight: 800; cursor: pointer; transition: background-color .2s, color .2s; }
+.gloss-close:hover, .gloss-close:focus-visible { background: var(--gloss); color: #1b2436; outline: none; }
+
+/* 鑑定の儀式 */
+.ritual { position: fixed; inset: 0; z-index: 2500; overflow: hidden; color: #fbf3e0; cursor: pointer; background: #070a15 center / cover no-repeat; animation: fx-fade .5s both; font-family: "Zen Maru Gothic", "Yu Gothic UI", sans-serif; }
+.ritual[data-leaving="true"] { animation: ritual-out .62s ease-in both; pointer-events: none; }
+@keyframes ritual-out { 0% { opacity: 1; filter: brightness(1); } 45% { filter: brightness(1.5); } 100% { opacity: 0; filter: brightness(1.7); transform: scale(1.05); } }
+.ritual-sky { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.ritual-god { position: absolute; left: var(--cx, 50%); top: var(--cy, 36%); width: calc(var(--r, 150px) * .94); aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; display: grid; place-items: center;
+  background: radial-gradient(circle, color-mix(in srgb, var(--tint) 22%, #0c1226) 0, rgba(8, 12, 28, .9) 62%, rgba(8, 12, 28, 0) 72%); animation: fx-float 3.4s ease-in-out infinite; transition: filter .9s, scale .9s cubic-bezier(.2,.8,.2,1); filter: drop-shadow(0 0 18px var(--tint)); }
+.ritual[data-opened="true"] .ritual-god { filter: drop-shadow(0 0 34px #eacc8c) brightness(1.25); scale: 1.12; }
+.ritual-god-beat { width: 86%; animation: ritual-beat .7s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes ritual-beat { 0% { transform: scale(1.16); filter: brightness(1.9); } 100% { transform: scale(1); filter: brightness(1); } }
+.ritual-read { position: absolute; left: 50%; top: calc(var(--cy, 36%) + var(--r, 150px) * 1.37); width: min(92vw, 400px); transform: translateX(-50%); display: grid; justify-items: center; gap: 4px; text-align: center; text-shadow: 0 1px 12px #050814, 0 0 3px #050814; }
+.ritual-now { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: .06em; animation: ritual-rise .55s cubic-bezier(.2,.8,.2,1) both; }
+.ritual-now small { display: block; margin-top: 2px; color: #bac6dd; font-size: 13px; font-weight: 500; letter-spacing: .04em; }
+.ritual[data-opened="true"] .ritual-now { color: #eacc8c; font-size: 22px; }
+@keyframes ritual-rise { 0% { opacity: 0; transform: translateY(10px); filter: blur(6px); } 100% { opacity: 1; transform: none; filter: none; } }
+.ritual-percent { margin: 2px 0 0; color: var(--tint); font: 200 44px/1 "Segoe UI", "Helvetica Neue", sans-serif; font-variant-numeric: tabular-nums; letter-spacing: .02em; transition: opacity .6s; }
+.ritual-percent i { margin-left: 3px; font-size: 15px; font-style: normal; font-weight: 400; opacity: .7; }
+.ritual[data-opened="true"] .ritual-percent { opacity: 0; }
+.ritual-found { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.ritual-found li { padding: 4px 11px; border-radius: 99px; border: 1px solid #2c3854; background: rgba(12, 18, 38, .62); color: #56637f; font-size: 13px; font-weight: 800; transition: border-color .4s, color .4s; }
+.ritual-found li[data-state="now"] { border-color: var(--tint); color: var(--tint); animation: fx-pulse 1.1s ease-in-out infinite; }
+.ritual-found li[data-state="done"] { border-color: #8a7a52; color: #eacc8c; animation: fx-pop .5s cubic-bezier(.3,1.5,.5,1) both; }
+.ritual-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.ritual-skip { position: absolute; left: 0; right: 0; bottom: max(18px, env(safe-area-inset-bottom)); margin: 0; text-align: center; color: #9aa7c4; font-size: 13px; text-shadow: 0 1px 8px #050814; animation: fx-pulse 2.2s ease-in-out infinite; }
+
+/* サイトに入るときのオープニング（鑑定の儀式と同じ舞台を、凪の海で見せる） */
+.opening { z-index: 2600; animation: none; --tint: #eacc8c; }
+.opening[data-leaving="true"] { animation: opening-out .8s ease-in both; }
+@keyframes opening-out { 0% { opacity: 1; filter: brightness(1); } 40% { filter: brightness(1.35); } 100% { opacity: 0; filter: brightness(1.5); } }
+.opening-god { animation: fx-float 3.4s ease-in-out infinite, opening-god-in 1.1s 1.15s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes opening-god-in { 0% { opacity: 0; filter: brightness(3) blur(8px) drop-shadow(0 0 0 #eacc8c); } 100% { opacity: 1; filter: brightness(1) blur(0px) drop-shadow(0 0 18px #eacc8c); } }
+.opening-read { gap: 6px; }
+.opening-kicker { margin: 0; color: #bac6dd; font-size: 13px; font-weight: 700; letter-spacing: .12em; animation: ritual-rise .8s 1.5s both; }
+.opening-title { margin: 0; display: flex; gap: .16em; font-size: clamp(38px, 11vw, 56px); line-height: 1.25; font-weight: 900; letter-spacing: .08em; }
+.opening-title span { display: inline-block; background: linear-gradient(180deg, #fff6dc 10%, #eacc8c 55%, #b88f4a 100%); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; filter: drop-shadow(0 0 14px rgba(234, 204, 140, .55)); animation: opening-letter .8s cubic-bezier(.2,.9,.2,1) both; }
+@keyframes opening-letter { 0% { opacity: 0; transform: translateY(18px) scale(1.5); filter: blur(10px) drop-shadow(0 0 0 transparent); } 60% { opacity: 1; transform: translateY(0) scale(.96); } 100% { opacity: 1; transform: none; filter: drop-shadow(0 0 14px rgba(234, 204, 140, .55)); } }
+.opening-line { margin: 2px 0 0; color: #fbf3e0; font-size: 16px; font-weight: 700; letter-spacing: .08em; animation: ritual-rise .9s 2.4s both; }
+.opening .ritual-skip { animation: fx-fade .6s 1.2s both; }
+
+/* 占い結果が確定した瞬間（resultFx の canvas と、数字・ポスターの動き） */
+.result-fx { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 2400; pointer-events: none; }
+@keyframes fx-lock { 0% { transform: scale(1); filter: brightness(1); } 20% { transform: scale(1.8); filter: brightness(2.3); } 52% { transform: scale(.92); filter: brightness(1.3); } 76% { transform: scale(1.08); } 100% { transform: scale(1); filter: brightness(1); } }
+[data-fx="lock"] { animation: fx-lock .85s cubic-bezier(.2,.9,.2,1) both !important; }
+@keyframes fx-quake { 0%, 100% { transform: none; filter: brightness(1); } 10% { transform: translate(-8px, 5px) rotate(-.7deg); filter: brightness(1.8); } 24% { transform: translate(7px, -5px) rotate(.6deg); } 40% { transform: translate(-5px, 3px) rotate(-.3deg); filter: brightness(1.25); } 58% { transform: translate(4px, -2px); } 76% { transform: translate(-2px, 1px); } }
+@keyframes fx-quake2 { 0%, 100% { transform: none; filter: brightness(1); } 10% { transform: translate(8px, 4px) rotate(.7deg); filter: brightness(1.8); } 24% { transform: translate(-7px, -5px) rotate(-.6deg); } 40% { transform: translate(5px, 3px) rotate(.3deg); filter: brightness(1.25); } 58% { transform: translate(-4px, -2px); } 76% { transform: translate(2px, 1px); } }
+[data-fx="quake"] { animation: fx-quake .55s ease-out both !important; }
+[data-fx="quake2"] { animation: fx-quake2 .55s ease-out both !important; }
+
+/* タロットをめくったときの光景（tarotFx）。奥の一枚は札の後ろ、手前の一枚は札の前に重ねる。 */
+.tarot-fx { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.tarot-fx-back { z-index: -1; }
+.tarot-fx-front { z-index: 2; }
+
+/* ===== ガイド：順番に現れる演出（鋭い出だし・オーバーシュート・ピタッと着地） ===== */
+@keyframes gd-left { 0% { opacity: 0; transform: translateX(-110px) skewX(-10deg); filter: brightness(1.9); } 55% { opacity: 1; transform: translateX(9px) skewX(2deg); filter: brightness(1.15); } 78% { transform: translateX(-3px); } 100% { opacity: 1; transform: none; filter: none; } }
+@keyframes gd-right { 0% { opacity: 0; transform: translateX(110px) skewX(10deg); filter: brightness(1.9); } 55% { opacity: 1; transform: translateX(-9px) skewX(-2deg); filter: brightness(1.15); } 78% { transform: translateX(3px); } 100% { opacity: 1; transform: none; filter: none; } }
+@keyframes gd-drop { 0% { opacity: 0; transform: translateY(-120px); animation-timing-function: cubic-bezier(.6, 0, 1, .7); } 42% { opacity: 1; transform: translateY(0) scaleY(.9) scaleX(1.04); animation-timing-function: cubic-bezier(.2, .8, .3, 1); } 58% { transform: translateY(-12px) scaleY(1.02); animation-timing-function: cubic-bezier(.6, 0, 1, .7); } 72% { transform: translateY(0) scaleY(.97) scaleX(1.01); } 84% { transform: translateY(-3px); } 100% { opacity: 1; transform: none; } }
+@keyframes gd-pop { 0% { opacity: 0; transform: scale(.35) rotate(-6deg); } 50% { opacity: 1; transform: scale(1.14) rotate(2deg); } 72% { transform: scale(.96) rotate(-1deg); } 100% { opacity: 1; transform: none; } }
+@keyframes gd-char { 0% { opacity: 0; transform: translateY(-46px) scale(1.5); filter: brightness(2); } 55% { opacity: 1; transform: translateY(3px) scale(.94); filter: none; } 100% { opacity: 1; transform: none; } }
+@keyframes gd-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@keyframes gd-zoom { 0% { transform: scale(1.35); filter: brightness(1.8) saturate(1.5); } 60% { transform: scale(.98); filter: none; } 100% { transform: none; } }
+@keyframes gd-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(234, 204, 140, .6); } 50% { box-shadow: 0 0 0 8px rgba(234, 204, 140, 0); } }
+@keyframes gd-wash { 0% { opacity: 0; transform: translateY(-40px); } 100% { opacity: 1; transform: none; } }
+[data-gd="wash"] { animation: gd-wash .7s cubic-bezier(.16, 1, .3, 1) both; }
+[data-gd="list"] > * { animation: gd-left .55s cubic-bezier(.16, 1, .3, 1) both; }
+[data-gd="list"] > :nth-child(3n+2) { animation-name: gd-right; }
+[data-gd="list"] > :nth-child(3n) { animation-name: gd-drop; animation-duration: .7s; }
+[data-gd="list"] > [data-gd="title"] { animation: none !important; }
+[data-gd="list"] > [data-gd="grid"] { animation: none !important; }
+[data-gd="char"] { display: inline-block; animation: gd-char .5s cubic-bezier(.16, 1, .3, 1) both; }
+[data-gd="grid"] > * { animation: gd-pop .55s cubic-bezier(.16, 1, .3, 1) both; }
+[data-gd="grid"] > :nth-child(4n+2) { animation-name: gd-right; }
+[data-gd="grid"] > :nth-child(4n+3) { animation-name: gd-drop; animation-duration: .7s; }
+[data-gd="pulse"] { animation: gd-pulse 1.4s ease-out infinite; }
+.gd-bob { animation: gd-bob 2.2s cubic-bezier(.45, 0, .55, 1) infinite; }
+.gd-zoom { animation: gd-zoom .7s cubic-bezier(.16, 1, .3, 1) both; }
+[data-gd="list"] > :nth-child(1) { animation-delay: 40ms; }
+[data-gd="list"] > :nth-child(2) { animation-delay: 95ms; }
+[data-gd="list"] > :nth-child(3) { animation-delay: 215ms; }
+[data-gd="list"] > :nth-child(4) { animation-delay: 270ms; }
+[data-gd="list"] > :nth-child(5) { animation-delay: 390ms; }
+[data-gd="list"] > :nth-child(6) { animation-delay: 445ms; }
+[data-gd="list"] > :nth-child(7) { animation-delay: 565ms; }
+[data-gd="list"] > :nth-child(8) { animation-delay: 620ms; }
+[data-gd="list"] > :nth-child(9) { animation-delay: 740ms; }
+[data-gd="list"] > :nth-child(10) { animation-delay: 795ms; }
+[data-gd="list"] > :nth-child(11) { animation-delay: 915ms; }
+[data-gd="list"] > :nth-child(12) { animation-delay: 970ms; }
+[data-gd="list"] > :nth-child(13) { animation-delay: 1090ms; }
+[data-gd="list"] > :nth-child(14) { animation-delay: 1145ms; }
+[data-gd="grid"] > :nth-child(1) { animation-delay: 380ms; }
+[data-gd="grid"] > :nth-child(2) { animation-delay: 440ms; }
+[data-gd="grid"] > :nth-child(3) { animation-delay: 550ms; }
+[data-gd="grid"] > :nth-child(4) { animation-delay: 610ms; }
+[data-gd="grid"] > :nth-child(5) { animation-delay: 720ms; }
+[data-gd="grid"] > :nth-child(6) { animation-delay: 780ms; }
+[data-gd="grid"] > :nth-child(7) { animation-delay: 890ms; }
+[data-gd="grid"] > :nth-child(8) { animation-delay: 950ms; }
+@keyframes gd-fade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  [data-gd="list"] > *, [data-gd="grid"] > *, [data-gd="char"], [data-gd="wash"] { animation-name: gd-fade !important; animation-duration: .35s !important; }
+  [data-gd="pulse"], .gd-bob, .gd-zoom { animation: none !important; }
+}
+
+/* ===== ページ先頭へ戻るボタン ===== */
+.to-top { position: fixed; z-index: 900; bottom: max(18px, env(safe-area-inset-bottom)); right: max(14px, calc((100vw - 780px) / 2 + 14px)); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; width: 58px; height: 58px; border-radius: 50%; border: 1px solid #eacc8c; background: rgba(16, 23, 42, .92); color: #eacc8c; font-family: inherit; cursor: pointer; backdrop-filter: blur(6px); box-shadow: 0 6px 22px rgba(0, 0, 0, .45), 0 0 0 0 rgba(234, 204, 140, .4); opacity: 0; transform: translateY(24px) scale(.6); pointer-events: none; transition: opacity .2s ease-out, transform .45s cubic-bezier(.34, 1.56, .64, 1); -webkit-tap-highlight-color: transparent; }
+.to-top[data-show="true"] { opacity: 1; transform: none; pointer-events: auto; }
+.to-top span { font-size: 22px; line-height: 20px; font-weight: 900; }
+.to-top small { font-size: 10px; line-height: 12px; font-weight: 800; }
+.to-top:active { transform: scale(.88); transition-duration: .08s; }
+.to-top:focus-visible { outline: 3px solid #eacc8c; outline-offset: 3px; }
+
+/* ===== ラッキーカラーの天体：手前に止まった色の下に、光だまりが広がる ===== */
+@keyframes oz-glow { 0% { opacity: 0; scale: .3; } 60% { opacity: 1; scale: 1.15; } 100% { opacity: .9; scale: 1; } }
+@keyframes oz-name { from { opacity: 0; translate: -18px 0; } to { opacity: 1; translate: 0 0; } }
+[data-oz="glow"] { animation: oz-glow .9s cubic-bezier(.2, .9, .3, 1.2) 2.7s both; }
+[data-oz="name"] { animation: oz-name .6s cubic-bezier(.16, 1, .3, 1) 2.95s both; }
+@media (prefers-reduced-motion: reduce) {
+  [data-oz="glow"] { animation: none !important; opacity: .9 !important; }
+  [data-oz="name"] { animation: none !important; opacity: 1 !important; }
+}
+
+/* ===== 今日の月（海の天球）：スクロール連動は JS、ここは常に流れる環境の動き（瞬き・波紋・脈動） ===== */
+@keyframes sg-twinkle { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
+@keyframes sg-ping { 0% { transform: scale(.7); opacity: .95; } 100% { transform: scale(2.1); opacity: 0; } }
+@keyframes sg-star { 0%, 100% { transform: scale(1) rotate(0deg); } 50% { transform: scale(1.22) rotate(45deg); } }
+@keyframes sg-halo { 0%, 100% { opacity: .1; transform: scale(1); } 50% { opacity: .32; transform: scale(1.35); } }
+@keyframes sg-sphere { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.18); } }
+.sg-twinkle { animation: sg-twinkle 2.4s ease-in-out infinite; }
+.sg-ping, .sg-star, .sg-moon-halo { transform-box: fill-box; transform-origin: center; }
+.sg-ping { animation: sg-ping 2.2s ease-out infinite; }
+.sg-star { animation: sg-star 4.5s ease-in-out infinite; }
+.sg-moon-halo { animation: sg-halo 3s ease-in-out infinite; }
+.sg-sphere { animation: sg-sphere 6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .sg-twinkle, .sg-ping, .sg-star, .sg-moon-halo, .sg-sphere { animation: none !important; } }
+
+/* 星が左から順に満ちていく（遅れは星ごとに style で指定するため !important を使わない） */
+@keyframes fx-fill { 0% { opacity: 0; transform: scale(.2) rotate(-80deg); } 55% { opacity: 1; transform: scale(1.55) rotate(10deg); } 80% { transform: scale(.92) rotate(-2deg); } 100% { opacity: 1; transform: scale(1) rotate(0); } }
+[data-fx="fill"] { animation: fx-fill .55s cubic-bezier(.3, 1.2, .5, 1) both; }
+
+/* ===== カードの縁：全体がほんのり光り、明るい光が縁をなぞって一周する ===== */
+@property --glow-a { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+@keyframes glow-run { to { --glow-a: 360deg; } }
+[data-glow-card]::before, [data-glow-card]::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; box-sizing: border-box;
+  padding: 1.5px;
+  background: conic-gradient(from var(--glow-a), rgba(234, 204, 140, .38) 0deg, rgba(234, 204, 140, .38) 215deg, rgba(255, 232, 160, .95) 300deg, #fff9e0 335deg, rgba(234, 204, 140, .38) 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: glow-run var(--glow-dur, 6s) linear var(--glow-delay, 0s) infinite;
+}
+[data-glow-card]::after { padding: 5px; filter: blur(6px); opacity: .85; }
+
+/* 年・月・日のカードが、順に弾んで現れる */
+[data-gd="pop"] { animation: gd-pop .6s cubic-bezier(.2, .9, .3, 1.2) both; }
+
+/* タロットを選ぶ前：札が順に、波のように揺れる（22 枚を端から端へ、一巡したら少し休んで繰り返す） */
+@keyframes gd-sway {
+  0%   { transform: translateY(0) rotate(0deg); filter: none; }
+  7%   { transform: translateY(-9px) rotate(-5deg); filter: brightness(1.45) saturate(1.2); }
+  15%  { transform: translateY(2px) rotate(3.5deg); filter: brightness(1.15); }
+  23%  { transform: translateY(-3px) rotate(-1.5deg); filter: none; }
+  31%  { transform: translateY(0) rotate(0deg); }
+  100% { transform: translateY(0) rotate(0deg); }
+}
+[data-gd="sway"] { animation: gd-sway 5.2s cubic-bezier(.3, .7, .3, 1) infinite; transform-origin: 50% 90%; will-change: transform; }

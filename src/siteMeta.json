@@ -1,0 +1,9 @@
+{
+  "categories": [
+    { "id": "self", "name": "自分を見失うとき" },
+    { "id": "work", "name": "仕事・創作・実力" },
+    { "id": "relation", "name": "人との距離" },
+    { "id": "time", "name": "時間・記憶・変化" }
+  ],
+  "featuredQuestions": ["Q01", "Q04", "Q08", "Q14", "Q16", "Q20"]
+}

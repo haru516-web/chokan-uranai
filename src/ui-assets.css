@@ -1,0 +1,63 @@
+/* 画像素材（assets/ui/）の差し込み口。カード・ボタン・下部タブバーの背景に、画像を敷く。
+   画像のアドレスは、起動時に src/uiAssets.ts が、下の変数へ入れる（CSS の中に url() は書けない）。画像が無いあいだは、いまの見た目のまま。
+   依頼メモは docs/codex-ui-assets.md。 */
+
+/* 全カード（Card 部品と、直接カード風に作った画面も含む） */
+[data-ui="card"], [data-glow-card] { background-image: var(--ui-card-bg, none); background-size: 100% 100%; background-repeat: no-repeat; }
+/* 金色の主要ボタン */
+[data-ui="gold"] { background-image: var(--ui-button-bg, none); background-size: 100% 100%; background-repeat: no-repeat; }
+/* 控えめなボタン・チップ */
+[data-ui="quiet"], [data-ui="chip"] { background-image: var(--ui-quiet-bg, none); background-size: 100% 100%; background-repeat: no-repeat; }
+/* 部品の形（縦横比）に合わせて、画像を選ぶ。形は src/cardGlow.ts が測って、data-shape に入れる（wide=横長 / tall=縦長 / short=幅が狭い）。 */
+[data-glow-card][data-shape="wide"] { background-image: var(--ui-card-wide-bg, var(--ui-card-bg, none)); }
+[data-glow-card][data-shape="tall"] { background-image: var(--ui-card-tall-bg, var(--ui-card-bg, none)); }
+[data-ui="gold"][data-shape="short"] { background-image: var(--ui-button-short-bg, var(--ui-button-bg, none)); }
+[data-ui="quiet"][data-shape="short"], [data-ui="chip"][data-shape="short"] { background-image: var(--ui-quiet-short-bg, var(--ui-quiet-bg, none)); }
+.has-field [data-ui="field"][data-shape="short"] { background-image: var(--ui-field-short-bg, var(--ui-field-bg)); }
+/* 色つきの背景を、部品の側に直接持っているカードにも、画像を敷く（色は、縁の色と文字・印に残る）。 */
+.has-card [data-tinted] { background-image: var(--ui-card-bg) !important; background-size: 100% 100% !important; background-repeat: no-repeat !important; }
+.has-card [data-tinted][data-shape="wide"] { background-image: var(--ui-card-wide-bg, var(--ui-card-bg)) !important; }
+.has-card [data-tinted][data-shape="tall"] { background-image: var(--ui-card-tall-bg, var(--ui-card-bg)) !important; }
+/* 下部タブバー */
+/* 画像の上の角が丸いので、左右と上を少しはみ出させて、角を見えなくする（画面の端にぴったり付く形）。 */
+[role="tablist"] { background-image: var(--ui-tabbar-bg, none); background-size: 112% 100%; background-position: center top; background-repeat: no-repeat; }
+
+/* 右側のスクロールバーは出さない（スクロールはそのまま動く）。 */
+* { scrollbar-width: none; -ms-overflow-style: none; }
+*::-webkit-scrollbar { display: none; width: 0; height: 0; }
+
+/* ── 追加の画像素材（届いたものだけ働く。画像が無いあいだは、いまの見た目のまま） ──
+   画像が置かれると、src/uiAssets.ts が、変数（--ui-○○-bg）と、目印の class（has-○○）を入れる。
+   色や背景が、部品の側に直接書かれているもの（色つきの面など）は、!important で、画像を上に敷く。 */
+.has-header [data-ui="header"] { background-image: var(--ui-header-bg); background-size: 112% 100%; background-position: center bottom; background-repeat: no-repeat; }
+.has-help [data-ui="help"] { background-image: var(--ui-help-bg); background-size: 100% 100%; background-repeat: no-repeat; background-color: transparent !important; border-color: transparent !important; }
+.has-round [data-ui="round"] { background-image: var(--ui-round-bg); background-size: 100% 100%; background-repeat: no-repeat; background-color: transparent !important; border-color: transparent !important; }
+.has-door [data-skin="door"] { background-image: var(--ui-door-bg) !important; background-size: 100% 100% !important; background-repeat: no-repeat !important; }
+.has-question [data-skin="question"] { background-image: var(--ui-question-bg) !important; background-size: 100% 100% !important; background-repeat: no-repeat !important; }
+.has-field [data-ui="field"] { background-image: var(--ui-field-bg); background-size: 100% 100%; background-repeat: no-repeat; }
+.has-chip-active [data-ui="chip"][data-active="true"] { background-image: var(--ui-chip-active-bg); background-size: 100% 100%; background-repeat: no-repeat; }
+.has-badge [data-ui="badge"] { background-image: var(--ui-badge-bg); background-size: 100% 100%; background-repeat: no-repeat; }
+.has-icon-frame [data-ui="icon-frame"] { background-image: var(--ui-icon-frame-bg); background-size: 100% 100%; background-repeat: no-repeat; }
+.has-tab-active [data-ui="tab"][data-active="true"] { background-image: var(--ui-tab-active-bg); background-size: 100% 100%; background-repeat: no-repeat; }
+
+/* 「先頭へ」ボタンも、丸ボタンの画像にする。 */
+.has-round .to-top { background-image: var(--ui-round-bg); background-size: 100% 100%; background-repeat: no-repeat; background-color: transparent; border-color: transparent; }
+
+/* カードの中の、いちだん暗い小パネル（「今日の一手」・画数の表示など）。専用の画像（panel-inset.webp）が届いたら働く。 */
+.has-inset [data-inset] { background-image: var(--ui-inset-bg) !important; background-size: 100% 100% !important; background-repeat: no-repeat !important; }
+.has-inset [data-inset][data-shape="wide"] { background-image: var(--ui-inset-wide-bg, var(--ui-inset-bg)) !important; }
+.has-inset [data-inset][data-shape="tall"] { background-image: var(--ui-inset-tall-bg, var(--ui-inset-bg)) !important; }
+
+/* 小さな枠つきの四角・丸（アイコンの枠、番号の丸）にも、アイコン枠の画像を敷く。 */
+.has-icon-frame [data-icon-frame] { background-image: var(--ui-icon-frame-bg) !important; background-size: 100% 100% !important; background-repeat: no-repeat !important; }
+
+/* 結果ポスター：順位で色が変わるので、色は塗らず、枠の画像だけを重ねる（角は元の比率のまま、辺だけ伸ばす）。 */
+.has-poster [data-poster]::after { content: ""; position: absolute; inset: 0; border: 52px solid transparent; border-image: var(--ui-poster-frame) 170 / 52px stretch; pointer-events: none; z-index: 3; }
+/* 丸いメダル（神様の顔）：金〜水色の枠を重ねる。 */
+.has-medal [data-medal] { border-color: transparent !important; }
+.has-medal [data-medal]::after { content: ""; position: absolute; inset: 0; background: var(--ui-medal) center / 100% 100% no-repeat; pointer-events: none; z-index: 3; }
+/* カレンダーの日付のマス */
+.has-cell [data-cell] { background-image: var(--ui-cell); background-size: 100% 100%; background-repeat: no-repeat; }
+.has-cell [data-cell][aria-selected="true"] { background-image: var(--ui-cell-selected, var(--ui-cell)); background-color: transparent !important; }
+/* 小さなラベル */
+.has-label [data-label] { background-image: var(--ui-label); background-size: 100% 100%; background-repeat: no-repeat; border-color: transparent !important; }

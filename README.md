@@ -50,3 +50,13 @@
 
 漢字の画数データは KANJIDIC2（© Electronic Dictionary Research and Development Group、[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)）から作っています。
 画数データの部分は同じ条件（CC BY-SA 4.0）で利用されます。月の位置の計算は Meeus『Astronomical Algorithms』の主要な項を使っています。
+
+## iOSネイティブ版（Expo）
+
+Web版（chokan-uranai-web）の画面・鑑定ロジックを `src/` に移し、Expo の DOM コンポーネント（`src/DomApp.tsx`）としてネイティブアプリ内で動かします。触覚フィードバックだけは `expo-haptics` に橋渡ししています。
+
+    npm install
+    npx expo start      # 開発確認
+    eas build -p ios    # 配布用ビルド（手動で実行）
+
+画像を `assets/art` に追加したら `src/artFiles.ts` にも追記してください。
