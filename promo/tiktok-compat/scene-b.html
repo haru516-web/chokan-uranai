@@ -1,0 +1,226 @@
+<!doctype html>
+<!--
+  TikTok 用「既読スルーあるある」動画の中身（1080×1920・縦）。
+  window.render(秒) を呼ぶと、その時刻の1コマを描く。record.mjs がこれを1コマずつ撮って動画にする。
+  相性の点数と文章は、アプリの相性の計算（src/pairing.ts）で 春の浅瀬 × 夏の沿岸 を読んだ実際の結果。
+-->
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: Zen; font-weight: 500; src: url(../../assets/fonts/ZenMaruGothic-500.woff2); }
+  @font-face { font-family: Zen; font-weight: 700; src: url(../../assets/fonts/ZenMaruGothic-700.woff2); }
+  @font-face { font-family: Zen; font-weight: 900; src: url(../../assets/fonts/ZenMaruGothic-900.woff2); }
+  :root { --gold: #eacc8c; --pink: #f6a9c4; --ink: #0b1224; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--ink); }
+  body { font-family: Zen, 'Yu Gothic', sans-serif; color: #fff; font-weight: 900; }
+  #stage { position: absolute; inset: 0; overflow: hidden; }
+  .abs { position: absolute; }
+  .layer { position: absolute; inset: 0; }
+  .center { left: 0; right: 0; text-align: center; }
+  .shadow { text-shadow: 0 6px 24px rgba(0,0,0,.65), 0 2px 4px rgba(0,0,0,.6); }
+  #bg { position: absolute; left: -60px; top: -60px; width: 1200px; height: 2040px; background: url(../../assets/art/ritual-bg.webp) center/cover; }
+  #tint { position: absolute; inset: 0; }
+  .heart { position: absolute; color: var(--pink); font-weight: 900; }
+  .bub { position: absolute; font-size: 58px; padding: 28px 44px; border-radius: 56px; }
+  .bub.me { right: 90px; background: linear-gradient(135deg,#f6a9c4,#e98bb0); color: #3a1230; border-bottom-right-radius: 14px; box-shadow: 0 14px 34px rgba(0,0,0,.4); }
+  .bub.you { left: 90px; background: rgba(255,255,255,.93); border-bottom-left-radius: 14px; padding: 36px 48px; box-shadow: 0 14px 34px rgba(0,0,0,.4); }
+  .dot { display: inline-block; width: 24px; height: 24px; border-radius: 50%; background: #9aa3b8; margin: 0 8px; }
+  .read { position: absolute; right: 100px; font-size: 40px; color: #cfd8ee; font-weight: 700; }
+  .card { position: absolute; width: 440px; text-align: center; }
+  .card .who { display: inline-block; font-size: 46px; padding: 8px 34px; border-radius: 40px; background: rgba(11,18,36,.7); border: 3px solid; }
+  .card img { width: 440px; height: 440px; display: block; filter: drop-shadow(0 18px 30px rgba(0,0,0,.55)); }
+  .card .band { font-size: 64px; margin-top: -10px; }
+  .card .sub { font-size: 40px; font-weight: 700; color: #dfe6f5; margin-top: 6px; }
+  .ring { position: absolute; border-radius: 50%; border: 6px solid var(--gold); }
+  .bar { position: absolute; left: 150px; width: 780px; }
+  .bar .lab { font-size: 54px; display: flex; justify-content: space-between; align-items: baseline; }
+  .bar .track { height: 26px; border-radius: 13px; background: rgba(255,255,255,.16); margin-top: 14px; overflow: hidden; }
+  .bar .fill { height: 100%; border-radius: 13px; }
+  #search { position: absolute; left: 110px; width: 860px; height: 128px; border-radius: 64px; background: rgba(255,255,255,.95); color: #1b2233; display: flex; align-items: center; padding: 0 44px; font-size: 62px; gap: 26px; box-shadow: 0 16px 40px rgba(0,0,0,.45); }
+  #caret { display: inline-block; width: 5px; height: 66px; background: #2f6bff; margin-left: 4px; vertical-align: middle; }
+  #flash { position: absolute; inset: 0; background: #fff; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="bg"></div>
+  <div id="tint"></div>
+  <div class="layer" id="hearts"></div>
+
+  <!-- ① フック：既読あるある -->
+  <div class="layer" id="s1">
+    <div class="abs center shadow" id="h1" style="top:300px;font-size:104px">既読ついたのに</div>
+    <div class="abs center shadow" id="h2" style="top:430px;font-size:140px;color:var(--pink)">返信こない夜…</div>
+    <div class="bub me" id="bm" style="top:760px">今度ごはん行かない？</div>
+    <div class="read" id="rd" style="top:905px">既読</div>
+    <div class="bub you" id="by" style="top:1000px"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+    <div class="abs center shadow" id="h3" style="top:1290px;font-size:96px">待つだけなんて</div>
+    <div class="abs center shadow" id="h4" style="top:1410px;font-size:112px;color:var(--gold)">もったいない！</div>
+  </div>
+
+  <!-- ② 二人のタイプ -->
+  <div class="layer" id="s2">
+    <div class="abs center shadow" id="cap2a" style="top:250px;font-size:60px;color:var(--gold)">待つ間に、先に相性を見ちゃおう</div>
+    <div class="abs center shadow" id="cap2b" style="top:340px;font-size:78px">生年月日と名前だけで</div>
+    <div class="card shadow" id="me">
+      <div class="who" style="border-color:#a9d9a0;color:#c9f0c0">あなた</div>
+      <img src="../../assets/art/resident-01.webp">
+      <div class="band" style="color:#c9f0c0">春の浅瀬</div>
+      <div class="sub">火花の発見者</div>
+    </div>
+    <div class="card shadow" id="you">
+      <div class="who" style="border-color:#f2917e;color:#ffc0b2">あの人</div>
+      <img src="../../assets/art/resident-06.webp">
+      <div class="band" style="color:#ffc0b2">夏の沿岸</div>
+      <div class="sub">港に火を灯す人</div>
+    </div>
+    <div class="abs center shadow" id="cap3" style="top:1360px;font-size:84px">二人の海を重ねると…</div>
+  </div>
+  <div class="layer" id="rings"></div>
+
+  <!-- ③ 結果 -->
+  <div class="layer" id="s4">
+    <div class="abs center shadow" id="k4" style="top:300px;font-size:66px;color:var(--pink)">♡ 恋愛の相性 ♡</div>
+    <div class="abs center shadow" id="score" style="top:390px;font-size:380px;line-height:1;color:var(--gold)"><span id="num">0</span><span style="font-size:90px;color:#fff"> / 100</span></div>
+    <div class="abs center shadow" id="lv" style="top:800px;font-size:92px;color:var(--pink)">ぴったり <span style="color:var(--gold)">★★★★★</span></div>
+    <div class="abs center shadow" id="ttl" style="top:960px;font-size:84px">「芽を火に育てる二人」</div>
+    <div class="abs center shadow" id="q" style="top:1110px;font-size:58px;font-weight:700;line-height:1.55;color:#e6ecf8">二人でいると、<br>世界が少し広がって見えます。</div>
+  </div>
+
+  <!-- ④ ほかの相性 -->
+  <div class="layer" id="s5">
+    <div class="abs center shadow" id="k5" style="top:330px;font-size:84px">結婚・仕事・友情まで</div>
+    <div class="abs center shadow" id="k5b" style="top:440px;font-size:84px;color:var(--gold)">ぜんぶ点数で出る</div>
+    <div class="bar shadow" id="b0" style="top:660px"><div class="lab"><span>♡ 恋愛</span><span><span class="v">92</span></span></div><div class="track"><div class="fill" style="background:#f0a8c0"></div></div></div>
+    <div class="bar shadow" id="b1" style="top:850px"><div class="lab"><span>❖ 結婚</span><span><span class="v">87</span></span></div><div class="track"><div class="fill" style="background:#c9b6ef"></div></div></div>
+    <div class="bar shadow" id="b2" style="top:1040px"><div class="lab"><span>⚓ 仕事</span><span><span class="v">88</span></span></div><div class="track"><div class="fill" style="background:#eacc8c"></div></div></div>
+    <div class="bar shadow" id="b3" style="top:1230px"><div class="lab"><span>☘ 友情</span><span><span class="v">84</span></span></div><div class="track"><div class="fill" style="background:#b6dfc4"></div></div></div>
+  </div>
+
+  <!-- ⑤ 締め：App Store で検索 -->
+  <div class="layer" id="s6">
+    <div class="abs center shadow" id="c0" style="top:230px;font-size:72px">あの人との相性、</div>
+    <div class="abs center shadow" id="c1" style="top:330px;font-size:72px;color:var(--pink)">いますぐ見てみて</div>
+    <img class="abs" id="icon" src="../../assets/art/app-icon.png" style="left:340px;top:470px;width:400px;height:400px;border-radius:90px;box-shadow:0 20px 50px rgba(0,0,0,.6)">
+    <div class="abs center shadow" id="c2" style="top:910px;font-size:132px">潮環占い</div>
+    <div class="abs center shadow" id="c3" style="top:1090px;font-size:62px;color:var(--gold)">App Storeで検索</div>
+    <div id="search" style="top:1190px">
+      <svg width="58" height="58" viewBox="0 0 24 24"><circle cx="10" cy="10" r="7" fill="none" stroke="#8a93a6" stroke-width="2.6"/><path d="M15.5 15.5L21 21" stroke="#8a93a6" stroke-width="2.6" stroke-linecap="round"/></svg>
+      <span><span id="typed"></span><span id="caret"></span></span>
+    </div>
+    <div class="abs center shadow" id="c4" style="top:1360px;font-size:50px;font-weight:700;color:#dfe6f5">無料でダウンロード</div>
+  </div>
+
+  <div id="flash"></div>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+const outCubic = x => 1 - Math.pow(1 - x, 3);
+const outBack = x => { const c = 1.9; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const inOut = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+// 場面の表示区間（秒）
+const T = { s1: [0, 3.9], s2: [3.9, 8.5], s4: [8.5, 13.3], s5: [13.3, 15.7], s6: [15.7, 20.0] };
+const DURATION = 20.0;
+const vis = (t, [a, b], fin = .25, fout = .25) => clamp(Math.min(seg(t, a, a + fin), 1 - seg(t, b - fout, b)));
+// ポンと出る文字
+function pop(el, t, at, dur = .45, rise = 40) {
+  const p = seg(t, at, at + dur);
+  el.style.opacity = clamp(p * 2.2);
+  el.style.transform = `translateY(${(1 - outCubic(p)) * rise}px) scale(${.6 + .4 * outBack(p)})`;
+}
+
+// 浮かぶハート（決まった配置で、毎回同じ動き）
+const HEARTS = Array.from({ length: 16 }, (_, i) => ({ x: (i * 271) % 1000 + 20, s: 40 + (i * 37) % 70, sp: 90 + (i * 53) % 120, ph: (i * 0.61) % 1, sw: 20 + (i * 13) % 40 }));
+const heartEls = HEARTS.map(() => { const d = document.createElement('div'); d.className = 'heart'; d.textContent = '♡'; $('hearts').appendChild(d); return d; });
+const RINGS = Array.from({ length: 5 }, () => { const d = document.createElement('div'); d.className = 'ring'; $('rings').appendChild(d); return d; });
+
+window.render = function (t) {
+  // 背景はずっとゆっくり寄る
+  $('bg').style.transform = `scale(${1 + .06 * t / DURATION}) translateY(${-t * 3}px)`;
+  const warm = vis(t, [8.6, 13.4], .2, .4);
+  $('tint').style.background = `linear-gradient(180deg, rgba(11,18,36,.55), rgba(11,18,36,.35) 40%, rgba(40,10,40,${.35 + .25 * warm}))`;
+
+  // ハートは「恋」の場面（フックと結果）で強く出す
+  const hv = Math.max(vis(t, T.s1, .2, .4), .25 * vis(t, T.s2), vis(t, T.s4, .3, .4));
+  HEARTS.forEach((h, i) => {
+    const y = 1920 - ((t * h.sp + h.ph * 2100) % 2100);
+    const el = heartEls[i];
+    el.style.left = (h.x + Math.sin(t * 1.3 + i) * h.sw) + 'px'; el.style.top = y + 'px';
+    el.style.fontSize = h.s + 'px'; el.style.opacity = hv * (.35 + .4 * ((i % 3) / 2));
+  });
+
+  // ① フック：既読あるある
+  $('s1').style.opacity = vis(t, T.s1, .01, .3);
+  pop($('h1'), t, .05); pop($('h2'), t, .35, .5, 60);
+  pop($('bm'), t, 1.0, .4, 60);
+  $('rd').style.opacity = seg(t, 1.7, 1.9);
+  const dp = seg(t, 2.2, 2.4) * (1 - seg(t, 3.2, 3.4));
+  $('by').style.opacity = dp; $('by').style.transform = 'translateY(' + (1 - dp) * 20 + 'px)';
+  [...document.querySelectorAll('.dot')].forEach((d, i) => d.style.transform = 'translateY(' + (-12 * Math.max(0, Math.sin(t * 9 - i * .9))) + 'px)');
+  pop($('h3'), t, 3.0); pop($('h4'), t, 3.3, .5, 60);
+  $('h4').style.transform += ' scale(' + (1 + .05 * Math.max(0, Math.sin(t * 7.5)) * seg(t, 3.6, 3.9)) + ')';
+
+  // ② 二人のタイプ → 重ねる
+  $('s2').style.opacity = vis(t, T.s2, .2, .25);
+  pop($('cap2a'), t, 4.0); pop($('cap2b'), t, 4.25);
+  const inMe = outCubic(seg(t, 4.5, 5.1)), inYou = outCubic(seg(t, 5.1, 5.7));
+  const merge = inOut(seg(t, 6.7, 8.2));
+  const meX = -480 + (60 + 480) * inMe + 210 * merge, youX = 1100 - (1100 - 580) * inYou - 210 * merge;
+  const cy = 560 + Math.sin(t * 2) * 10;
+  Object.assign($('me').style, { left: meX + 'px', top: cy + 'px', transform: `rotate(${-6 * merge}deg)`, opacity: 1 });
+  Object.assign($('you').style, { left: youX + 'px', top: (cy - Math.sin(t * 2) * 20) + 'px', transform: `rotate(${6 * merge}deg)`, opacity: 1 });
+  [...document.querySelectorAll('.card .who, .card .band, .card .sub')].forEach(e => e.style.opacity = 1 - seg(t, 6.7, 7.1));
+  $('cap2a').style.opacity *= 1 - seg(t, 6.5, 6.9); $('cap2b').style.opacity *= 1 - seg(t, 6.5, 6.9);
+  pop($('cap3'), t, 6.9);
+  // 波紋
+  RINGS.forEach((r, i) => {
+    const p = seg(t, 7.0 + i * .35, 7.0 + i * .35 + 1.4);
+    const size = 120 + 1100 * outCubic(p);
+    Object.assign(r.style, { width: size + 'px', height: size + 'px', left: (540 - size / 2) + 'px', top: (840 - size / 2) + 'px', opacity: (p > 0 && p < 1) ? (1 - p) * .9 : 0 });
+  });
+  $('flash').style.opacity = Math.max(0, 1 - Math.abs(t - 8.5) / .22) * .9 + Math.max(0, 1 - Math.abs(t - 15.7) / .18) * .35;
+
+  // ③ 結果
+  $('s4').style.opacity = vis(t, T.s4, .05, .3);
+  pop($('k4'), t, 8.6);
+  $('num').textContent = Math.round(92 * outCubic(seg(t, 8.7, 9.9)));
+  const land = seg(t, 9.9, 10.25);
+  $('score').style.transform = 'scale(' + (1 + .18 * Math.sin(Math.PI * land)) + ')';
+  $('score').style.opacity = seg(t, 8.65, 8.85);
+  pop($('lv'), t, 10.05, .5, 50); pop($('ttl'), t, 10.8); pop($('q'), t, 11.5, .6, 30);
+
+  // ④ ほかの相性
+  $('s5').style.opacity = vis(t, T.s5, .15, .3);
+  pop($('k5'), t, 13.35); pop($('k5b'), t, 13.6);
+  [92, 87, 88, 84].forEach((v, i) => {
+    const el = $('b' + i), p = outCubic(seg(t, 13.8 + i * .22, 14.6 + i * .22));
+    el.style.opacity = seg(t, 13.7 + i * .22, 13.9 + i * .22);
+    el.querySelector('.fill').style.width = (v * p) + '%';
+    el.querySelector('.v').textContent = Math.round(v * p);
+  });
+
+  // ⑤ 締め
+  $('s6').style.opacity = vis(t, [T.s6[0], 99], .15, .3);
+  pop($('c0'), t, 15.8); pop($('c1'), t, 16.0);
+  const ip = seg(t, 15.9, 16.5);
+  $('icon').style.opacity = clamp(ip * 2); $('icon').style.transform = 'scale(' + (.4 + .6 * outBack(ip)) + ') rotate(' + ((1 - outCubic(ip)) * -12) + 'deg)';
+  pop($('c2'), t, 16.3, .5, 50); pop($('c3'), t, 16.8);
+  const sp = seg(t, 16.9, 17.25);
+  $('search').style.opacity = sp; $('search').style.transform = 'translateY(' + (1 - outCubic(sp)) * 40 + 'px)';
+  const word = '潮環占い', k = Math.floor(clamp((t - 17.3) / .28, 0, word.length));
+  $('typed').textContent = word.slice(0, k);
+  $('caret').style.opacity = (Math.floor(t * 2.4) % 2 === 0 || (t > 17.3 && t < 18.5)) ? 1 : 0;
+  const tap = seg(t, 18.6, 18.85);
+  $('search').style.boxShadow = '0 16px 40px rgba(0,0,0,.45), 0 0 0 ' + (10 * Math.sin(Math.PI * tap)) + 'px rgba(234,204,140,.8)';
+  pop($('c4'), t, 18.5);
+};
+window.DURATION = DURATION;
+window.ready = document.fonts.ready.then(() => Promise.all([...document.images].map(i => i.decode()))).then(() => true);
+render(0);
+</script>
+</body>
+</html>

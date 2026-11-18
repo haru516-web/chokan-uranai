@@ -1,5 +1,5 @@
 // scene.html をヘッドレスChromeで1コマずつ撮り、連番画像にする（依存なし。Node 22+）。
-// 使い方: node promo/tiktok-compat/record.mjs <出力フォルダ>
+// 使い方: node promo/tiktok-compat/record.mjs <出力フォルダ> [シーンのHTML。省略すると scene.html]
 import { spawn } from 'node:child_process';
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { setTimeout as sleep } from 'node:timers/promises';
@@ -28,7 +28,7 @@ try {
 
   await send('Page.enable'); await send('Runtime.enable');
   await send('Emulation.setDeviceMetricsOverride', { width: 1080, height: 1920, deviceScaleFactor: 1, mobile: false });
-  await send('Page.navigate', { url: pathToFileURL(resolve(import.meta.dirname, 'scene.html')).href });
+  await send('Page.navigate', { url: pathToFileURL(resolve(import.meta.dirname, process.argv[3] ?? 'scene.html')).href });
   for (let i = 0; i < 100; i++) { if (await evalJs('typeof window.ready !== "undefined"').catch(() => false)) break; await sleep(100); }
   await evalJs('window.ready');
   const duration = await evalJs('window.DURATION');

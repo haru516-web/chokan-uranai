@@ -5,7 +5,10 @@
 #   3. 映像と音を合わせて out/ に書き出す。TikTok 側で流行りの曲を付けたいとき用に、無音版も出す。
 set -euo pipefail
 cd "$(dirname "$0")"
-OUT=out; FR=$(mktemp -d); mkdir -p "$OUT"
+OUT=out; mkdir -p "$OUT/work"
+# 作業用の一時ファイルは出力フォルダ（Gitに入れない）に置き、終わったら消す
+export TEMP="$PWD/$OUT/work" TMP="$PWD/$OUT/work" TMPDIR="$PWD/$OUT/work"
+FR=$(mktemp -d); trap 'rm -rf "$FR"' EXIT
 node record.mjs "$FR"
 
 DUR=20
