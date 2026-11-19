@@ -1,0 +1,227 @@
+<!doctype html>
+<!--
+  TikTok 用「性格まっ逆なのに気になる人」動画の中身（1080×1920・縦・20秒）。
+  window.render(秒) を呼ぶと、その時刻の1コマを描く。record.mjs がこれを1コマずつ撮って動画にする。
+  相性の点数と文章は、アプリの相性の計算（src/pairing.ts）で 夏の沿岸 × 冬の沿岸 を読んだ実際の結果
+  （恋愛84点・とても良い・「火と氷が引き合う二人」。ひとことは compatText の夏×冬の love と tip から）。
+-->
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: Zen; font-weight: 500; src: url(../../assets/fonts/ZenMaruGothic-500.woff2); }
+  @font-face { font-family: Zen; font-weight: 700; src: url(../../assets/fonts/ZenMaruGothic-700.woff2); }
+  @font-face { font-family: Zen; font-weight: 900; src: url(../../assets/fonts/ZenMaruGothic-900.woff2); }
+  :root { --gold: #eacc8c; --pink: #f6a9c4; --ink: #0b1224; --hot: #ffb38a; --ice: #a9d8ff; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--ink); }
+  body { font-family: Zen, 'Yu Gothic', sans-serif; color: #fff; font-weight: 900; }
+  #stage { position: absolute; inset: 0; overflow: hidden; }
+  .abs { position: absolute; }
+  .layer { position: absolute; inset: 0; }
+  .center { left: 0; right: 0; text-align: center; }
+  .shadow { text-shadow: 0 6px 24px rgba(0,0,0,.65), 0 2px 4px rgba(0,0,0,.6); }
+  #bg { position: absolute; left: -60px; top: -60px; width: 1200px; height: 2040px; background: url(../../assets/art/ritual-bg.webp) center/cover; }
+  #tint { position: absolute; inset: 0; }
+  #split { position: absolute; inset: 0; }
+  .fx { position: absolute; font-weight: 900; }
+  .card { position: absolute; width: 470px; text-align: center; }
+  .card .who { display: inline-block; font-size: 48px; padding: 8px 34px; border-radius: 40px; background: rgba(11,18,36,.72); border: 3px solid; }
+  .card img { width: 440px; height: 440px; display: block; margin: 0 auto; filter: drop-shadow(0 18px 30px rgba(0,0,0,.55)); }
+  .card .band { font-size: 62px; margin-top: -10px; }
+  .card .sub { font-size: 38px; font-weight: 700; color: #dfe6f5; margin-top: 4px; }
+  .tags { margin-top: 22px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .tag { font-size: 42px; font-weight: 700; padding: 8px 26px; border-radius: 18px; background: rgba(11,18,36,.66); }
+  .ring { position: absolute; border-radius: 50%; border: 6px solid var(--gold); }
+  .bubble { display: inline-block; padding: 22px 44px; border-radius: 40px; background: rgba(11,18,36,.72); border: 3px solid rgba(234,204,140,.8); }
+  #search { position: absolute; left: 110px; width: 860px; height: 128px; border-radius: 64px; background: rgba(255,255,255,.95); color: #1b2233; display: flex; align-items: center; padding: 0 44px; font-size: 62px; gap: 26px; box-shadow: 0 16px 40px rgba(0,0,0,.45); }
+  #caret { display: inline-block; width: 5px; height: 66px; background: #2f6bff; margin-left: 4px; vertical-align: middle; }
+  #flash { position: absolute; inset: 0; background: #fff; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="bg"></div>
+  <div id="tint"></div>
+  <div id="split"></div>
+  <div class="layer" id="fx"></div>
+
+  <!-- ① フック：性格まっ逆なのに、なぜか気になる人いる？ -->
+  <div class="layer" id="s1">
+    <div class="abs center shadow" id="h1" style="top:430px;font-size:104px">性格<span style="color:var(--hot)">まっ</span><span style="color:var(--ice)">逆</span>なのに</div>
+    <div class="abs center shadow" id="h2" style="top:580px;font-size:120px;color:var(--pink)">なぜか気になる人</div>
+    <div class="abs center shadow" id="h3" style="top:740px;font-size:150px;color:var(--gold)">いる？</div>
+    <div class="abs center shadow" id="h4" style="top:1000px;font-size:300px;line-height:1"><span style="color:var(--hot)">🔥</span><span style="color:var(--pink);font-size:220px">♡</span><span style="color:var(--ice)">❄</span></div>
+    <div class="abs center shadow" id="h5" style="top:1400px;font-size:62px;font-weight:700;color:#e6ecf8">それ、相性で説明できるかも</div>
+  </div>
+
+  <!-- ② まっ逆な二人 -->
+  <div class="layer" id="s2">
+    <div class="abs center shadow" id="cap2a" style="top:200px;font-size:66px">あなたと あの人、</div>
+    <div class="abs center shadow" id="cap2b" style="top:290px;font-size:84px;color:var(--gold)">こんなに真逆</div>
+    <div class="card shadow" id="me">
+      <div class="who" style="border-color:var(--hot);color:var(--hot)">あなた</div>
+      <img src="../../assets/art/resident-06.webp">
+      <div class="band" style="color:var(--hot)">夏の沿岸</div>
+      <div class="sub">港に火を灯す人</div>
+      <div class="tags" id="tagsMe"><div class="tag">すぐ顔に出る</div><div class="tag">LINEは即レス</div><div class="tag">休日は外へ</div></div>
+    </div>
+    <div class="card shadow" id="you">
+      <div class="who" style="border-color:var(--ice);color:var(--ice)">あの人</div>
+      <img src="../../assets/art/resident-14.webp">
+      <div class="band" style="color:var(--ice)">冬の沿岸</div>
+      <div class="sub">帰る場所を守る人</div>
+      <div class="tags" id="tagsYou"><div class="tag">表情が読めない</div><div class="tag">返信マイペース</div><div class="tag">休日は家で</div></div>
+    </div>
+    <div class="abs center shadow" id="vs" style="top:820px;font-size:110px;color:var(--gold)">VS</div>
+    <div class="abs center shadow" id="cap3" style="top:1560px;font-size:80px">相性を占ってみたら…</div>
+  </div>
+  <div class="layer" id="rings"></div>
+
+  <!-- ③ 結果 -->
+  <div class="layer" id="s4">
+    <div class="abs center shadow" id="ttl" style="top:250px;font-size:88px">「<span style="color:var(--hot)">火</span>と<span style="color:var(--ice)">氷</span>が引き合う二人」</div>
+    <div class="abs center shadow" id="k4" style="top:420px;font-size:66px;color:var(--pink)">♡ 恋愛の相性 ♡</div>
+    <div class="abs center shadow" id="score" style="top:510px;font-size:380px;line-height:1;color:var(--gold)"><span id="num">0</span><span style="font-size:90px;color:#fff"> / 100</span></div>
+    <div class="abs center shadow" id="lv" style="top:920px;font-size:88px;color:var(--pink)">とても良い <span style="color:var(--gold)">★★★★</span><span style="color:rgba(255,255,255,.3)">★</span></div>
+    <div class="abs center shadow" id="q" style="top:1100px;font-size:64px;line-height:1.5"><span class="bubble">反対だから惹かれる、<br><span style="color:var(--pink)">強い引力の恋。</span></span></div>
+  </div>
+
+  <!-- ④ 二人へのひとこと -->
+  <div class="layer" id="s5">
+    <div class="abs center shadow" id="k5" style="top:440px;font-size:70px;color:var(--gold)">しかも、二人へのアドバイスまで</div>
+    <div class="abs center shadow" id="k5b" style="top:640px;font-size:70px;line-height:1.6"><span class="bubble" style="border-color:var(--ice)">あの人が<span style="color:var(--ice)">黙ってる時間</span>は、<br><span style="color:var(--pink)">嫌いのサインじゃない</span></span></div>
+    <div class="abs center shadow" id="k5c" style="top:1060px;font-size:62px;font-weight:700;line-height:1.5;color:#e6ecf8">生年月日と名前だけで<br>恋愛・結婚・友情まで点数で出る</div>
+  </div>
+
+  <!-- ⑤ 締め：App Store で検索 -->
+  <div class="layer" id="s6">
+    <div class="abs center shadow" id="c0" style="top:230px;font-size:72px">気になるあの人との相性、</div>
+    <div class="abs center shadow" id="c1" style="top:330px;font-size:72px;color:var(--pink)">こっそり見てみて</div>
+    <img class="abs" id="icon" src="../../assets/art/app-icon.png" style="left:340px;top:470px;width:400px;height:400px;border-radius:90px;box-shadow:0 20px 50px rgba(0,0,0,.6)">
+    <div class="abs center shadow" id="c2" style="top:910px;font-size:132px">潮環占い</div>
+    <div class="abs center shadow" id="c3" style="top:1090px;font-size:62px;color:var(--gold)">App Storeで検索</div>
+    <div id="search" style="top:1190px">
+      <svg width="58" height="58" viewBox="0 0 24 24"><circle cx="10" cy="10" r="7" fill="none" stroke="#8a93a6" stroke-width="2.6"/><path d="M15.5 15.5L21 21" stroke="#8a93a6" stroke-width="2.6" stroke-linecap="round"/></svg>
+      <span><span id="typed"></span><span id="caret"></span></span>
+    </div>
+    <div class="abs center shadow" id="c4" style="top:1360px;font-size:50px;font-weight:700;color:#dfe6f5">無料でダウンロード</div>
+  </div>
+
+  <div id="flash"></div>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+const outCubic = x => 1 - Math.pow(1 - x, 3);
+const outBack = x => { const c = 1.9; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const inOut = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+// 場面の表示区間（秒）
+const T = { s1: [0, 3.4], s2: [3.4, 9.0], s4: [9.0, 13.6], s5: [13.6, 15.9], s6: [15.9, 20.0] };
+const DURATION = 20.0;
+const HIT = 8.6; // 二人がぶつかって結果が出る瞬間
+const vis = (t, [a, b], fin = .25, fout = .25) => clamp(Math.min(seg(t, a, a + fin), 1 - seg(t, b - fout, b)));
+function pop(el, t, at, dur = .45, rise = 40) {
+  const p = seg(t, at, at + dur);
+  el.style.opacity = clamp(p * 2.2);
+  el.style.transform = `translateY(${(1 - outCubic(p)) * rise}px) scale(${.6 + .4 * outBack(p)})`;
+}
+
+// 左から火の粉、右から雪が舞う。真ん中ではハート（決まった配置で、毎回同じ動き）
+const FX = Array.from({ length: 24 }, (_, i) => ({ kind: i % 3, x: (i * 137) % 480, s: 36 + (i * 29) % 56, sp: 80 + (i * 53) % 120, ph: (i * 0.37) % 1, sw: 16 + (i * 13) % 34 }));
+const fxEls = FX.map(f => { const d = document.createElement('div'); d.className = 'fx'; d.textContent = ['✦', '❄', '♡'][f.kind]; d.style.color = ['#ffb38a', '#cfe8ff', '#f6a9c4'][f.kind]; $('fx').appendChild(d); return d; });
+const RINGS = Array.from({ length: 5 }, () => { const d = document.createElement('div'); d.className = 'ring'; $('rings').appendChild(d); return d; });
+
+window.render = function (t) {
+  $('bg').style.transform = `scale(${1 + .06 * t / DURATION}) translateY(${-t * 3}px)`;
+  // 左が暖色・右が寒色。結果のあとは混ざってピンクに寄る
+  const mix = seg(t, HIT, HIT + 1.2);
+  $('tint').style.background = `linear-gradient(180deg, rgba(11,18,36,.55), rgba(11,18,36,.35) 40%, rgba(40,10,40,${.3 + .3 * mix}))`;
+  const sv = (1 - mix) * Math.max(vis(t, T.s1, .2, .2), vis(t, T.s2, .2, .2)) + .25 * vis(t, [HIT, 99]);
+  $('split').style.background = `linear-gradient(90deg, rgba(255,120,60,${.32 * sv}), rgba(255,120,60,0) 45%, rgba(90,170,255,0) 55%, rgba(90,170,255,${.32 * sv}))`;
+
+  const fv = Math.max(vis(t, T.s1, .2, .4), .5 * vis(t, T.s2), vis(t, T.s4, .3, .4));
+  FX.forEach((f, i) => {
+    const el = fxEls[i];
+    let x, y;
+    if (f.kind === 0) { x = 30 + f.x * .9; y = 1920 - ((t * f.sp + f.ph * 2100) % 2100); }      // 火の粉は左を上へ
+    else if (f.kind === 1) { x = 560 + f.x * .95; y = ((t * f.sp * .7 + f.ph * 2100) % 2100) - 100; } // 雪は右を下へ
+    else { x = 300 + f.x; y = 1920 - ((t * f.sp + f.ph * 2100) % 2100); }                         // ハートは真ん中
+    el.style.left = (x + Math.sin(t * 1.3 + i) * f.sw) + 'px'; el.style.top = y + 'px'; el.style.fontSize = f.s + 'px';
+    const heartOnly = f.kind === 2 ? Math.max(mix, .4) : 1 - .6 * mix;
+    el.style.opacity = fv * heartOnly * (.35 + .4 * ((i % 4) / 3));
+  });
+
+  // ① フック
+  $('s1').style.opacity = vis(t, T.s1, .01, .3);
+  pop($('h1'), t, .05); pop($('h2'), t, .35); pop($('h3'), t, .75, .5, 60);
+  $('h3').style.transform += ' scale(' + (1 + .07 * Math.max(0, Math.sin(t * 7.5)) * seg(t, 1.25, 1.5)) + ')';
+  pop($('h4'), t, 1.1, .5, 50);
+  $('h4').style.transform += ` translateY(${Math.sin(t * 3) * 10}px)`;
+  pop($('h5'), t, 2.1);
+
+  // ② まっ逆な二人：左右から入って、特徴が並び、最後に真ん中でぶつかる
+  $('s2').style.opacity = vis(t, T.s2, .2, .25);
+  pop($('cap2a'), t, 3.5); pop($('cap2b'), t, 3.7);
+  const enter = outCubic(seg(t, 3.6, 4.2));
+  const merge = inOut(seg(t, 7.7, HIT));
+  const cy = 430;
+  const meX = -500 + (560) * enter + 210 * merge, youX = 1080 + (-530) * enter - 210 * merge;
+  Object.assign($('me').style, { left: meX + 'px', top: (cy + Math.sin(t * 2) * 12) + 'px', transform: `rotate(${-4 + 10 * merge}deg)` });
+  Object.assign($('you').style, { left: youX + 'px', top: (cy - Math.sin(t * 2) * 12) + 'px', transform: `rotate(${4 - 10 * merge}deg)` });
+  [...$('tagsMe').children, ...$('tagsYou').children].forEach((el, i) => {
+    const row = i % 3, side = i < 3 ? 0 : 1;
+    pop(el, t, 4.5 + row * .7 + side * .3, .4, 24);
+    el.style.opacity = +el.style.opacity * (1 - seg(t, 7.4, 7.7));
+  });
+  // ぶつかる直前は名札の文字が重なるので消し、絵だけが寄っていく
+  document.querySelectorAll('.card .who, .card .band, .card .sub').forEach(el => { el.style.opacity = 1 - seg(t, 7.6, 8.0); });
+  pop($('vs'), t, 4.3, .4, 0);
+  $('vs').style.opacity = +$('vs').style.opacity * (1 - seg(t, 7.4, 7.7));
+  $('vs').style.transform += ` scale(${1 + .08 * Math.sin(t * 6)})`;
+  pop($('cap3'), t, 7.0);
+  const shake = Math.max(0, 1 - Math.abs(t - HIT) / .3);
+  $('stage').style.transform = `translate(${Math.sin(t * 90) * 14 * shake}px, ${Math.cos(t * 70) * 10 * shake}px)`;
+
+  RINGS.forEach((r, i) => {
+    const p = seg(t, HIT + i * .25, HIT + i * .25 + 1.3), size = 120 + 1100 * outCubic(p);
+    Object.assign(r.style, { width: size + 'px', height: size + 'px', left: (540 - size / 2) + 'px', top: (720 - size / 2) + 'px', opacity: (p > 0 && p < 1) ? (1 - p) * .9 : 0, borderColor: i % 2 ? '#a9d8ff' : '#ffb38a' });
+  });
+  $('flash').style.opacity = Math.max(0, 1 - Math.abs(t - HIT) / .22) * .85 + Math.max(0, 1 - Math.abs(t - 13.6) / .18) * .25 + Math.max(0, 1 - Math.abs(t - 15.9) / .18) * .35;
+
+  // ③ 結果
+  $('s4').style.opacity = vis(t, T.s4, .1, .3);
+  pop($('ttl'), t, HIT + .15, .5, 50); pop($('k4'), t, HIT + .45);
+  const cnt = seg(t, HIT + .6, HIT + 1.9);
+  $('num').textContent = Math.round(84 * outCubic(cnt));
+  const land = seg(t, HIT + 1.9, HIT + 2.2);
+  $('score').style.opacity = seg(t, HIT + .55, HIT + .75);
+  $('score').style.transform = `scale(${1 + .18 * Math.sin(Math.PI * land)})`;
+  pop($('lv'), t, HIT + 2.1); pop($('q'), t, HIT + 2.6, .55, 40);
+
+  // ④ 二人へのひとこと
+  $('s5').style.opacity = vis(t, T.s5, .2, .3);
+  pop($('k5'), t, 13.7); pop($('k5b'), t, 14.0, .55, 40); pop($('k5c'), t, 14.7, .6, 30);
+
+  // ⑤ 締め
+  $('s6').style.opacity = vis(t, [T.s6[0], 99], .15, .3);
+  pop($('c0'), t, 16.0); pop($('c1'), t, 16.2);
+  const ip = seg(t, 16.1, 16.7);
+  $('icon').style.opacity = clamp(ip * 2); $('icon').style.transform = 'scale(' + (.4 + .6 * outBack(ip)) + ') rotate(' + ((1 - outCubic(ip)) * -12) + 'deg)';
+  pop($('c2'), t, 16.5, .5, 50); pop($('c3'), t, 17.0);
+  const sp = seg(t, 17.1, 17.45);
+  $('search').style.opacity = sp; $('search').style.transform = 'translateY(' + (1 - outCubic(sp)) * 40 + 'px)';
+  const word = '潮環占い', k = Math.floor(clamp((t - 17.5) / .28, 0, word.length));
+  $('typed').textContent = word.slice(0, k);
+  $('caret').style.opacity = (Math.floor(t * 2.4) % 2 === 0 || (t > 17.5 && t < 18.7)) ? 1 : 0;
+  const tap = seg(t, 18.8, 19.05);
+  $('search').style.boxShadow = '0 16px 40px rgba(0,0,0,.45), 0 0 0 ' + (10 * Math.sin(Math.PI * tap)) + 'px rgba(234,204,140,.8)';
+  pop($('c4'), t, 18.7);
+};
+window.DURATION = DURATION;
+window.ready = document.fonts.ready.then(() => Promise.all([...document.images].map(i => i.decode()))).then(() => true);
+render(0);
+</script>
+</body>
+</html>
