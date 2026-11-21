@@ -177,7 +177,7 @@ export function ResultPoster({ reading, band, personName, dateText, dayWord, ins
     </Reveal>
     {ime
       ? <ImeText segments={ime} delay={lineDelay} instant={instant} style={styles.line} />
-      : <TypeText text={reading.outlook.line} delay={lineDelay} speed={26} instant={instant} style={styles.line} />}
+      : <TypeText text={reading.outlook.line} marks={reading.outlook.marks} delay={lineDelay} speed={26} instant={instant} style={styles.line} />}
     <Reveal kind="up" delay={actionDelay} instant={instant}>
       <View style={styles.action}>
         <Text style={S.kicker}>{dayWord}の一手</Text>

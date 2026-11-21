@@ -255,8 +255,7 @@ function Voyage({ hold }: { hold: boolean }) {
     if (Platform.OS === 'ios') void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
   }
 
-  const body = {
-    today: <Today people={people} activeId={activeId} onSwitch={id => { setActiveId(id); setTodayVisit(previous => previous + 1); }}
+  const renderToday = (view: 'result' | 'reading') => <Today view={view} openReading={() => go('reading')} people={people} activeId={activeId} onSwitch={id => { setActiveId(id); setTodayVisit(previous => previous + 1); }}
       onAdd={() => open({ kind: 'profile', add: true })} onManage={() => open({ kind: 'people' })} today={today} profile={profile} goMyth={openMyth} openCalendar={openCalendar} create={editProfile}
       ranks={openRanking} questions={stored.questions} reflections={stored.reflections}
       tarotDraw={stored.tarotDraw} tarotLog={stored.tarotLog} onDrawTarot={drawTarot}
@@ -268,7 +267,10 @@ function Voyage({ hold }: { hold: boolean }) {
         toggle: () => toggleQuestion(selectedQuestion.id),
         compare: () => compare(selectedQuestion.id),
       } : undefined}
-      openHomecoming={year => open({ kind: 'homecoming', year })} />,
+      openHomecoming={year => open({ kind: 'homecoming', year })} />;
+  const body = {
+    today: renderToday('result'),
+    reading: renderToday('reading'),
     tarot: <TarotHome today={today} savedDraw={stored.tarotDraw} log={stored.tarotLog} onDraw={drawTarot}
       personKey={profile ? 'k' + profile.t.key : 'guest'} season={profile ? seasonOf(profile.t.mod) : null}
       level={profile ? readDay(today, profile).layers.day : null} onCreate={editProfile} goToday={() => go('today')} />,
@@ -393,7 +395,7 @@ function Voyage({ hold }: { hold: boolean }) {
           {detailBody(entry)}
         </ScrollView>)}
       </> : <View style={[layout.scroll, layout.content]}><Text style={S.body}>海図をひらいています…</Text></View>}
-      <TabBar wide={wide} seasonIndex={profile?.t.mod ?? null} activeTab={tab} onSelect={go} />
+      <TabBar wide={wide} seasonIndex={profile?.t.mod ?? null} activeTab={tab === 'questions' ? 'today' : tab} onSelect={go} />
     </KeyboardAvoidingView>
     <ToTop resetKey={tab + (detail ? detail.kind + path.length : "")} />
     {ritual && profile && <Ritual profile={profile} today={today} onDone={() => setRitual(false)} />}
