@@ -1,7 +1,7 @@
 import { analyze, nameChars, strokeOf } from './strokes';
 import { NUMS, SEASON, STAGES, stageFor, axes, blockScoreOf, ctxFor, dayTable, fivePhaseRelation, personalFor, yearScoreOf, type SeaContext, type SeaType } from './scoring';
 import content from './content.json';
-import { outlookText } from './dayText';
+import { outlookText, rotate } from './dayText';
 import { chooseFactors, factorsFor } from './reasons';
 
 const DAY = 86_400_000;
@@ -82,7 +82,15 @@ export function cycleTier(score: number, sortedScores: number[]): Tier {
   return 2;
 }
 
-function layeredReading(year: Tier, block: Tier, day: Tier) {
+// 年・月が同じ段階の日が続いても同じ文にならないよう、最後に今日の段階に沿った一言を日付で回して添える。
+const CLOSERS = [
+  ['迷ったら、進むほうを選んで大丈夫です。', '今日の追い風は、午前のうちにいちばん使いやすい日です。', '動くなら今日。あとで「やっておけばよかった」が減ります。'],
+  ['予定どおりに進めれば、ちゃんと結果がついてきます。', '小さな前進を一つ重ねるだけで、十分な一日です。', '頼まれごとをされたら、前向きに受けてみてください。'],
+  ['大きな変化がない分、手元の整理が進みます。', '急がず順番に。いつも通りが、いちばんの味方です。', '静かな日だからこそ、小さな違和感に気づけます。'],
+  ['予定を一つ減らすだけで、気持ちの余裕が変わります。', '人の言葉を、いつもよりやさしく受け取ってみてください。', '焦って返事をせず、夜まで寝かせてから決めましょう。'],
+  ['今日はできた分だけで、百点です。', '休むことも、立派な予定の一つです。', '温かいものを食べて、早めに布団へ。それで十分です。'],
+];
+function layeredReading(year: Tier, block: Tier, day: Tier, dayIndex: number) {
   let lead: string;
   if (year < 2 && day > 2) lead = '大きな流れは追い風ですが、今日は波が立ちます。長い航路を変える前に、今日の予定を一つ軽くしてみましょう。';
   else if (year > 2 && day < 2) lead = '長い向かい風の中で、今日だけは帆を張りやすい日。足元を整え、手の届く一件から進めましょう。';
@@ -96,7 +104,7 @@ function layeredReading(year: Tier, block: Tier, day: Tier) {
     'この月の海は穏やかです。', 'この月の海は荒れやすい時期。余力を残しておきましょう。',
     'この月の海はもっとも荒れる時期。長く守りたいものを優先しましょう。',
   ][block];
-  return lead + middle;
+  return lead + middle + rotate(CLOSERS[day], dayIndex);
 }
 
 export function readDay(date: Date, profile: Profile) {
@@ -110,11 +118,11 @@ export function readDay(date: Date, profile: Profile) {
   const level: Tier = row.rank <= 16 ? 0 : row.rank <= 56 ? 1 : row.rank <= 104 ? 2 : row.rank <= 144 ? 3 : 4;
   const force = axes(context, row);
   // 文章は候補から選ばず、この名札の今日の数値（順位の位置・8つの項目・二つの力）から組み立てる。
-  const { line, detail, action, basis } = outlookText(row, force);
-  const outlook = { title: tiers[level], color: tierColors[level], line, detail, action, basis };
+  const { line, marks, detail, action, basis } = outlookText(row, force, context);
+  const outlook = { title: tiers[level], color: tierColors[level], line, marks, detail, action, basis };
   // 画面の「内訳」用。全160タイプの平均とのずれから、各項目が追い風か向かい風かを並べる（占い文そのものは上の outlookText が決める）。
   const factors = factorsFor(context, row, table.rows);
-  const chosen = chooseFactors(factors, level);
+  const chosen = chooseFactors(factors, level, context.dayIndex + profile.t.key * 7);
   const cycle = cycleFor(profile.t);
   const year = cycleTier(yearScoreOf(context.solarYear, profile.t).score, cycle.years);
   const block = cycleTier(blockScoreOf(context.solarYear, context.solarMonth, profile.t).score, cycle.blocks);
@@ -130,7 +138,7 @@ export function readDay(date: Date, profile: Profile) {
     dayRelation: fivePhaseRelation(profile.t, context.dayElement),
   };
   return { context, row, personal, personalRank, outlook, force, mean: table.mean,
-    fivePhase, layers: { year, block, day: level, text: layeredReading(year, block, level) }, factors, chosen };
+    fivePhase, layers: { year, block, day: level, text: layeredReading(year, block, level, context.dayIndex + profile.t.key * 7) }, factors, chosen };
 }
 
 export const lifeFields = [

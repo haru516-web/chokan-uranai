@@ -14,6 +14,7 @@ import { ctxFor, DAY_STAGES, FIVE_PHASES, labelOf, OUTER, SEASON, STAGES, stageF
 import { Meter, MoonFacts, SeaGlobe } from './TideCharts';
 import { GodAnimation } from './GodAnimation';
 import { Scene } from './Story';
+import { colorRuns } from './marks';
 import { fortuneFor, tomorrowFor } from './fortune';
 import { FortuneAreas, LuckyCard, TomorrowCard } from './FortuneDetail';
 import { Gloss, GlossHint, TermText } from './Glossary';
@@ -33,7 +34,7 @@ const seenResults = new Set<string>();
 type FoldId = 'why' | 'me' | 'layers' | 'flow' | 'moon';
 
 export function Today({ people, activeId, onSwitch, onAdd, onManage, today, profile, goMyth, openCalendar, create, ranks, questions, reflections, openQuestion, openQuestions, openHomecoming, tarotDraw, tarotLog, onDrawTarot,
-  shareTideCard, openExplanation, selectedQuestion }: {
+  shareTideCard, openExplanation, selectedQuestion, view = 'result', openReading }: {
   people: Person[]; activeId: number | null; onSwitch: (id: number) => void; onAdd: () => void; onManage: () => void;
   today: Date; profile: Profile | null; goMyth: () => void; openCalendar: (date: Date, mode: 'current' | 'stage') => void;
   create: () => void; ranks: (date: Date) => void;
@@ -42,6 +43,8 @@ export function Today({ people, activeId, onSwitch, onAdd, onManage, today, prof
   tarotDraw: SavedTarotDraw | null; tarotLog: SavedTarotDraw[]; onDrawTarot: (cardId: string) => void;
   shareTideCard: () => void; openExplanation: () => void;
   selectedQuestion?: { question: Question; saved: boolean; toggle: () => void; compare: () => void };
+  /** result＝占い（ポスターとタイプ紹介）／reading＝鑑定（今日の鑑定書だけを独立させた画面） */
+  view?: 'result' | 'reading'; openReading?: () => void;
 }) {
   const [offset, setOffset] = useState(0);
   const [shareMessage, setShareMessage] = useState('');
@@ -96,7 +99,7 @@ export function Today({ people, activeId, onSwitch, onAdd, onManage, today, prof
         level: rank <= 16 ? 0 : rank <= 56 ? 1 : rank <= 104 ? 2 : rank <= 144 ? 3 : 4,
         godUrl: godArt[reading.row.t.mod], dateText: dateLabel(c),
         personName: activePerson && !activePerson.me ? activePerson.inputs.name : undefined,
-        plate: labelOf(reading.row.t), band: resident?.band ?? '', rank, dayWord, line: reading.outlook.line, action: reading.outlook.action,
+        plate: labelOf(reading.row.t), band: resident?.band ?? '', rank, dayWord, line: reading.outlook.line, marks: reading.outlook.marks, action: reading.outlook.action,
       });
       setShareMessage('');
       // iOS アプリ版：WebView ではダウンロードできないので、ネイティブの共有シート（写真に保存など）で渡す。
@@ -148,6 +151,7 @@ export function Today({ people, activeId, onSwitch, onAdd, onManage, today, prof
   const goStrong = reading.force.go >= .5;
   const changeStrong = reading.force.change >= .5;
   return <View style={S.stack}>
+    {view === 'result' && <>
     <Pressable accessible={false} onPress={() => setSkipKey(playKey)}>
       <ResultPoster key={playKey + (instant ? 'i' : '')} reading={reading} band={resident?.band} dateText={dateLabel(c)} dayWord={dayWord}
         personName={activePerson && !activePerson.me ? activePerson.inputs.name : undefined} instant={instant} />
@@ -168,12 +172,13 @@ export function Today({ people, activeId, onSwitch, onAdd, onManage, today, prof
       <div style={{ color: C.muted, fontSize: 12 }}>保存できないときは、画像を長押ししてください。</div>
     </div>, document.body)}
     {!!shareMessage && <Text selectable accessibilityLiveRegion="polite" style={S.tiny}>{shareMessage}</Text>}
+    </>}
     {dayNavigation}
-    <Chips>
+    {view === 'result' && <Chips>
       <Chip onPress={onManage}>⚙ 管理・削除</Chip>
-    </Chips>
+    </Chips>}
 
-    {(departureDay || tideChange || homecoming || revisit || currentQuestion) && <View style={S.stack}>
+    {view === 'result' && (departureDay || tideChange || homecoming || revisit || currentQuestion) && <View style={S.stack}>
       {departureDay && <Card>
         <Text style={[S.kicker, { color: C.gold }]}>✦ 今日だけの知らせ</Text>
         <Text style={S.h3}>今日は、あなたの出航日</Text>
@@ -199,27 +204,12 @@ export function Today({ people, activeId, onSwitch, onAdd, onManage, today, prof
       {currentQuestion && <SelectedQuestionReading question={currentQuestion.question} profile={profile} />}
     </View>}
 
-    {resident && <View key={'type-' + activeId} style={styles.typeSection}>
-      <View style={[S.card, glow(SEASON[profile.t.mod].col), styles.typeHero]}>
-        <View style={styles.typeTop}>
-          <View style={[styles.portrait, { borderColor: SEASON[profile.t.mod].col, backgroundImage: `radial-gradient(circle at 50% 42%, #f4f8ff 0%, ${SEASON[profile.t.mod].col}aa 70%, ${SEASON[profile.t.mod].col}66 100%)` } as object]}>
-            <Image source={residentArt[residentIndex(profile.t)]} accessible={false} style={styles.portraitImg} />
-          </View>
-          <View style={{ flex: 1, minWidth: 0, gap: 3 }}>
-            <Text style={[S.kicker, { color: SEASON[profile.t.mod].col }]}>あなたのタイプ　{labelOf(profile.t)}</Text>
-            <Text accessibilityRole="header" style={styles.typeTitle}>{resident.band}</Text>
-            <Text style={styles.typeSub}>{resident.subtitle}</Text>
-          </View>
-        </View>
-        <Text style={styles.typeHook}>{resident.hook}</Text>
-        <Text style={styles.detail}>{resident.inner}</Text>
-      </View>
-      <TypeFortunes entry={resident} />
-      <TypeTraits entry={resident} />
-      <Button quiet onPress={() => setShowName(!showName)}>{showName ? '名札の決まり方を閉じる' : '名札の決まり方を詳しく見る'}</Button>
-      {showName && <NameReadingDetails profile={profile} />}
-    </View>}
-
+    {view === 'reading' && <>
+    <View style={styles.readingHero}>
+      <Text accessibilityRole="header" style={[styles.readingTier, { color: tierColor }]}>{outlook.title}</Text>
+      <Text style={styles.readingRank}>{row.rank} 位 / 160</Text>
+      <Text style={styles.readingLine}>{colorRuns(outlook.line, outlook.marks).map((run, k) => <Text key={k} style={run.color ? { color: run.color, fontWeight: '900' } : undefined}>{run.text}</Text>)}</Text>
+    </View>
     <View style={styles.bookHead}>
       <Text style={[S.kicker, { color: tierColor }]}>{dateLabel(c)}</Text>
       <Text accessibilityRole="header" style={styles.bookTitle}>{dayWord}の鑑定書</Text>
@@ -274,6 +264,34 @@ export function Today({ people, activeId, onSwitch, onAdd, onManage, today, prof
         <Premium id="tomorrow" lines={9}><TomorrowCard tomorrow={tomorrow} /></Premium>
       </Scene>}
     </View>
+    </>}
+
+    {view === 'result' && openReading && <Pressable accessibilityRole="button" onPress={openReading} {...ui('tap', { skin: 'door' })} style={({ pressed }) => [styles.readingDoor, glow(tierColor), { borderColor: tierColor }, pressed && { opacity: .8 }]}>
+      <Text style={[S.kicker, { color: tierColor }]}>{dayWord}の鑑定</Text>
+      <Text style={styles.readingDoorTitle}>{outlook.title}の日の詳しい鑑定を読む　›</Text>
+      <Text style={S.tiny}>仕事・恋愛・金運・健康、ラッキー、明日の潮まで</Text>
+    </Pressable>}
+
+    {view === 'result' && resident && <View key={'type-' + activeId} style={styles.typeSection}>
+      <View style={[S.card, glow(SEASON[profile.t.mod].col), styles.typeHero]}>
+        <View style={styles.typeTop}>
+          <View style={[styles.portrait, { borderColor: SEASON[profile.t.mod].col, backgroundImage: `radial-gradient(circle at 50% 42%, #f4f8ff 0%, ${SEASON[profile.t.mod].col}aa 70%, ${SEASON[profile.t.mod].col}66 100%)` } as object]}>
+            <Image source={residentArt[residentIndex(profile.t)]} accessible={false} style={styles.portraitImg} />
+          </View>
+          <View style={{ flex: 1, minWidth: 0, gap: 3 }}>
+            <Text style={[S.kicker, { color: SEASON[profile.t.mod].col }]}>あなたのタイプ　{labelOf(profile.t)}</Text>
+            <Text accessibilityRole="header" style={styles.typeTitle}>{resident.band}</Text>
+            <Text style={styles.typeSub}>{resident.subtitle}</Text>
+          </View>
+        </View>
+        <Text style={styles.typeHook}>{resident.hook}</Text>
+        <Text style={styles.detail}>{resident.inner}</Text>
+      </View>
+      <TypeFortunes entry={resident} />
+      <TypeTraits entry={resident} />
+      <Button quiet onPress={() => setShowName(!showName)}>{showName ? '名札の決まり方を閉じる' : '名札の決まり方を詳しく見る'}</Button>
+      {showName && <NameReadingDetails profile={profile} />}
+    </View>}
 
     <Text style={S.h2}>次はどうする？</Text>
     <NextLinks items={[
@@ -365,6 +383,12 @@ const styles = StyleSheet.create({
   actionText: { color: C.ink, fontSize: 19, lineHeight: 28, fontWeight: '800' },
   factor: { borderTopWidth: 1, borderTopColor: C.line, paddingTop: 8, gap: 3 },
   toolbar: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  readingHero: { alignItems: 'center', gap: 6, paddingTop: 20, paddingBottom: 8 },
+  readingTier: { fontSize: 56, lineHeight: 70, fontFamily: display, fontWeight: '400', letterSpacing: 4, textAlign: 'center' },
+  readingRank: { color: C.muted, fontSize: 20, fontWeight: '800', textAlign: 'center' },
+  readingLine: { color: C.ink, fontSize: 22, lineHeight: 36, fontFamily: rounded, fontWeight: '800', textAlign: 'center', paddingHorizontal: 8, marginTop: 6 },
+  readingDoor: { borderWidth: 1.5, borderRadius: 22, padding: 18, gap: 4, alignItems: 'center' },
+  readingDoorTitle: { color: C.ink, fontSize: 20, lineHeight: 30, fontFamily: rounded, fontWeight: '900', textAlign: 'center' },
   bookHead: { alignItems: 'center', gap: 2, paddingTop: 14, paddingBottom: 6 },
   bookTitle: { color: C.ink, fontSize: 30, lineHeight: 42, fontFamily: rounded, fontWeight: '900', letterSpacing: 4 },
   detail: { color: C.muted, fontSize: 16, lineHeight: 28 },

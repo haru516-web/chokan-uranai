@@ -159,7 +159,9 @@ export function Guide({ today, profile, onClose }: { today: Date; profile: Profi
 }
 
 const st = StyleSheet.create({
-  overlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, alignItems: 'center', backgroundColor: C.base, zIndex: 3000 } as never,
+  // 画面全体に重ねるので、ノッチ（上）・ホームバー（下）・横の余白を自分で避ける。これが無いと実機で上部の「1/14・バー・スキップ」が隠れる。
+  overlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, alignItems: 'center', backgroundColor: C.base, zIndex: 3000,
+    paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)', paddingLeft: 'env(safe-area-inset-left)', paddingRight: 'env(safe-area-inset-right)' } as never,
   frame: { flex: 1, width: '100%', maxWidth: 780, minHeight: 0 },
   top: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingTop: 14 },
   count: { color: C.muted, fontSize: 13, fontWeight: '800', minWidth: 44 },

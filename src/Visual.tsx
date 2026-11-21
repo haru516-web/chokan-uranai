@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { C, display as displayFont } from './ui';
 import type { ImeSegment } from './kana';
+import { colorRuns, type Mark } from './marks';
 
 const anim = (style: object) => style as unknown as ViewStyle;
 /** CSS 側（styles.css）で定義したアニメーションを data 属性で当てる。 */
@@ -77,8 +78,10 @@ export function GlowPulse({ color, radius = 25 }: { color: string; radius?: numb
 }
 
 /** 1文字ずつ打ち出す。レイアウトは最初から全文ぶんを確保して揺れないようにする。 */
-export function TypeText({ text, delay = 0, speed = 30, instant, style }: {
+export function TypeText({ text, delay = 0, speed = 30, instant, style, marks }: {
   text: string; delay?: number; speed?: number; instant?: boolean; style?: StyleProp<import('react-native').TextStyle>;
+  /** 色を付ける言葉（分野名など）。 */
+  marks?: Mark[];
 }) {
   const [count, setCount] = useState(instant ? text.length : 0);
   useEffect(() => {
@@ -96,7 +99,7 @@ export function TypeText({ text, delay = 0, speed = 30, instant, style }: {
     return () => { clearTimeout(starter); if (timer) clearInterval(timer); };
   }, [text, delay, speed, instant]);
   return <Text style={style} accessibilityLabel={text}>
-    <Text>{text.slice(0, count)}</Text><Text style={{ opacity: 0 }}>{text.slice(count)}</Text>
+    {colorRuns(text, marks, 0, count).map((run, k) => <Text key={k} style={run.color ? { color: run.color, fontWeight: '900' } : undefined}>{run.text}</Text>)}<Text style={{ opacity: 0 }}>{text.slice(count)}</Text>
   </Text>;
 }
 
