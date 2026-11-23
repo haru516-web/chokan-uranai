@@ -92,6 +92,7 @@ export function Today({ people, activeId, onSwitch, onAdd, onManage, today, prof
     if (!reading) return;
     setShareMessage('画像を作っています…');
     const rank = reading.row.rank;
+    let stage = '画像の作成';
     try {
       const blob = await makePosterImage({
         color: ['#efd393', '#b6dfc4', '#c1d2ef', '#ff5a4d', '#e0245e'][rank <= 16 ? 0 : rank <= 56 ? 1 : rank <= 104 ? 2 : rank <= 144 ? 3 : 4],
@@ -102,10 +103,10 @@ export function Today({ people, activeId, onSwitch, onAdd, onManage, today, prof
       });
       setShareMessage('');
       // iOS アプリ版：WebView ではダウンロードできないので、ネイティブの共有シート（写真に保存など）で渡す。
-      if (canShareNatively()) { await shareImage(await blobToDataUrl(blob)); return; }
+      if (canShareNatively()) { stage = '共有シートへの受け渡し'; await shareImage(await blobToDataUrl(blob)); return; }
       setPosterUrl(URL.createObjectURL(blob));
-    } catch {
-      setShareMessage('画像を作成できませんでした。もう一度お試しください。');
+    } catch (error) {
+      setShareMessage('画像を保存できませんでした（' + stage + 'で失敗：' + (error instanceof Error ? error.message : String(error)).slice(0, 80) + '）。もう一度お試しください。');
     }
   }
 
