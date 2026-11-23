@@ -1,4 +1,7 @@
 import { tarotArt } from './art';
+import { TAROT_EXTRA_A } from './tarotTexts.a';
+import { TAROT_EXTRA_B } from './tarotTexts.b';
+import { TAROT_EXTRA_C } from './tarotTexts.c';
 
 /**
  * 大アルカナ22枚。意味は3層で持つ。
@@ -163,4 +166,21 @@ export function tarotSpread(day: string, key: string, recent: string[], count = 
   }
   const skip = new Set(recent.slice(-(tarotDeck.length - count)));
   return [...order.filter(card => !skip.has(card.id)), ...order.filter(card => skip.has(card.id))].slice(0, count);
+}
+
+const EXTRA = { ...TAROT_EXTRA_A, ...TAROT_EXTRA_B, ...TAROT_EXTRA_C };
+
+/**
+ * 引いた札の読み。意味と一手は、札ごとに10文から選ぶ（人・日付・札で決まるので、その日は何度開いても同じ）。
+ * 季節のレンズは、季節4 × 今日の運勢5段階＝20文から選ぶ（凪の日は、もとの季節別の文）。
+ */
+export function tarotReading(card: TarotCard, day: string, key: string, season: Season | null, level: Level | null) {
+  const extra = EXTRA[card.id];
+  const messages = [card.message, ...(extra?.messages ?? [])];
+  const actions = [card.action, ...(extra?.actions ?? [])];
+  const pick = <T,>(list: T[], salt: string) => list[hash(key + ':' + day + ':' + card.id + ':' + salt) % list.length];
+  const lens = season === null ? undefined
+    : level === null || level === 2 || !extra ? card.lens[season]
+    : extra.lens[season][level < 2 ? level : level - 1];
+  return { message: pick(messages, 'm'), action: pick(actions, 'a'), lens };
 }

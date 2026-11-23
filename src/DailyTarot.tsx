@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, Text, View, type GestureResponderEvent } from 'r
 import { tarotBack } from './art';
 import { dateKey } from './domain';
 import { Image } from './web/image';
-import { findTarot, seasonNames, tarotDeck, tarotSpread, tarotTone, type Level, type Season, type TarotCard } from './tarotDeck';
+import { findTarot, seasonNames, tarotDeck, tarotReading, tarotSpread, tarotTone, type Level, type Season, type TarotCard } from './tarotDeck';
 import { Button, C, Heading, NextLinks, S } from './ui';
 import { startTarotFx } from './tarotFx';
 
@@ -96,6 +96,7 @@ export function DailyTarot({ today, savedDraw, log, onDraw, personKey, season, l
     return () => clearTimeout(timer);
   }, [flight]);
 
+  const reading = card ? tarotReading(card, day, personKey, season, level) : null;
   const spread = card ? [] : tarotSpread(day, personKey, [], tarotDeck.length);
 
   function pickCard(pick: TarotCard, event: GestureResponderEvent) {
@@ -141,15 +142,15 @@ export function DailyTarot({ today, savedDraw, log, onDraw, personKey, season, l
         <Text style={styles.arcana}>{card.arcana}</Text>
         <Text style={[S.tiny, { textAlign: 'center' }]}>{card.keywords.join('・')}</Text>
         <Text style={S.h3}>{card.theme}</Text>
-        <Text style={S.body}>{card.message}</Text>
+        <Text style={S.body}>{reading?.message ?? card.message}</Text>
         <View style={styles.action}>
           <Text style={[S.kicker, { color: C.aqua }]}>今日の小さな一手</Text>
-          <Text style={S.body}>{card.action}</Text>
+          <Text style={S.body}>{reading?.action ?? card.action}</Text>
         </View>
 
         {season !== null && level !== null ? <View style={styles.lens}>
           <Text style={[S.kicker, { color: C.gold }]}>あなたの海（{seasonNames[season]}）では</Text>
-          <Text style={S.body}>{card.lens[season]}</Text>
+          <Text style={S.body}>{reading?.lens ?? card.lens[season]}</Text>
           <Text style={S.body}>{tarotTone(level, card.heavy)}</Text>
         </View> : onCreate ? <View style={styles.lens}>
           <Text style={[S.kicker, { color: C.gold }]}>あなたの海で読むと、意味が変わります</Text>
