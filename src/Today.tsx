@@ -52,7 +52,6 @@ export function Today({ people, activeId, onSwitch, onAdd, onManage, today, prof
   const [posterUrl, setPosterUrl] = useState<string | null>(null);
   const { desktop } = useColumns();
   const [fold, setFold] = useState<FoldId | null>(null);
-  const [showScore, setShowScore] = useState(false);
   const [showName, setShowName] = useState(false);
   const toggle = (id: FoldId) => setFold(current => current === id ? null : id);
   const date = addDays(today, offset);
@@ -230,8 +229,7 @@ export function Today({ people, activeId, onSwitch, onAdd, onManage, today, prof
 
       <Scene index={4} last={!tomorrow} color="#c1d2ef" kicker={dayWord + 'の月'} title={c.moon + '・' + c.phaseTide} lead={isNewMoon ? '新月。始めたいことを、一つだけ選ぶ夜です。' : isFullMoon ? '満月。いま手元にあるものを、確かめる夜です。' : '月の形と距離が、' + dayWord + 'の潮の強さを決めています。'} next={tomorrow ? '明日の潮' : undefined}>
         {moonCard}
-        <Button quiet onPress={() => setShowScore(!showScore)}>{showScore ? '点数の内訳を閉じる' : '順位の計算を、点数の内訳まで見る'}</Button>
-        {showScore && <ReadingReasons reading={reading} />}
+        <ReadingReasons reading={reading} />
       </Scene>
 
       {tomorrow && <Scene index={5} last color={['#efd393', '#b6dfc4', '#c1d2ef', '#ff5a4d', '#e0245e'][tomorrow.level]} kicker="予告" title="明日の潮は……">
@@ -314,6 +312,7 @@ function Door({ fill, color, big, badge, kicker, title, hint, cta, onPress, art 
 }
 
 function ReadingReasons({ reading }: { reading: Reading }) {
+  const [showScore, setShowScore] = useState(false);
   const { context: c, row, personal, personalRank, force, fivePhase } = reading;
   const { p, t } = row;
   const season = SEASON[t.mod];
@@ -334,12 +333,13 @@ function ReadingReasons({ reading }: { reading: Reading }) {
     <Text style={S.h2}>二つの力と、点数の内訳</Text>
     <Meter title="自分が進む" value={force.go} caption={force.go >= .5 ? '好機' : '控えめ'} />
     <Meter title="周りを変える" value={force.change} color="#a8c4f0" caption={force.change >= .5 ? '届きやすい' : '控えめ'} delay={220} />
-    {factors.map(({ title, score, note }) => <View key={title} style={styles.factor}>
+    <Button quiet onPress={() => setShowScore(!showScore)}>{showScore ? '点数の内訳を閉じる' : '順位の計算を、点数の内訳まで見る'}</Button>
+    {showScore && factors.map(({ title, score, note }) => <View key={title} style={styles.factor}>
       <View style={S.between}><Text style={S.h3}>{title}</Text><Text style={[S.tiny, { color: score < 0 ? '#efb2b0' : C.gold }]}>{score > 0 ? '+' : ''}{score.toFixed(1)}点</Text></View>
       <Gloss style={S.body}>{note}</Gloss>
     </View>)}
-    <Text style={S.h3}>名札 {row.score.toFixed(1)}点　／　全体平均 {reading.mean.toFixed(1)}点</Text>
-    <Text style={S.body}>あなた個人の日の海は「{DAY_STAGES[personal.pos].n}」。誕生日と総画数から読んだ補正{personal.delta >= 0 ? '+' : ''}{personal.delta.toFixed(1)}点{personal.ret ? '（帰郷の年の加点を含む）' : ''}{t.A ? 'と、Aの渦による振れ幅' : ''}を重ねると、{personalRank}位相当です。</Text>
+    {showScore && <Text style={S.h3}>名札 {row.score.toFixed(1)}点　／　全体平均 {reading.mean.toFixed(1)}点</Text>}
+    {showScore && <Text style={S.body}>あなた個人の日の海は「{DAY_STAGES[personal.pos].n}」。誕生日と総画数から読んだ補正{personal.delta >= 0 ? '+' : ''}{personal.delta.toFixed(1)}点{personal.ret ? '（帰郷の年の加点を含む）' : ''}{t.A ? 'と、Aの渦による振れ幅' : ''}を重ねると、{personalRank}位相当です。</Text>}
   </View>;
 }
 
