@@ -59,8 +59,10 @@ type Detail =
   | { kind: 'chapter'; index: number }
   | { kind: 'rank'; date: Date };
 
-type Saved = { inputs: Inputs | null; people: Person[]; favorites: number[]; read: number[]; questions: SavedQuestion[]; reflections: Reflection[]; tarotDraw: SavedTarotDraw | null; tarotLog: SavedTarotDraw[] };
-const empty: Saved = { inputs: null, people: [], favorites: [], read: [], questions: [], reflections: [], tarotDraw: null, tarotLog: [] };
+type Saved = { inputs: Inputs | null; people: Person[]; favorites: number[]; read: number[]; questions: SavedQuestion[]; reflections: Reflection[]; tarotDraw: SavedTarotDraw | null; tarotLog: SavedTarotDraw[];
+  /** 「鑑定」タブを最後に開いた日（YYYY-MM-DD）。null＝まだ一度も開いていない。タブの NEW・赤い点の出し分けに使う。 */
+  readingDay: string | null };
+const empty: Saved = { inputs: null, people: [], favorites: [], read: [], questions: [], reflections: [], tarotDraw: null, tarotLog: [], readingDay: null };
 const storageKey = 'chokan/v1';
 let pendingSave: Promise<void> = Promise.resolve();
 
@@ -98,6 +100,12 @@ function Voyage({ hold }: { hold: boolean }) {
   const selectedQuestion = findQuestion(selectedQuestionId);
   const day = dateKey(today);
   const accent = mainTabs.find(item => item.id === tab)?.accent ?? '#eacc8c';
+
+  // 「鑑定」タブを開いたら、今日は読んだことにする（NEW・赤い点が消える）。占った人がいるときだけ。
+  useEffect(() => {
+    if (!ready || tab !== 'reading' || detail || !profile || stored.readingDay === day) return;
+    setStored(previous => previous.readingDay === day ? previous : { ...previous, readingDay: day });
+  }, [ready, tab, detail, !!profile, stored.readingDay, day]);
 
   useEffect(() => {
     const page = detail ? detailTitles[detail.kind] : mainTabs.find(item => item.id === tab)?.title;
@@ -255,8 +263,7 @@ function Voyage({ hold }: { hold: boolean }) {
     if (Platform.OS === 'ios') void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
   }
 
-  const body = {
-    today: <Today people={people} activeId={activeId} onSwitch={id => { setActiveId(id); setTodayVisit(previous => previous + 1); }}
+  const renderToday = (view: 'result' | 'reading') => <Today view={view} openReading={() => go('reading')} people={people} activeId={activeId} onSwitch={id => { setActiveId(id); setTodayVisit(previous => previous + 1); }}
       onAdd={() => open({ kind: 'profile', add: true })} onManage={() => open({ kind: 'people' })} today={today} profile={profile} goMyth={openMyth} openCalendar={openCalendar} create={editProfile}
       ranks={openRanking} questions={stored.questions} reflections={stored.reflections}
       tarotDraw={stored.tarotDraw} tarotLog={stored.tarotLog} onDrawTarot={drawTarot}
@@ -268,7 +275,10 @@ function Voyage({ hold }: { hold: boolean }) {
         toggle: () => toggleQuestion(selectedQuestion.id),
         compare: () => compare(selectedQuestion.id),
       } : undefined}
-      openHomecoming={year => open({ kind: 'homecoming', year })} />,
+      openHomecoming={year => open({ kind: 'homecoming', year })} />;
+  const body = {
+    today: renderToday('result'),
+    reading: renderToday('reading'),
     tarot: <TarotHome today={today} savedDraw={stored.tarotDraw} log={stored.tarotLog} onDraw={drawTarot}
       personKey={profile ? 'k' + profile.t.key : 'guest'} season={profile ? seasonOf(profile.t.mod) : null}
       level={profile ? readDay(today, profile).layers.day : null} onCreate={editProfile} goToday={() => go('today')} />,
@@ -393,7 +403,8 @@ function Voyage({ hold }: { hold: boolean }) {
           {detailBody(entry)}
         </ScrollView>)}
       </> : <View style={[layout.scroll, layout.content]}><Text style={S.body}>海図をひらいています…</Text></View>}
-      <TabBar wide={wide} seasonIndex={profile?.t.mod ?? null} activeTab={tab} onSelect={go} />
+      <TabBar wide={wide} seasonIndex={profile?.t.mod ?? null} activeTab={tab === 'questions' ? 'today' : tab} onSelect={go}
+        badges={ready && profile && stored.readingDay !== day ? { reading: stored.readingDay === null ? 'new' : 'dot' } : undefined} />
     </KeyboardAvoidingView>
     <ToTop resetKey={tab + (detail ? detail.kind + path.length : "")} />
     {ritual && profile && <Ritual profile={profile} today={today} onDone={() => setRitual(false)} />}

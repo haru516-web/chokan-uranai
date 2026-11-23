@@ -1,9 +1,12 @@
 // 占い結果のポスターを、PNG画像として書き出す（画面の枠の中身を canvas に描き直す）。
 import { C } from './ui';
+import { colorRuns, type Mark, type Run } from './marks';
 
 export type PosterImage = {
   color: string; level: number; godUrl?: string; dateText: string; personName?: string;
   plate: string; band: string; rank: number; dayWord: string; line: string; action: string;
+  /** ひと言の中で色を付ける言葉（分野名）。 */
+  marks?: Mark[];
 };
 
 const TIER_NAMES = ['凱風', '順風', '凪', '荒波', '轟沈'];
@@ -23,7 +26,15 @@ function loadImage(url: string) {
 
 function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
   ctx.beginPath();
-  ctx.roundRect(x, y, w, h, r);
+  // roundRect は新しい WebView にしかない。無い環境では arcTo で丸い角を描く。
+  if (typeof ctx.roundRect === 'function') { ctx.roundRect(x, y, w, h, r); return; }
+  const k = Math.min(r, w / 2, h / 2);
+  ctx.moveTo(x + k, y);
+  ctx.arcTo(x + w, y, x + w, y + h, k);
+  ctx.arcTo(x + w, y + h, x, y + h, k);
+  ctx.arcTo(x, y + h, x, y, k);
+  ctx.arcTo(x, y, x + w, y, k);
+  ctx.closePath();
 }
 
 /** 幅に収まるよう、文字を折り返す（日本語なので1文字ずつ測る）。 */
@@ -157,7 +168,22 @@ function draw(canvas: HTMLCanvasElement, data: PosterImage, god: HTMLImageElemen
   // ひとこと
   ctx.font = `700 20px ${ROUNDED}`;
   ctx.fillStyle = C.ink;
-  wrap(ctx, data.line, inner).forEach(text => { ctx.fillText(text, W / 2, y + 22); y += 31; });
+  // 分野名（恋愛・対人など）は、その分野の色・太字で描く。折り返した行ごとに、色の塊を左から並べる。
+  let offset = 0;
+  wrap(ctx, data.line, inner).forEach(text => {
+    const runs = colorRuns(data.line, data.marks, offset, offset + text.length);
+    offset += text.length;
+    const fontOf = (run: Run) => `${run.color ? 900 : 700} 20px ${ROUNDED}`;
+    const widths = runs.map(run => { ctx.font = fontOf(run); return ctx.measureText(run.text).width; });
+    let x = W / 2 - widths.reduce((sum, width) => sum + width, 0) / 2;
+    const align = ctx.textAlign;
+    ctx.textAlign = 'left';
+    runs.forEach((run, k) => { ctx.font = fontOf(run); ctx.fillStyle = run.color ?? C.ink; ctx.fillText(run.text, x, y + 22); x += widths[k]; });
+    ctx.textAlign = align;
+    ctx.font = `700 20px ${ROUNDED}`;
+    ctx.fillStyle = C.ink;
+    y += 31;
+  });
   y += 12;
 
   // 今日の一手

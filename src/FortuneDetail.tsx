@@ -70,7 +70,7 @@ export function FortuneAreas({ fortune, dayWord, hideSea }: { fortune: Fortune; 
         <Text style={S.h3}>{area.label}</Text>
         <Stars count={area.stars} color={area.color} play={seen} delay={300 + index * 110} />
         <Text style={S.tiny}>{area.point}点</Text>
-        <Premium id="areaText" compact lines={3}><Text style={styles.areaText}>{area.text}</Text></Premium>
+        <Premium id="areaText" compact lines={3}><View style={{ gap: 8 }}><Text style={styles.areaText}>{area.text}</Text><Text style={styles.areaText}>{area.extra}</Text><Text style={[S.tiny, { color: area.color }]}>{area.reason}</Text></View></Premium>
       </View>)}
     </View>
   </View>;

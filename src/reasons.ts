@@ -83,13 +83,17 @@ export function factorsFor(c: SeaContext, row: RankRow, rows: RankRow[]): Factor
 const DAILY: FactorId[] = ['stage', 'moon', 'tide', 'day', 'trait'];
 
 /** その日の段階（凱風〜轟沈）に沿う理由を主役にし、次点と、逆向きの理由（あれば）を選ぶ。 */
-export function chooseFactors(factors: Factor[], level: number) {
+export function chooseFactors(factors: Factor[], level: number, dayIndex = 0) {
   const sign = level < 2 ? 1 : level > 2 ? -1 : 0;
   const weight = (f: Factor) => sign ? f.z * sign : Math.abs(f.z);
   const order = (a: Factor, b: Factor) => weight(b) - weight(a) || FACTOR_ORDER.indexOf(a.id) - FACTOR_ORDER.indexOf(b.id);
   const sorted = [...factors].sort(order);
-  const main = sorted.find(f => DAILY.includes(f.id))!;
-  const support = sorted.find(f => f.id !== main.id && DAILY.includes(f.id))!;
+  // 月の形のように動きの遅い項目が毎日の主役に居座らないよう、段階に沿う上位3つの項目を日付で順に主役にする。
+  const daily = sorted.filter(f => DAILY.includes(f.id));
+  const top = daily.slice(0, 3);
+  const main = top[((dayIndex % top.length) + top.length) % top.length];
+  const rest = daily.filter(f => f.id !== main.id).slice(0, 2);
+  const support = rest[((dayIndex % rest.length) + rest.length) % rest.length];
   const worst = sign ? [...factors].sort((a, b) => weight(a) - weight(b))[0] : undefined;
   return {
     main, support,

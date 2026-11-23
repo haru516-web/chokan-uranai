@@ -162,6 +162,8 @@ export const uiFiles: Record<string, string> = {
   '../assets/ui/tab-match-on.webp': u(require('../assets/ui/tab-match-on.webp')),
   '../assets/ui/tab-questions-off.webp': u(require('../assets/ui/tab-questions-off.webp')),
   '../assets/ui/tab-questions-on.webp': u(require('../assets/ui/tab-questions-on.webp')),
+  '../assets/ui/tab-reading-off.webp': u(require('../assets/ui/tab-reading-off.webp')),
+  '../assets/ui/tab-reading-on.webp': u(require('../assets/ui/tab-reading-on.webp')),
   '../assets/ui/tab-tarot-off.webp': u(require('../assets/ui/tab-tarot-off.webp')),
   '../assets/ui/tab-tarot-on.webp': u(require('../assets/ui/tab-tarot-on.webp')),
   '../assets/ui/tab-today-off.webp': u(require('../assets/ui/tab-today-off.webp')),

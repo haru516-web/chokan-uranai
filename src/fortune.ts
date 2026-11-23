@@ -2,12 +2,16 @@
 // その名札の今日の数値（順位・力・月・五行）だけから決める。乱数もハッシュも使わない
 // （同じ名札・同じ日なら必ず同じ結果になるのは、入力が同じだからである）。
 import { addDays, calendarEvents, readDay, tiers, type Profile } from './domain';
-import { tierPosition } from './dayText';
+import { areaScores } from './areaScore';
+import { AREA_EXTRA, areaReason } from './fortuneExtra';
+import { WORK_TEXTS } from './areaTexts.work';
+import { LOVE_TEXTS } from './areaTexts.love';
+import { MONEY_TEXTS } from './areaTexts.money';
+import { HEALTH_TEXTS } from './areaTexts.health';
+import { rotate, tierPosition } from './dayText';
 import { FIVE_PHASES, SEASON, STAGES, relationOf, stageFor } from './scoring';
 
 type Reading = ReturnType<typeof readDay>;
-
-const clamp = (value: number) => Math.max(0, Math.min(1, value));
 
 // 海のようす。段階ごとに3通りで、段階の中の順位の位置（上・中・下）で決まる。上ほど良いほうの文。
 const SEA = [
@@ -19,35 +23,11 @@ const SEA = [
 ];
 
 type AreaId = 'work' | 'love' | 'money' | 'health';
-const AREAS: { id: AreaId; label: string; icon: string; color: string; texts: string[][] }[] = [
-  { id: 'work', label: '仕事・学び', icon: '⚓', color: '#eacc8c', texts: [
-    ['手を広げず、決まった作業だけを淡々と。新しい提案は別の日に。', '集中が途切れやすい日。締め切りの近いもの一つに絞りましょう。'],
-    ['進みは遅めです。確認と見直しに時間を使うと、後で助かります。', '人に聞けば早い場面が増えます。一人で粘りすぎないこと。'],
-    ['いつも通りの力が出せます。溜まった用事を順に片づけましょう。', '可もなく不可もなく。地味な作業ほど、今日は手になじみます。'],
-    ['頭がよく回る日。少し難しい課題に手をつけるなら今日です。', '評価につながる仕事ができます。見せたいものは今日のうちに。'],
-    ['会心の一日。大きな勝負や発表は、今日に寄せてください。', '始めたことが一気に形になります。迷っていた挑戦に踏み出す日。'],
-  ] },
-  { id: 'love', label: '恋愛・対人', icon: '♡', color: '#f0a8c0', texts: [
-    ['言葉がすれ違いやすい日。大事な話は、日を改めたほうが届きます。', '一人の時間が薬になります。無理に合わせず、早めに切り上げて。'],
-    ['相手の機嫌を読みすぎないこと。短い挨拶だけで十分です。', '期待しすぎると疲れる日。聞き役に回ると、関係が保てます。'],
-    ['穏やかなやり取りができます。日常の「ありがとう」を一つ多く。', '大きな進展はなくても、安心が積み上がる日です。'],
-    ['素直な一言がよく響きます。気になる人に、自分から連絡を。', '笑顔が伝染する日。人の集まる場所に顔を出すと良い縁があります。'],
-    ['想いがまっすぐ届く日。伝えたかったことを、今日言葉にしてください。', '出会いにも仲直りにも最高の潮。待つより、迎えに行く日です。'],
-  ] },
-  { id: 'money', label: '金運', icon: '◎', color: '#b6dfc4', texts: [
-    ['財布のひもは固く。勢いの買い物は、明日には後悔に変わります。', '思わぬ出費に注意。大きな支払いの判断は先に延ばしましょう。'],
-    ['「安いから」で買わないこと。必要なものだけを選ぶ日です。', '貸し借りは控えめに。細かい出費を数えると、無駄が見つかります。'],
-    ['収支は穏やか。家計を五分だけ見直すと、小さな発見があります。', '良くも悪くも動きません。欲しいものは、リストに書いて寝かせて。'],
-    ['使ったお金が、きちんと満足になって返る日。良いものを一つ。', '小さな得があります。値段より、長く使えるかで選ぶと正解です。'],
-    ['お金の流れが開く日。投資や学びへの出費が、後で大きく実ります。', '思いがけない収入や、得な話が舞い込みやすい日。直感を信じて。'],
-  ] },
-  { id: 'health', label: '健康・休息', icon: '☘', color: '#a8c4f0', texts: [
-    ['疲れが表に出やすい日。予定を削ってでも、睡眠を最優先に。', '無理がきかない日です。温かいものを食べて、早く横になりましょう。'],
-    ['肩や目に疲れが溜まっています。一時間に一度、席を立って。', '冷えに注意。首・手首・足首を温めると、調子が戻ります。'],
-    ['体調は安定しています。軽い散歩が、気分転換にちょうどいい日。', '特に心配はいりません。水を一杯多く飲むだけで十分です。'],
-    ['体が軽く動く日。いつもより一駅ぶん歩くと、頭も冴えます。', '回復力が高い日です。先延ばしにしていた運動を、少しだけ。'],
-    ['心も体も満ちています。新しい習慣を始めるなら今日が吉日。', '活力があふれる日。体を動かすほど、さらに運が巡ります。'],
-  ] },
+const AREAS: { id: AreaId; label: string; icon: string; color: string; texts: string[][][] }[] = [
+  { id: 'work', label: '仕事・学び', icon: '⚓', color: '#eacc8c', texts: WORK_TEXTS },
+  { id: 'love', label: '恋愛・対人', icon: '♡', color: '#f0a8c0', texts: LOVE_TEXTS },
+  { id: 'money', label: '金運', icon: '◎', color: '#b6dfc4', texts: MONEY_TEXTS },
+  { id: 'health', label: '健康・休息', icon: '☘', color: '#a8c4f0', texts: HEALTH_TEXTS },
 ];
 
 // 五行ごとの色（木・火・土・金・水）。浅い（明るい）色から深い色の順に3色。名札の深さの帯で選ぶ。
@@ -80,22 +60,20 @@ export type Fortune = ReturnType<typeof fortuneFor>;
 
 export function fortuneFor(reading: Reading, profile: Profile) {
   const { row, force, context } = reading;
-  const base = 1 - (row.rank - 1) / 159;
-  const parts = [
-    force.go,
-    force.change * 0.6 + clamp((row.p.moon + 2) / 4) * 0.4,
-    clamp((row.p.comp + 2) / 4) * 0.5 + clamp((row.p.base - 1) / 9) * 0.5,
-    // 健康：日の波（体力の上げ下げ）・月の距離と深さ（潮の引き）・進む力と変える力のつり合い。
-    clamp(0.5 + row.p.day / 7) * 0.5 + clamp(0.5 + row.p.depth / 1.8) * 0.2 + (1 - Math.abs(force.go - force.change) * 1.6) * 0.3,
-  ];
+  // 日付にタイプの番号を足して文を選ぶ。同じ日・同じ段階でも、タイプが違えば別の文になる。
+  const spin = context.dayIndex + profile.t.key * 7;
+  const scores = areaScores(row, force);
   const areas = AREAS.map((area, index) => {
-    // 順位55％＋分野ごとの数値35％。0〜1に伸ばして、0〜100点と星1〜5にする。
-    const value = clamp((base * 0.55 + parts[index] * 0.35 - 0.12) / 0.62);
-    const scaled = value * 4;
-    const stars = 1 + Math.round(scaled);
-    // 同じ星の中でも、点数が低いほうの文と高いほうの文を分ける。
-    const text = area.texts[stars - 1][scaled >= Math.round(scaled) ? 1 : 0];
-    return { id: area.id, label: area.label, icon: area.icon, color: area.color, stars, point: Math.round(value * 100), text };
+    // 点数と星は、ひと言と同じ計算（areaScore.ts）。
+    const { scaled, stars, point } = scores[index];
+    // 星の中の位置（低い→高い）を4つに分け、それぞれ10種の文から、日付で順に回す。
+    // 星1・星5は幅が半分しかないので、その幅に合わせて4つに分ける（そうしないと、半分の文が出なくなる）。
+    const from = stars === 1 ? 0 : stars - 1.5, width = stars === 1 || stars === 5 ? 0.5 : 1;
+    const sub = Math.max(0, Math.min(3, Math.floor((scaled - from) / width * 4)));
+    const text = rotate(area.texts[stars - 1][sub], spin, index);
+    const extra = rotate(AREA_EXTRA[area.id][stars - 1], spin, index + 2);
+    const reason = areaReason(area.id, row.p, force);
+    return { id: area.id, label: area.label, icon: area.icon, color: area.color, stars, point, text, extra, reason };
   });
   const best = areas.reduce((top, area) => area.point > top.point ? area : top, areas[0]);
 
@@ -107,22 +85,25 @@ export function fortuneFor(reading: Reading, profile: Profile) {
   const element = supported ? own : (own + 4) % 5;
   const depthBand = profile.t.num <= 2 ? 0 : profile.t.num <= 3.5 ? 1 : 2;
   const level = reading.layers.day;
+  // 同じ五行・同じ段階の日が続いても、色の濃さと持ち物が日替わりになるよう、日付で1つずつずらす。
+  const shade = (depthBand + spin) % 3;
+  const itemIndex = Math.max(0, Math.min(4, level + (spin % 3) - 1));
   // 時間：その五行の十二支のうち、自分の「日の波」の位置から先に来る最初の刻。
   const hours = BRANCHES_OF[element];
   const start = reading.personal.pos;
   const hour = hours.map(branch => ({ branch, wait: (branch - start + 12) % 12 })).sort((a, b) => a.wait - b.wait)[0].branch;
   const lucky = {
-    color: COLORS[element][depthBand],
+    color: COLORS[element][shade],
     element: FIVE_PHASES[element].name,
     direction: DIRECTIONS[element],
-    item: ITEMS[element][level],
+    item: ITEMS[element][itemIndex],
     time: BRANCH_TIMES[hour],
     number: NUMBERS[element][force.go >= 0.5 ? 1 : 0],
     reason: '今日の' + FIVE_PHASES[context.dayElement].name + 'と自分の' + FIVE_PHASES[own].name + 'は「' + relation.kind + '」。'
       + (supported ? '支えがある日なので、自分の' + FIVE_PHASES[own].name + 'を保ちます。' : '力を奪われやすい日なので、自分を生む' + FIVE_PHASES[element].name + 'で補います。'),
   };
   const pos = tierPosition(row.rank);
-  return { areas, best, lucky, level, sea: SEA[level][pos.sub] };
+  return { areas, best, lucky, level, sea: rotate(SEA[level], spin, pos.sub) };
 }
 
 /** 明日の潮の予告。段階と月・潮・行事までを明かし、順位とひと言は明日のお楽しみにする。 */
