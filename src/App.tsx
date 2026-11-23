@@ -59,8 +59,10 @@ type Detail =
   | { kind: 'chapter'; index: number }
   | { kind: 'rank'; date: Date };
 
-type Saved = { inputs: Inputs | null; people: Person[]; favorites: number[]; read: number[]; questions: SavedQuestion[]; reflections: Reflection[]; tarotDraw: SavedTarotDraw | null; tarotLog: SavedTarotDraw[] };
-const empty: Saved = { inputs: null, people: [], favorites: [], read: [], questions: [], reflections: [], tarotDraw: null, tarotLog: [] };
+type Saved = { inputs: Inputs | null; people: Person[]; favorites: number[]; read: number[]; questions: SavedQuestion[]; reflections: Reflection[]; tarotDraw: SavedTarotDraw | null; tarotLog: SavedTarotDraw[];
+  /** 「鑑定」タブを最後に開いた日（YYYY-MM-DD）。null＝まだ一度も開いていない。タブの NEW・赤い点の出し分けに使う。 */
+  readingDay: string | null };
+const empty: Saved = { inputs: null, people: [], favorites: [], read: [], questions: [], reflections: [], tarotDraw: null, tarotLog: [], readingDay: null };
 const storageKey = 'chokan/v1';
 let pendingSave: Promise<void> = Promise.resolve();
 
@@ -98,6 +100,12 @@ function Voyage({ hold }: { hold: boolean }) {
   const selectedQuestion = findQuestion(selectedQuestionId);
   const day = dateKey(today);
   const accent = mainTabs.find(item => item.id === tab)?.accent ?? '#eacc8c';
+
+  // 「鑑定」タブを開いたら、今日は読んだことにする（NEW・赤い点が消える）。占った人がいるときだけ。
+  useEffect(() => {
+    if (!ready || tab !== 'reading' || detail || !profile || stored.readingDay === day) return;
+    setStored(previous => previous.readingDay === day ? previous : { ...previous, readingDay: day });
+  }, [ready, tab, detail, !!profile, stored.readingDay, day]);
 
   useEffect(() => {
     const page = detail ? detailTitles[detail.kind] : mainTabs.find(item => item.id === tab)?.title;
@@ -395,7 +403,8 @@ function Voyage({ hold }: { hold: boolean }) {
           {detailBody(entry)}
         </ScrollView>)}
       </> : <View style={[layout.scroll, layout.content]}><Text style={S.body}>海図をひらいています…</Text></View>}
-      <TabBar wide={wide} seasonIndex={profile?.t.mod ?? null} activeTab={tab === 'questions' ? 'today' : tab} onSelect={go} />
+      <TabBar wide={wide} seasonIndex={profile?.t.mod ?? null} activeTab={tab === 'questions' ? 'today' : tab} onSelect={go}
+        badges={ready && profile && stored.readingDay !== day ? { reading: stored.readingDay === null ? 'new' : 'dot' } : undefined} />
     </KeyboardAvoidingView>
     <ToTop resetKey={tab + (detail ? detail.kind + path.length : "")} />
     {ritual && profile && <Ritual profile={profile} today={today} onDone={() => setRitual(false)} />}
