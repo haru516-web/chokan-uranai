@@ -6,6 +6,7 @@ import { addDays, calendarEvents, content, cycleFor, cycleTier, dateLabel, lifeF
 import { GodAnimation } from './GodAnimation';
 import { Gloss } from './Glossary';
 import { TypeTraits } from './NameReading';
+import { colorRuns, typeTextMarks } from './marks';
 import { TideMarks } from './ResidentCard';
 import { ctxFor, dayTable, FIVE_PHASES, labelOf, monthStagesFor, OUTER, SEASON, solarMonthStartDate, solarStageStartDate, STAGES, stageFor, yearScoreOf, blockScoreOf } from './scoring';
 import { TideWheel } from './TideCharts';
@@ -207,7 +208,7 @@ export function Resident({ index, profile, favorite, toggle }: { index: number; 
     </Chips>
     <Card>
       <Text style={S.h3}>{entry.hook}</Text>
-      <Text style={S.body}>{entry.inner}</Text>
+      <Text style={S.body}>{colorRuns(entry.inner, typeTextMarks(entry.inner)).map((run, k) => <Text key={k} style={run.color ? { color: run.color, fontWeight: '800' } : undefined}>{run.text}</Text>)}</Text>
     </Card>
     <TypeTraits entry={entry} />
     <Text style={S.tiny}>この占いタイプは、自分の考え方や日々の過ごし方を振り返るためのヒントです。</Text>

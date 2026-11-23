@@ -6,7 +6,7 @@ import { Gloss } from './Glossary';
 
 export const C = {
   base: '#10172a', panel: '#1a243c', raised: '#273450', line: '#414e6a',
-  ink: '#fbf3e0', muted: '#bac6dd', aqua: '#b6cde8', gold: '#eacc8c',
+  ink: '#fbf3e0', muted: '#d0daed', text: '#f0f4fb', aqua: '#b6cde8', gold: '#eacc8c',
   dark: '#1b2436', error: '#ffc4ac',
 };
 
@@ -27,16 +27,16 @@ export function useColumns() {
 }
 
 export const S = StyleSheet.create({
-  body: { color: C.muted, fontSize: 16, lineHeight: 27 },
+  body: { color: C.text, fontSize: 16, lineHeight: 28, ...({ textShadow: '0 1px 3px rgba(8, 12, 26, .85)' } as object) },
   title: { color: C.ink, fontSize: 30, lineHeight: 42, fontFamily: serif, fontWeight: '700' },
   h2: { color: C.ink, fontSize: 23, lineHeight: 32, fontFamily: serif, fontWeight: '700' },
   h3: { color: C.ink, fontSize: 18, lineHeight: 27, fontWeight: '700' },
   kicker: { color: C.gold, fontSize: 12, lineHeight: 18, fontWeight: '800', letterSpacing: 2 },
-  tiny: { color: C.muted, fontSize: 13, lineHeight: 20 },
+  tiny: { color: C.text, fontSize: 13, lineHeight: 21, ...({ textShadow: '0 1px 3px rgba(8, 12, 26, .85)' } as object) },
   card: { backgroundColor: C.panel, borderColor: C.line, borderWidth: 1, borderRadius: 20, overflow: 'hidden',
     // 縁を、やわらかく光らせる。
     ...({ boxShadow: '0 0 0 1px rgba(234, 204, 140, .22), 0 0 24px rgba(234, 204, 140, .22), inset 0 0 18px rgba(234, 204, 140, .08)' } as object) },
-  pad: { padding: 17, gap: 8 },
+  pad: { paddingVertical: 24, paddingHorizontal: 26, gap: 10 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   between: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
   stack: { gap: 13 },

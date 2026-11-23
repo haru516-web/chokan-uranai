@@ -26,3 +26,13 @@ export function colorRuns(text: string, marks: Mark[] | undefined, from = 0, to 
   }
   return runs;
 }
+
+/** タイプ説明の文章から、色を付ける言葉を自動で選ぶ。書き出し＝水色、「　」の中＝金色、「一方で」「でも」以降の弱点＝珊瑚色。 */
+export function typeTextMarks(text: string): Mark[] {
+  const marks: Mark[] = [];
+  const lead = text.match(/^[^、。]+/)?.[0];
+  if (lead) marks.push({ text: lead, color: '#9fd3ff' });
+  for (const quoted of text.matchAll(/「[^」]+」/g)) marks.push({ text: quoted[0], color: '#f5d98a' });
+  for (const weak of text.matchAll(/(?:その一方で|一方で|一方|その反面|半面|でも|けれど|しかし)、?([^。]+)/g)) marks.push({ text: weak[1], color: '#ffb59c' });
+  return marks;
+}

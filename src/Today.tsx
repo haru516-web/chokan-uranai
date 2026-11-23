@@ -14,7 +14,7 @@ import { ctxFor, DAY_STAGES, FIVE_PHASES, labelOf, OUTER, SEASON, STAGES, stageF
 import { Meter, MoonFacts, SeaGlobe } from './TideCharts';
 import { GodAnimation } from './GodAnimation';
 import { Scene } from './Story';
-import { colorRuns } from './marks';
+import { colorRuns, typeTextMarks } from './marks';
 import { fortuneFor, tomorrowFor } from './fortune';
 import { FortuneAreas, LuckyCard, TomorrowCard } from './FortuneDetail';
 import { Gloss, GlossHint, TermText } from './Glossary';
@@ -178,32 +178,6 @@ export function Today({ people, activeId, onSwitch, onAdd, onManage, today, prof
       <Chip onPress={onManage}>⚙ 管理・削除</Chip>
     </Chips>}
 
-    {view === 'result' && (departureDay || tideChange || homecoming || revisit || currentQuestion) && <View style={S.stack}>
-      {departureDay && <Card>
-        <Text style={[S.kicker, { color: C.gold }]}>✦ 今日だけの知らせ</Text>
-        <Text style={S.h3}>今日は、あなたの出航日</Text>
-        <Text style={S.body}>この一年で見え方が変わった出来事を、一つ思い出してみましょう。</Text>
-      </Card>}
-      {tideChange && <Card>
-        <Text style={[S.kicker, { color: C.gold }]}>✦ 今日だけの知らせ</Text>
-        <Text style={S.h3}>潮替わり · {STAGES[stageIndex].n}</Text>
-        <Gloss style={S.body}>{'いまの海況です。いま気になることを一つ選んでみましょう。'}</Gloss>
-        <GlossHint />
-        <Button quiet onPress={openQuestions}>新しい問いを選ぶ</Button>
-      </Card>}
-      {homecoming && <Card>
-        <TermText id="帰郷の年" style={S.h3} />
-        <Gloss style={S.body}>{(c.solarYear - 12) + '年と同じ海流が巡っています。'}</Gloss>
-        <Button quiet onPress={() => openHomecoming(c.solarYear - 12)}>{(c.solarYear - 12) + '年の海と記録を見る'}</Button>
-      </Card>}
-      {revisit && previous && <Card>
-        <Text style={S.kicker}>{previous.title}</Text>
-        <Text style={S.h3}>{revisit.question}</Text>
-        <Button quiet onPress={() => openQuestion(revisit.id)}>問いを読み直す</Button>
-      </Card>}
-      {currentQuestion && <SelectedQuestionReading question={currentQuestion.question} profile={profile} />}
-    </View>}
-
     {view === 'reading' && <>
     <View style={styles.readingHero}>
       <Text accessibilityRole="header" style={[styles.readingTier, { color: tierColor }]}>{outlook.title}</Text>
@@ -223,8 +197,8 @@ export function Today({ people, activeId, onSwitch, onAdd, onManage, today, prof
         <Meter title="自分が進む力" value={reading.force.go} color={tierColor} caption={goStrong ? '強い' : '控えめ'} />
         <Meter title="周りを変える力" value={reading.force.change} color="#a8c4f0" caption={changeStrong ? '強い' : '控えめ'} delay={220} />
         <View style={styles.reason}>
-          <TermText id="今日の一手" style={S.kicker}>{'なぜ、この一手なのか'}</TermText>
-          <Text style={S.body}>{goStrong && changeStrong ? '動くことも、人を巻き込むことも通りやすい日' : goStrong ? '自分のことは進むけれど、人を動かすのは難しい日' : changeStrong ? '自分で進めるより、人に頼るほうがうまくいく日' : '進むよりも、守って休むほうが得をする日'}。だから{dayWord}は、上の一手がいちばん合っています。</Text>
+          <TermText id="今日の一手" style={S.kicker}>{dayWord + 'のおすすめの過ごし方'}</TermText>
+          <Text style={S.body}>{goStrong && changeStrong ? '動くことも、人を巻き込むことも通りやすい日' : goStrong ? '自分のことは進むけれど、人を動かすのは難しい日' : changeStrong ? '自分で進めるより、人に頼るほうがうまくいく日' : '進むよりも、守って休むほうが得をする日'}。だから{dayWord}は、{goStrong && changeStrong ? '自分から動き、周りも巻き込んでいく' : goStrong ? '周りに頼らず、自分のことを進める' : changeStrong ? '一人で抱えず、周りに頼る' : '無理に進まず、守って休む'}過ごし方がいちばん合っています。</Text>
           <Premium id="breakdown" lines={8}><View style={{ gap: 10 }}>
           <Text style={[S.kicker, { marginTop: 6 }]}>{dayWord}、あなたの海に効いていること</Text>
           {reading.chosen.ranked.map(factor => <View key={factor.id} style={styles.factorRow}>
@@ -236,7 +210,7 @@ export function Today({ people, activeId, onSwitch, onAdd, onManage, today, prof
           </View>)}
           </View></Premium>
         </View>
-        {!!events.length && <Chips>{events.map(event => <Chip key={event}>{event}</Chip>)}</Chips>}
+        {!!events.length && <Text style={S.tiny}>{dayWord}の暦のしるし　<Text style={{ color: C.gold, fontWeight: '800' }}>{events.join('　/　')}</Text></Text>}
       </Scene>
 
       <Scene index={1} color={fortune.best.color} kicker="仕事・恋愛・金運・健康" title={'いちばんは「' + fortune.best.label + '」'} lead={'4つのうち、' + fortune.best.label + 'がいちばん輝く日。好調度の高さで、得意と不得意が分かります。'} next="三つの潮が重なる">
@@ -268,8 +242,12 @@ export function Today({ people, activeId, onSwitch, onAdd, onManage, today, prof
 
     {view === 'result' && openReading && <Pressable accessibilityRole="button" onPress={openReading} {...ui('tap', { skin: 'door' })} style={({ pressed }) => [styles.readingDoor, glow(tierColor), { borderColor: tierColor }, pressed && { opacity: .8 }]}>
       <Text style={[S.kicker, { color: tierColor }]}>{dayWord}の鑑定</Text>
-      <Text style={styles.readingDoorTitle}>{outlook.title}の日の詳しい鑑定を読む　›</Text>
+      <Text style={styles.readingDoorTitle}>{dayWord}の詳しい鑑定</Text>
       <Text style={S.tiny}>仕事・恋愛・金運・健康、ラッキー、明日の潮まで</Text>
+      <View style={[styles.readingDoorButton, { backgroundColor: tierColor }]}>
+        <Text style={styles.readingDoorButtonText}>タップして読む</Text>
+        <Text style={styles.readingDoorButtonText}>›</Text>
+      </View>
     </Pressable>}
 
     {view === 'result' && resident && <View key={'type-' + activeId} style={styles.typeSection}>
@@ -285,10 +263,23 @@ export function Today({ people, activeId, onSwitch, onAdd, onManage, today, prof
           </View>
         </View>
         <Text style={styles.typeHook}>{resident.hook}</Text>
-        <Text style={styles.detail}>{resident.inner}</Text>
+        <Text style={styles.detail}>{colorRuns(resident.inner, typeTextMarks(resident.inner)).map((run, k) => <Text key={k} style={run.color ? { color: run.color, fontWeight: '800' } : undefined}>{run.text}</Text>)}</Text>
       </View>
       <TypeFortunes entry={resident} />
       <TypeTraits entry={resident} />
+      {(homecoming || revisit || currentQuestion) && <View style={S.stack}>
+        {homecoming && <Card>
+          <TermText id="帰郷の年" style={S.h3} />
+          <Gloss style={S.body}>{(c.solarYear - 12) + '年と同じ海流が巡っています。'}</Gloss>
+          <Button quiet onPress={() => openHomecoming(c.solarYear - 12)}>{(c.solarYear - 12) + '年の海と記録を見る'}</Button>
+        </Card>}
+        {revisit && previous && <Card>
+          <Text style={S.kicker}>{previous.title}</Text>
+          <Text style={S.h3}>{revisit.question}</Text>
+          <Button quiet onPress={() => openQuestion(revisit.id)}>問いを読み直す</Button>
+        </Card>}
+        {currentQuestion && <SelectedQuestionReading question={currentQuestion.question} profile={profile} />}
+      </View>}
       <Button quiet onPress={() => setShowName(!showName)}>{showName ? '名札の決まり方を閉じる' : '名札の決まり方を詳しく見る'}</Button>
       {showName && <NameReadingDetails profile={profile} />}
     </View>}
@@ -388,10 +379,12 @@ const styles = StyleSheet.create({
   readingRank: { color: C.muted, fontSize: 20, fontWeight: '800', textAlign: 'center' },
   readingLine: { color: C.ink, fontSize: 22, lineHeight: 36, fontFamily: rounded, fontWeight: '800', textAlign: 'center', paddingHorizontal: 8, marginTop: 6 },
   readingDoor: { borderWidth: 1.5, borderRadius: 22, padding: 18, gap: 4, alignItems: 'center' },
+  readingDoorButton: { marginTop: 10, flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 10, paddingHorizontal: 22, borderRadius: 999 },
+  readingDoorButtonText: { color: '#10213f', fontSize: 16, fontWeight: '900' },
   readingDoorTitle: { color: C.ink, fontSize: 20, lineHeight: 30, fontFamily: rounded, fontWeight: '900', textAlign: 'center' },
   bookHead: { alignItems: 'center', gap: 2, paddingTop: 14, paddingBottom: 6 },
   bookTitle: { color: C.ink, fontSize: 30, lineHeight: 42, fontFamily: rounded, fontWeight: '900', letterSpacing: 4 },
-  detail: { color: C.muted, fontSize: 16, lineHeight: 28 },
+  detail: { color: C.text, fontSize: 17, lineHeight: 31, ...({ textShadow: '0 1px 3px rgba(8, 12, 26, .85)' } as object) },
   typeSection: { gap: 12 },
   typeHero: { padding: 16, gap: 12 },
   typeTop: { flexDirection: 'row', alignItems: 'center', gap: 14 },
